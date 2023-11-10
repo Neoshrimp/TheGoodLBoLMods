@@ -298,8 +298,8 @@
         </Reference>
         <Reference Include="UniTask">
             <HintPath>$(GameFolder)\LBoL_Data\Managed\UniTask.dll</HintPath>
-        </Reference>
-        <Reference Include="spine-csharp">
+        </Reference>        
+		<Reference Include="spine-csharp">
             <HintPath>$(GameFolder)\LBoL_Data\Managed\spine-csharp.dll</HintPath>
         </Reference>
         <Reference Include="spine-unity">
@@ -310,7 +310,7 @@
         </Reference>
         <Reference Include="UnityEngine.UnityEngine.ParticleSystemModule">
             <HintPath>$(GameFolder)\LBoL_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
-        </Reference>
+        </Reference>	
     </ItemGroup>
 
 
@@ -320,16 +320,13 @@
 
 
     <ItemGroup>
-      <None Remove="resources\CardsEn.yaml" />
-      <None Remove="resources\ExhibitsEn.yaml" />
-      <None Remove="Resources\reimu_fist.png" />
-      <None Remove="Resources\UltimateSkillEn.yaml" />
+      <None Remove="resources\JadeboxesEn.yaml" />
     </ItemGroup>
 
 
     <ItemGroup>
       <Folder Include="DirResources\" />
-      <Folder Include="WorkingDir\" />
+      <Folder Include="Resources\" />
     </ItemGroup>
 
 

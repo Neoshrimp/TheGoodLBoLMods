@@ -116,16 +116,16 @@ using Untitled.ConfigDataBuilder.Base;
 using Debug = UnityEngine.Debug;
 
 
-namespace VariantsC
+namespace FullElite
 {
-    [BepInPlugin(VariantsC.PInfo.GUID, VariantsC.PInfo.Name, VariantsC.PInfo.version)]
+    [BepInPlugin(FullElite.PInfo.GUID, FullElite.PInfo.Name, FullElite.PInfo.version)]
     [BepInDependency(LBoLEntitySideloader.PluginInfo.GUID, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(AddWatermark.API.GUID, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInProcess("LBoL.exe")]
     public class BepinexPlugin : BaseUnityPlugin
     {
 
-        private static readonly Harmony harmony = VariantsC.PInfo.harmony;
+        private static readonly Harmony harmony = FullElite.PInfo.harmony;
 
         internal static BepInEx.Logging.ManualLogSource log;
 
@@ -134,7 +134,7 @@ namespace VariantsC
         internal static IResourceSource embeddedSource = new EmbeddedSource(Assembly.GetExecutingAssembly());
 
         // add this for audio loading
-        internal static DirectorySource directorySource = new DirectorySource(VariantsC.PInfo.GUID, "");
+        internal static DirectorySource directorySource = new DirectorySource(FullElite.PInfo.GUID, "");
 
 
         private void Awake()
@@ -152,8 +152,6 @@ namespace VariantsC
             if (BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(AddWatermark.API.GUID))
                 WatermarkWrapper.ActivateWatermark();
 
-
-            CustomLoadouts.AddLoadouts();
         }
 
         private void OnDestroy()
