@@ -1,6 +1,6 @@
 {
   "name": "FullElite",
-  "version_number": "0.5.0",
+  "version_number": "0.5.2",
   "website_url": "https://github.com/Neoshrimp/TheGoodLBoLMods/tree/master/FullElite",
   "description": "All fights are Elites",
   "dependencies": [ "BepInEx-BepInExPack-5.4.2100", "TeamNeo-Sideloader-0.5.0" ]
