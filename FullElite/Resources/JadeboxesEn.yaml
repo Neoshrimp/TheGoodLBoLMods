@@ -1,3 +1,7 @@
 FullElite:
   Name: Full Elite
-  Description: Draft {Value1} cards before the debut. Start with |Block Toys|. All normal encounters contain an elite enemy instead.
+  Description: Draft {Value1} cards before the debut and gain {Value2} <sprite="Point" name="Power">. All normal encounters contain an elite enemy instead.
+
+EzFullElite:
+  Name: Full Elite (EASY)
+  Description: Draft {Value1} cards before the debut. Start with |Block Toys|. All normal encounters contain an elite enemy instead.    
