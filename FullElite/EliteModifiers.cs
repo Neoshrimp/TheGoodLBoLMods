@@ -19,9 +19,12 @@ using LBoL.Base;
 using LBoL.EntityLib.StatusEffects.Enemy;
 using static FullElite.BattleModifiers.ModFactory;
 using static FullElite.BattleModifiers.PrecondFactory;
-
+using DG.Tweening;
 using LBoL.Core.Battle.BattleActions;
 using FullElite.BattleModifiers.Actions;
+using LBoL.Presentation.Units;
+using UnityEngine;
+using LBoL.Core.Battle;
 
 namespace FullElite
 {
@@ -39,6 +42,19 @@ namespace FullElite
             Func<Type, Func<int, ModMod>> seWiLevel = (Type se) => (int level) => AddSE(se, level);
 
             ModPrecond isRainbow = HasJadeboxes(new HashSet<string>() { new RainbowFullEliteJadeboxDef().UniqueId });
+
+            Func<Vector3, ModMod> fairyShenanigans = (Vector3 targetPos) => (Unit unit) => {
+                var uv = unit.View as UnitView;
+                var scale = UnityEngine.Random.Range(1.5f, 1.85f);
+                uv?.transform.DOLocalMove(
+                    targetPos + new Vector3(0, UnityEngine.Random.Range(-0.1f, 0.1f)),
+                    1.3f).SetEase(Ease.InQuad).OnComplete(() => {
+                        uv.PlayEffectOneShot("BuffRed", 0f);
+                        AudioManager.PlaySfx("Buff");
+                        uv.transform.DOScale(new Vector3(scale, scale), 0.3f);
+                    });
+                return unit;
+            };
 
             // A1 elites
             foreach (var id in VanillaElites.act1.Select(t => t.Name))
@@ -69,12 +85,24 @@ namespace FullElite
 
                 var a3um = new UnitModifier(id);
                 a3um.preconds.Add(isEliteGroup);
-                a3um.preconds.Add(isRainbow);
-                a3um.preconds.Add(IsStage(typeof(WindGodLake)));
+/*                a3um.preconds.Add(isRainbow);
+                a3um.preconds.Add(IsStage(typeof(WindGodLake)));*/
+
+                if (id == nameof(Sunny))
+                    a3um.mods.Add(fairyShenanigans(new Vector3(-3, 0)));
+
+                if (id == nameof(Luna))
+                    a3um.mods.Add(fairyShenanigans(new Vector3(-2.7f, -1.7f)));
+
+                if (id == nameof(Star))
+                    a3um.mods.Add(fairyShenanigans(new Vector3(0, 1.45f)));
 
                 if (!VanillaElites.spirits.Contains(id))
                 {
-                    a3um.mods.Add(AddSE(typeof(Firepower), 5));
+                    if (id != nameof(Sunny) && id != nameof(Luna) && id != nameof(Star))
+                        a3um.mods.Add(AddSE(typeof(Firepower), 5));
+                    else
+                        a3um.mods.Add(AddSE(typeof(Firepower), 6));
                     a3um.mods.Add(LazyArg(nextFloat(2.1f, 2.3f), MulEffetiveHp));
                 }
                 else
@@ -100,7 +128,7 @@ namespace FullElite
                 var a2um = new UnitModifier(id);
                 a2um.preconds.Add(isEliteGroup);
                 a2um.preconds.Add(isRainbow);
-                a2um.preconds.Add(IsStage(typeof(XuanwuRavine)));
+                a2um.preconds.Add(IsStage(typeof(BambooForest)));
 
                 if (id == nameof(Nitori))
                 {
@@ -158,7 +186,7 @@ namespace FullElite
                 var a2um = new UnitModifier(id);
                 a2um.preconds.Add(isEliteGroup);
                 a2um.preconds.Add(isRainbow);
-                a2um.preconds.Add(IsStage(typeof(XuanwuRavine)));
+                a2um.preconds.Add(IsStage(typeof(BambooForest)));
 
 
                 // order matters for Doremy
@@ -188,7 +216,7 @@ namespace FullElite
                 var a3um = new UnitModifier(id);
                 a3um.preconds.Add(isEliteGroup);
                 a3um.preconds.Add(isRainbow);
-                a3um.preconds.Add(IsStage(typeof(WindGodLake)));
+                a3um.preconds.Add(IsStage(typeof(XuanwuRavine)));
 
 
                 a3um.mods.Add(LazyArg(nextFloat(0.48f, 0.55f), MulEffetiveHp));

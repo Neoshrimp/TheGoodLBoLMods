@@ -111,7 +111,8 @@ namespace FullElite
             {
                 foreach (var s in gameRun.Stages)
                 {
-                    PoolElites(VanillaElites.eliteGroups, s);
+                    if(s.GetType() == typeof(BambooForest) || s.GetType() == typeof(XuanwuRavine) || s.GetType() == typeof(WindGodLake))
+                        PoolElites(VanillaElites.eliteGroups, s);
                 }
             }
 
