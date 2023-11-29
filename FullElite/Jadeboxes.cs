@@ -21,6 +21,10 @@ using UnityEngine;
 using static FullElite.BepinexPlugin;
 using LBoL.EntityLib.Stages.NormalStages;
 using System.Text.RegularExpressions;
+using LBoL.Core.StatusEffects;
+using HarmonyLib;
+using JetBrains.Annotations;
+using System.Linq;
 
 namespace FullElite
 {
@@ -32,109 +36,172 @@ namespace FullElite
         public override LocalizationOption LoadLocalization() 
         {
             var gl = new GlobalLocalization(BepinexPlugin.embeddedSource);
-            gl.LocalizationFiles.AddLocaleFile(LBoL.Core.Locale.En, "JadeboxesEn");
             return gl;
         }
 
         public override JadeBoxConfig MakeConfig()
         {
             var con = DefaultConfig();
-            con.Value1 = 4;
-            con.Value2 = 50;
             con.Group = new List<string>() { JdBoxGroup };
             return con;
         }
     }
 
+
+
     public class BaseFullElite : JadeBox
     {
-        protected override void OnGain(GameRunController gameRun)
+        protected Stage PoolElites(IEnumerable<string> elites, Stage stage)
         {
-
-            Func<List<string>, Stage, Stage> poolElites = (List<string> elites, Stage stage) => {
-
-                stage.EnemyPoolAct1 = new UniqueRandomPool<string>(true);
-                stage.EnemyPoolAct2 = new UniqueRandomPool<string>(true);
-                stage.EnemyPoolAct3 = new UniqueRandomPool<string>(true);
-                foreach (var e in elites)
-                {
-                    stage.EnemyPoolAct1.Add(e);
-                    stage.EnemyPoolAct2.Add(e);
-                    stage.EnemyPoolAct3.Add(e);
-                }
-                return stage;
-            };
-
-            foreach (var s in gameRun.Stages)
+            stage.EnemyPoolAct1 = new UniqueRandomPool<string>(true);
+            stage.EnemyPoolAct2 = new UniqueRandomPool<string>(true);
+            stage.EnemyPoolAct3 = new UniqueRandomPool<string>(true);
+            foreach (var e in elites)
             {
-                if (s.GetType() == typeof(BambooForest))
-                    poolElites(new List<string> { "Sanyue", "Aya", "Rin" }, s);
-                else if (s.GetType() == typeof(XuanwuRavine))
-                    poolElites(new List<string> { "Nitori", "Youmu", "Kokoro" }, s);
-                else if (s.GetType() == typeof(WindGodLake))
-                    poolElites(new List<string> { "Clownpiece", "Siji", "Doremy" }, s);
+                stage.EnemyPoolAct1.Add(e);
+                stage.EnemyPoolAct2.Add(e);
+                stage.EnemyPoolAct3.Add(e);
             }
-
+            return stage;
         }
-
-        protected override void OnAdded()
-        {
-            base.HandleGameRunEvent<StationEventArgs>(base.GameRun.StationEntered, delegate (StationEventArgs args)
-            {
-                EntryStation entryStation = args.Station as EntryStation;
-                if (entryStation != null && GameRun.Stages.IndexOf(entryStation.Stage) == 0)
-                {
-                    var rewards = new List<StationReward>();
-                    for (var i = 0; i < Value1; i++)
-                    {
-                        rewards.Add(GameRun.CurrentStage.GetEnemyCardReward());
-                    }
-                    entryStation.AddRewards(rewards);
-
-
-                    // 2do queue reward screen if reward screen is showing
-
-                    UiManager.GetPanel<RewardPanel>().Show(new ShowRewardContent
-                    {
-                        Station = GameRun.CurrentStation,
-                        Rewards = GameRun.CurrentStation.Rewards,
-                        ShowNextButton = true
-                    });
-                }
-            });
-        }
-
-
-
+      
     }
+
+
 
     public sealed class FullEliteJadeboxDef : BaseFullEliteJadeBoxDef
     {
-        public override IdContainer GetId() => nameof(FullElite);
+        public override IdContainer GetId() => nameof(FullEliteBox);
 
-        public override JadeBoxConfig MakeConfig()
+        public override LocalizationOption LoadLocalization()
         {
-            return base.MakeConfig();
+            var gl = new GlobalLocalization(BepinexPlugin.embeddedSource);
+            gl.LocalizationFiles.AddLocaleFile(LBoL.Core.Locale.En, "JadeboxesEn");
+            return gl;
         }
 
         [EntityLogic(typeof(FullEliteJadeboxDef))]
-        public sealed class FullElite : BaseFullElite
+        public sealed class FullEliteBox : BaseFullElite
         {
             protected override void OnGain(GameRunController gameRun)
             {
-                base.OnGain(gameRun);
-                gameRun.GainPower(Value2);
+                foreach (var s in gameRun.Stages)
+                {
+                    if (s.GetType() == typeof(BambooForest))
+                        PoolElites(new List<string> { "Sanyue", "Aya", "Rin" }, s);
+                    else if (s.GetType() == typeof(XuanwuRavine))
+                        PoolElites(new List<string> { "Nitori", "Youmu", "Kokoro" }, s);
+                    else if (s.GetType() == typeof(WindGodLake))
+                        PoolElites(new List<string> { "Clownpiece", "Siji", "Doremy" }, s);
+                }
+            }
+        }
+
+    }
+
+
+    public sealed class RainbowFullEliteJadeboxDef : BaseFullEliteJadeBoxDef
+    {
+        public override IdContainer GetId() => nameof(RainbowFullEliteBox);
+
+        [EntityLogic(typeof(RainbowFullEliteJadeboxDef))]
+        public sealed class RainbowFullEliteBox : BaseFullElite
+        {
+            protected override void OnGain(GameRunController gameRun)
+            {
+                foreach (var s in gameRun.Stages)
+                {
+                    PoolElites(VanillaElites.eliteGroups, s);
+                }
+            }
+
+        }
+    }
+
+
+
+
+    public sealed class StartingDraftBoxDef : JadeBoxTemplate
+    {
+        public override IdContainer GetId() => nameof(StartingDraftBox);
+
+        public override LocalizationOption LoadLocalization() => new GlobalLocalization(embeddedSource);
+        public override JadeBoxConfig MakeConfig()
+        {
+            var con = DefaultConfig();
+            con.Value1 = 4;
+            return con;
+        }
+
+        [EntityLogic(typeof(StartingDraftBoxDef))]
+        public sealed class StartingDraftBox : JadeBox
+        {
+            protected override void OnAdded()
+            {
+                base.HandleGameRunEvent<StationEventArgs>(base.GameRun.StationEntered, delegate (StationEventArgs args)
+                {
+                    EntryStation entryStation = args.Station as EntryStation;
+                    if (entryStation != null && GameRun.Stages.IndexOf(entryStation.Stage) == 0)
+                    {
+                        var rewards = new List<StationReward>();
+                        for (var i = 0; i < Value1; i++)
+                        {
+                            rewards.Add(GameRun.CurrentStage.GetEnemyCardReward());
+                        }
+                        entryStation.AddRewards(rewards);
+
+
+                        // 2do queue reward screen if reward screen is showing
+
+                        UiManager.GetPanel<RewardPanel>().Show(new ShowRewardContent
+                        {
+                            Station = GameRun.CurrentStation,
+                            Rewards = GameRun.CurrentStation.Rewards,
+                            ShowNextButton = true
+                        });
+                    }
+                });
             }
         }
     }
 
 
-    public sealed class EzFullEliteJadeboxDef : BaseFullEliteJadeBoxDef
+    public sealed class PowerBonusBoxDef : JadeBoxTemplate
     {
-        public override IdContainer GetId() => nameof(EzFullElite);
+        public override IdContainer GetId() => nameof(PowerBonusBox);
 
-        [EntityLogic(typeof(EzFullEliteJadeboxDef))]
-        public sealed class EzFullElite : BaseFullElite
+        public override LocalizationOption LoadLocalization() => new GlobalLocalization(embeddedSource);
+        public override JadeBoxConfig MakeConfig()
+        {
+            var con = DefaultConfig();
+            con.Value1 = 50;
+            return con;
+        }
+
+        [EntityLogic(typeof(PowerBonusBoxDef))]
+        public sealed class PowerBonusBox : JadeBox
+        {
+            protected override void OnGain(GameRunController gameRun)
+            {
+                gameRun.GainPower(Value1);
+            }
+        }
+    }
+
+
+    public sealed class BlockToysBonusBoxDef : JadeBoxTemplate
+    {
+        public override IdContainer GetId() => nameof(BlockToysBonusBox);
+
+        public override LocalizationOption LoadLocalization() => new GlobalLocalization(embeddedSource);
+        public override JadeBoxConfig MakeConfig()
+        {
+            var con = DefaultConfig();
+            return con;
+        }
+
+        [EntityLogic(typeof(BlockToysBonusBoxDef))]
+        public sealed class BlockToysBonusBox : JadeBox
         {
             protected override void OnGain(GameRunController gameRun)
             {
@@ -150,5 +217,8 @@ namespace FullElite
                 gameRun.ExhibitPool.RemoveAll(e => exhibits.Contains(e));
             }
         }
+
     }
+
+
 }

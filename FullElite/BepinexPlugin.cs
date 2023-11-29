@@ -152,6 +152,10 @@ namespace FullElite
             if (BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(AddWatermark.API.GUID))
                 WatermarkWrapper.ActivateWatermark();
 
+
+            EliteModifiers.Innitialize();
+
+
         }
 
         private void OnDestroy()

@@ -64,7 +64,6 @@
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.GameEntity.get_PlayerName" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.GameEntity.get_Description" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.GameEntity.get_DefaultEventPriority" />
-        <DoNotPublicize Include="LBoL.Core:LBoL.Core.GameEntity.React" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.GameEntity.Initialize" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.GameEntity.CreateFormatWrapper" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.GameEntity.add_PropertyChanged" />
@@ -86,7 +85,6 @@
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.Cards.Card.Upgrade" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.Cards.Card.OnEnterBattle" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.Cards.Card.OnLeaveBattle" />
-        <DoNotPublicize Include="LBoL.Core:LBoL.Core.Cards.Card.React" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.Cards.Card.Precondition" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.Cards.Card.Actions" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.Cards.Card.SetGuns" />
@@ -143,7 +141,6 @@
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.Exhibit.OnEnterBattle" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.Exhibit.OnLeaveBattle" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.Exhibit.NotifyActivating" />
-        <DoNotPublicize Include="LBoL.Core:LBoL.Core.Exhibit.React" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.Exhibit.EnumerateDisplayWords" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.Exhibit.EnumerateRelativeCards" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.Units.PlayerUnit.LocalizeProperty" />
@@ -159,7 +156,6 @@
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.Units.Unit.OnLeaveGameRun" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.Units.Unit.OnEnterBattle" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.Units.Unit.OnLeaveBattle" />
-        <DoNotPublicize Include="LBoL.Core:LBoL.Core.Units.Unit.React" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.Units.Unit.Die" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.Units.Unit.OnDie" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.Units.Unit.SetView" />
@@ -197,7 +193,6 @@
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.StatusEffects.StatusEffect.OnRemoved" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.StatusEffects.StatusEffect.NotifyActivating" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.StatusEffects.StatusEffect.NotifyChanged" />
-        <DoNotPublicize Include="LBoL.Core:LBoL.Core.StatusEffects.StatusEffect.React" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.StatusEffects.StatusEffect.StackAction" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.StatusEffects.StatusEffect.ShouldPreventCardUsage" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.StatusEffects.StatusEffect.get_PreventCardUsageMessage" />
@@ -236,7 +231,6 @@
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.JadeBox.OnAdded" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.JadeBox.OnEnterBattle" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.JadeBox.OnLeaveBattle" />
-        <DoNotPublicize Include="LBoL.Core:LBoL.Core.JadeBox.React" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.JadeBox.EnumerateDisplayWords" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.JadeBox.EnumerateRelativeCards" />
     </ItemGroup>

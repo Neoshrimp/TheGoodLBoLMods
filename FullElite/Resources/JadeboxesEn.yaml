@@ -1,7 +1,19 @@
-FullElite:
+FullEliteBox:
   Name: Full Elite
-  Description: Draft {Value1} cards before the debut and gain {Value2} <sprite="Point" name="Power">. All normal encounters contain an elite enemy instead.
+  Description: All normal encounters contain an elite enemy instead.
 
-EzFullElite:
-  Name: Full Elite (EASY)
-  Description: Draft {Value1} cards before the debut. Start with |Block Toys|. All normal encounters contain an elite enemy instead.    
+RainbowFullEliteBox:
+  Name: Rainbow Full Elite
+  Description: All normal encounters contain an elite enemy instead. Elites of ALL acts are added to the encounter pool and are scaled appropriately (surely).
+
+StartingDraftBox:
+  Name: '|FE Bonus| Starting Draft'
+  Description: Draft {Value1} cards before the debut.
+
+PowerBonusBox:
+  Name: '|FE Bonus| Extra Power'
+  Description: Gain {Value1} <sprite="Point" name="Power"> at the start of the run.
+
+BlockToysBonusBox:
+  Name: '|FE Bonus| Block Toys'    
+  Description: Start with |Block Toys| exhibit.
