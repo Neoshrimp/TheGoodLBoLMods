@@ -85,8 +85,8 @@ namespace FullElite
 
                 var a3um = new UnitModifier(id);
                 a3um.preconds.Add(isEliteGroup);
-/*                a3um.preconds.Add(isRainbow);
-                a3um.preconds.Add(IsStage(typeof(WindGodLake)));*/
+                a3um.preconds.Add(isRainbow);
+                a3um.preconds.Add(IsStage(typeof(WindGodLake)));
 
                 if (id == nameof(Sunny))
                     a3um.mods.Add(fairyShenanigans(new Vector3(-3, 0)));

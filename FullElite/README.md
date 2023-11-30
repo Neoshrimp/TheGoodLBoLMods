@@ -13,6 +13,8 @@ Challenge is selectable and configurable via jadeboxes. Jadebox bonuses are pret
 ---
 *Change log*
 
+`0.9.1` Bug fix: big elites can only be encountered in act 3.
+
 `0.9.0` added Rainbow Full Elite jadebox. Reorganized starting bonuses.
 
 `0.6.0` added more difficult Full Elite jadebox variation. Demoted original jadebox to EASY mode.
