@@ -12,7 +12,7 @@ namespace FullElite.BattleModifiers
 
         public static ModPrecond HasJadeboxes(HashSet<string> jadeBoxes)
         {
-            return (Unit unit) => unit.GameRun.JadeBox.Select(jb => jb.GetType().Name).Count(name => jadeBoxes.Contains(name)) >= jadeBoxes.Count;
+            return (Unit unit) => unit.GameRun.JadeBoxes.Select(jb => jb.GetType().Name).Count(name => jadeBoxes.Contains(name)) >= jadeBoxes.Count;
         }
 
         static public ModPrecond IsEnemyGroup(string groupId)

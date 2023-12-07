@@ -28,6 +28,7 @@ using LBoL.Core.Battle;
 
 namespace FullElite
 {
+
     public class EliteModifiers
     {
 
