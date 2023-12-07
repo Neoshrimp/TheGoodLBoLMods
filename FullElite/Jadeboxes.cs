@@ -25,6 +25,10 @@ using LBoL.Core.StatusEffects;
 using HarmonyLib;
 using JetBrains.Annotations;
 using System.Linq;
+using System.Reflection;
+using FullElite.BattleModifiers;
+using LBoL.Core.Units;
+using LBoL.EntityLib.StatusEffects.Reimu;
 
 namespace FullElite
 {
@@ -111,12 +115,47 @@ namespace FullElite
             {
                 foreach (var s in gameRun.Stages)
                 {
-                    if(s.GetType() == typeof(BambooForest) || s.GetType() == typeof(XuanwuRavine) || s.GetType() == typeof(WindGodLake))
+                    if (s.GetType() == typeof(BambooForest) || s.GetType() == typeof(XuanwuRavine) || s.GetType() == typeof(WindGodLake))
+                    { 
                         PoolElites(VanillaElites.eliteGroups, s);
+                        // works because of reference assignments
+                        s.EnemyPoolAct2 = s.EnemyPoolAct1;
+                        s.EnemyPoolAct3 = s.EnemyPoolAct1;
+
+                        var ogElites = new HashSet<string>();
+                        s.EliteEnemyPool.Do(eg => ogElites.Add(eg.Elem));
+
+                        s.EliteEnemyPool = new UniqueRandomPool<string>(true);
+                        foreach (var eg in VanillaElites.eliteGroups)
+                        {
+                            if (ogElites.Contains(eg))
+                                s.EliteEnemyPool.Add(eg, 2.1f);
+                            else 
+                                s.EliteEnemyPool.Add(eg, 1f);
+                        }
+
+                    }
                 }
             }
 
+            protected override void OnAdded()
+            {
+                foreach (var s in this.GameRun.Stages)
+                {
+                    if (s.GetType() == typeof(BambooForest) || s.GetType() == typeof(XuanwuRavine) || s.GetType() == typeof(WindGodLake))
+                    {
+                        // reassign on game load
+                        s.EnemyPoolAct2 = s.EnemyPoolAct1;
+                        s.EnemyPoolAct3 = s.EnemyPoolAct1;
+                    }
+                }
+
+
+            }
+
         }
+
+
     }
 
 
@@ -152,7 +191,6 @@ namespace FullElite
                         entryStation.AddRewards(rewards);
 
 
-                        // 2do queue reward screen if reward screen is showing
 
                         UiManager.GetPanel<RewardPanel>().Show(new ShowRewardContent
                         {

@@ -74,6 +74,14 @@ namespace FullElite
                 else
                 {
                     a2um.mods.Add(LazyArg(nextInt(1, 2), seWiLevel(typeof(Firepower))));
+                    if (id == nameof(GuihuoRed))
+                        a2um.mods.Add(DoSomeAction((Unit unit) => {
+                            if (unit is GuihuoRed red)
+                            {
+                                red.NoDebuffMove = false;
+                            }
+                            return unit;
+                        }));
                 }
                 if (id != nameof(Sunny) && id != nameof(Luna) && id != nameof(Star))
                     a2um.mods.Add(LazyArg(() => UnityEngine.Random.Range(1.2f, 1.4f), ScaleModel));
@@ -103,13 +111,29 @@ namespace FullElite
                     if (id != nameof(Sunny) && id != nameof(Luna) && id != nameof(Star))
                         a3um.mods.Add(AddSE(typeof(Firepower), 5));
                     else
-                        a3um.mods.Add(AddSE(typeof(Firepower), 6));
+                    { 
+                        a3um.mods.Add(LazyArg(nextInt(5, 7), seWiLevel(typeof(Firepower))));
+                        a3um.mods.Add(DoSomeAction((Unit unit) => {
+                            if (unit is LightFairy lightFairy)
+                                lightFairy.Next = LightFairy.MoveType.Spell;
+                            return unit;
+                        }));
+                    }
                     a3um.mods.Add(LazyArg(nextFloat(2.1f, 2.3f), MulEffetiveHp));
                 }
                 else
                 {
                     a3um.mods.Add(LazyArg(nextFloat(1.05f, 1.2f), MulEffetiveHp));
-                    a3um.mods.Add(LazyArg(nextInt(2, 4), seWiLevel(typeof(Firepower))));
+                    a3um.mods.Add(LazyArg(nextInt(2, 5), seWiLevel(typeof(Firepower))));
+                    if (id == nameof(GuihuoRed))
+                        a3um.mods.Add(DoSomeAction((Unit unit) => {
+                            if (unit is GuihuoRed red)
+                            {
+                                red.NoDebuffMove = false;
+                                red.Next = Guihuo.MoveType.Debuff;
+                            }
+                            return unit;
+                        }));
                 }
                 if (id != nameof(Sunny) && id != nameof(Luna) && id != nameof(Star))
                     a3um.mods.Add(LazyArg(() => UnityEngine.Random.Range(1.5f, 1.85f), ScaleModel));
@@ -120,6 +144,15 @@ namespace FullElite
                     a3um.mods.Add(MultiplyHp(1.2f));
                     a3um.mods.Add(ScaleModel(0.3f));
                 }
+
+                if (id == nameof(Rin))
+                {
+                    a3um.mods.Add(DoSomeAction((Unit unit) => {
+                        unit.React(new ModifyBlockShield(unit, 35, 0));
+                        return unit;
+                    }));
+                }
+
             }
 
 

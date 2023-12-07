@@ -8,10 +8,12 @@ Challenge mode where every regular encounter contains an elite.
 
 Challenge is selectable and configurable via jadeboxes. Jadebox bonuses are pretty much mandatory for a clear but starting cards and power should be enough to clear L7.
 
-[Rainbow box details](https://pastebin.com/c7Nv6fCF) (somewhat spoilers)
+[Rainbow box details](https://github.com/Neoshrimp/TheGoodLBoLMods/blob/master/FullElite/RainbowPoolingRules.md) (somewhat spoilers)
 
 ---
 *Change log*
+
+`1.0.0` **WORS ONLY WITH GAME VERSION 1.4+ (beta branch)** Changed Rainbow Elite pooling rules. Buffed some act 3 elites.
 
 `0.9.1` Bug fix: big elites can only be encountered in act 3.
 

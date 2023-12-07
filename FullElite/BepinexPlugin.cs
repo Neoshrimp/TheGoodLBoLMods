@@ -24,7 +24,6 @@ using LBoL.Core.Stations;
 using LBoL.Core.Stats;
 using LBoL.Core.StatusEffects;
 using LBoL.Core.Units;
-using LBoL.EntityLib.Adventures;
 using LBoL.EntityLib.Adventures.Common;
 using LBoL.EntityLib.Adventures.FirstPlace;
 using LBoL.EntityLib.Adventures.Shared12;

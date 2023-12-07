@@ -15,6 +15,9 @@ namespace FullElite.BattleModifiers.Actions
         public ModifyBlockShield(Unit target, int block, int shield, float multiplier = 1f, bool forced = true) : base(target, block, shield, forced)
         {
             this.multiplier = multiplier;
+            this.Args.Block *= -1;
+            this.Args.Shield *= -1;
+
         }
 
         public static int ApplyMul(int val, float mul, int min) => (int)Math.Max(val * mul, min);
@@ -38,8 +41,8 @@ namespace FullElite.BattleModifiers.Actions
                 return string.Format("{0} --- {{B: {1}, S: {2}, mul: {3}, Type: {5}}} --> {6}", new object[]
                 {
                     GameEventArgs.DebugString(Args.Source),
-                    Args.Block,
-                    Args.Shield,
+                    -Args.Block,
+                    -Args.Shield,
                     Args.Type,
                     multiplier,
                     GameEventArgs.DebugString(Args.Target)
@@ -48,8 +51,8 @@ namespace FullElite.BattleModifiers.Actions
             return string.Format("{0} --- {{B: {1}, S: {2}, mul: {3}}} --> {4}", new object[]
             {
                 GameEventArgs.DebugString(Args.Source),
-                Args.Block,
-                Args.Shield,
+                -Args.Block,
+                -Args.Shield,
                 multiplier,
                 GameEventArgs.DebugString(Args.Target)
             });

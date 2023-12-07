@@ -237,7 +237,7 @@
 
 
 
-
+    
     <ItemGroup>
         <Reference Include="LBoL.Base">
             <HintPath>$(GameFolder)\LBoL_Data\Managed\LBoL.Base.dll</HintPath>
