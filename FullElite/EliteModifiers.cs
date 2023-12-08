@@ -155,27 +155,45 @@ namespace FullElite
 
             }
 
-
             // A2 elites
             foreach (var id in VanillaElites.act2.Select(t => t.Name))
             {
-                var a2um = new UnitModifier(id);
-                a2um.preconds.Add(isEliteGroup);
-                a2um.preconds.Add(isRainbow);
-                a2um.preconds.Add(IsStage(typeof(BambooForest)));
+                var a1um = new UnitModifier(id);
+                a1um.preconds.Add(isEliteGroup);
+                a1um.preconds.Add(isRainbow);
+                a1um.preconds.Add(IsStage(typeof(BambooForest)));
 
                 if (id == nameof(Nitori))
                 {
-                    a2um.mods.Add(AddSE(typeof(FirepowerNegative), 4));
-                    a2um.mods.Add(LazyArg(nextFloat(0.45f, 0.5f), MulEffetiveHp));
+                    a1um.mods.Add(AddSE(typeof(FirepowerNegative), 4));
+                    a1um.mods.Add(LazyArg(nextFloat(0.45f, 0.5f), MulEffetiveHp));
                 }
-                else
+                else 
                 {
-                    a2um.mods.Add(AddSE(typeof(FirepowerNegative), 3));
-                    a2um.mods.Add(LazyArg(nextFloat(0.48f, 0.55f), MulEffetiveHp));
+                    if(id != nameof(Youmu))
+                        a1um.mods.Add(AddSE(typeof(FirepowerNegative), 3));
+                    a1um.mods.Add(LazyArg(nextFloat(0.48f, 0.55f), MulEffetiveHp));
                 }
 
-                a2um.mods.Add(LazyArg(() => UnityEngine.Random.Range(0.85f, 0.95f), ScaleModel));
+                if (id == nameof(Youmu))
+                    a1um.mods.Add(AddSE(typeof(FirepowerNegative), 4));
+
+                a1um.mods.Add(LazyArg(() => UnityEngine.Random.Range(0.85f, 0.95f), ScaleModel));
+
+                if (id == nameof(TerminatorElite))
+                {
+                    a1um.mods.Add(DoSomeAction((Unit unit) =>
+                    {
+                        var drone = unit as TerminatorElite;
+                        if (drone.TryGetStatusEffect<DroneBlock>(out var matrix))
+                        {
+                            unit.React(new RemoveStatusEffectAction(matrix));
+                            unit.React(new ModifyBlockShield(unit, 0, 0, multiplier: 0));
+                            unit.React(new ApplySEnoTriggers(typeof(DroneBlock), unit, 10));
+                        }
+                        return unit;
+                    }));
+                }
 
 
                 var a3um = new UnitModifier(id);
@@ -203,8 +221,7 @@ namespace FullElite
             }
 
 
-            ModMod adjustDoremySleep = (Unit unit) =>
-            {
+            ModMod adjustDoremySleep = (Unit unit) => {
                 var doremy = unit as Doremy;
                 if (doremy?.Sleep != null)
                 {
@@ -217,61 +234,61 @@ namespace FullElite
             // A3 elites
             foreach (var id in VanillaElites.act3.Select(t => t.Name))
             {
-                var a2um = new UnitModifier(id);
-                a2um.preconds.Add(isEliteGroup);
-                a2um.preconds.Add(isRainbow);
-                a2um.preconds.Add(IsStage(typeof(BambooForest)));
+                var a1um = new UnitModifier(id);
+                a1um.preconds.Add(isEliteGroup);
+                a1um.preconds.Add(isRainbow);
+                a1um.preconds.Add(IsStage(typeof(BambooForest)));
 
 
                 // order matters for Doremy
-                a2um.mods.Add(LazyArg(nextFloat(0.28f, 0.33f), MulEffetiveHp));
+                a1um.mods.Add(LazyArg(nextFloat(0.28f, 0.33f), MulEffetiveHp));
 
                 if (VanillaElites.eikiSummons.Contains(id))
-                    a2um.mods.Add(AddSE(typeof(FirepowerNegative), 4));
+                    a1um.mods.Add(AddSE(typeof(FirepowerNegative), 4));
                 else if (id == nameof(Doremy))
                 { 
-                    a2um.mods.Add(AddSE(typeof(FirepowerNegative), 7));
-                    a2um.mods.Add(DoSomeAction(adjustDoremySleep));
-                    a2um.mods.Add(MultiplyHp(0.95f));
+                    a1um.mods.Add(AddSE(typeof(FirepowerNegative), 7));
+                    a1um.mods.Add(DoSomeAction(adjustDoremySleep));
+                    a1um.mods.Add(MultiplyHp(0.95f));
                 }
                 else
-                    a2um.mods.Add(AddSE(typeof(FirepowerNegative), 5));
+                    a1um.mods.Add(AddSE(typeof(FirepowerNegative), 5));
 
                 if (id == nameof(Clownpiece))
-                    a2um.mods.Add(MultiplyHp(1.15f));
+                    a1um.mods.Add(MultiplyHp(1.15f));
 
                 if (id == nameof(Doremy))
-                    a2um.mods.Add(ScaleModel(0.7f));
+                    a1um.mods.Add(ScaleModel(0.7f));
                 else
-                    a2um.mods.Add(LazyArg(() => UnityEngine.Random.Range(0.55f, 0.65f), ScaleModel));
+                    a1um.mods.Add(LazyArg(() => UnityEngine.Random.Range(0.55f, 0.65f), ScaleModel));
 
 
 
-                var a3um = new UnitModifier(id);
-                a3um.preconds.Add(isEliteGroup);
-                a3um.preconds.Add(isRainbow);
-                a3um.preconds.Add(IsStage(typeof(XuanwuRavine)));
+                var a2um = new UnitModifier(id);
+                a2um.preconds.Add(isEliteGroup);
+                a2um.preconds.Add(isRainbow);
+                a2um.preconds.Add(IsStage(typeof(XuanwuRavine)));
 
 
-                a3um.mods.Add(LazyArg(nextFloat(0.48f, 0.55f), MulEffetiveHp));
+                a2um.mods.Add(LazyArg(nextFloat(0.48f, 0.55f), MulEffetiveHp));
 
                 if (VanillaElites.dreamGirls.Contains(id))
-                    a3um.mods.Add(AddSE(typeof(FirepowerNegative), 2));
+                    a2um.mods.Add(AddSE(typeof(FirepowerNegative), 2));
                 else if (id == nameof(Doremy))
                 {
-                    a3um.mods.Add(AddSE(typeof(FirepowerNegative), 5));
-                    a3um.mods.Add(DoSomeAction(adjustDoremySleep));
+                    a2um.mods.Add(AddSE(typeof(FirepowerNegative), 5));
+                    a2um.mods.Add(DoSomeAction(adjustDoremySleep));
                 }
                 else
-                    a3um.mods.Add(AddSE(typeof(FirepowerNegative), 3));
+                    a2um.mods.Add(AddSE(typeof(FirepowerNegative), 3));
 
                 if (id == nameof(Clownpiece))
-                    a3um.mods.Add(MultiplyHp(1.27f));
+                    a2um.mods.Add(MultiplyHp(1.27f));
 
                 if (id == nameof(Doremy))
-                    a2um.mods.Add(ScaleModel(0.95f));
+                    a1um.mods.Add(ScaleModel(0.95f));
                 else
-                    a3um.mods.Add(LazyArg(() => UnityEngine.Random.Range(0.88f, 0.95f), ScaleModel));
+                    a2um.mods.Add(LazyArg(() => UnityEngine.Random.Range(0.88f, 0.95f), ScaleModel));
 
 
             }

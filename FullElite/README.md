@@ -13,6 +13,8 @@ Challenge is selectable and configurable via jadeboxes. Jadebox bonuses are pret
 ---
 *Change log*
 
+`1.1.0` Nerf act 1 Youmu and terminator drone Defense Matrix.
+
 `1.0.0` **WORS ONLY WITH GAME VERSION 1.4+ (beta branch)** Changed Rainbow Elite pooling rules. Buffed some act 3 elites.
 
 `0.9.1` Bug fix: big elites can only be encountered in act 3.
