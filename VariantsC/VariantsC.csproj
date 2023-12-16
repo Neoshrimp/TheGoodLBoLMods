@@ -321,6 +321,7 @@
 
     <ItemGroup>
       <None Remove="resources\CardsEn.yaml" />
+      <None Remove="Resources\ChocolateCoinEx.png" />
       <None Remove="resources\ExhibitsEn.yaml" />
       <None Remove="Resources\reimu_fist.png" />
       <None Remove="Resources\UltimateSkillEn.yaml" />

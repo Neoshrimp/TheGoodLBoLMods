@@ -1,0 +1,6 @@
+ChocolateCoinEx:
+    Name: Chocolate Coin
+    Description: |-
+      Adds {BaseMana} to the mana base.
+      At the start of the first {Value1} turns of each combat, |Exile| a random |Basic| card from the drawpile, discard or hand, prioritizing drawpile first, discard second and hand last.
+    FlavorText: Melts if exposed to direct sunlight.

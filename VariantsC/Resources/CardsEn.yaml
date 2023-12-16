@@ -5,8 +5,8 @@ BalancedBasicCard:
 RollingPebbleCard:
   Description: |- 
     Deal {Damage} damage.
-    |For each <sprite="ManaSprite" name="C"> spent|: Until the end of the fight, |this| card deals {Value1} more damage.
+    |For each <sprite="ManaSprite" name="C"> or <sprite="ManaSprite" name="P"> spent|: Until the end of the combat, |this| card deals {Value1} more damage.
   UpgradedDescription: |- 
-    |For each <sprite="ManaSprite" name="C"> spent|: Until the end of the fight, |this| card deals {Value1} more damage.
+    |For each <sprite="ManaSprite" name="C"> or <sprite="ManaSprite" name="P"> spent|: Until the end of the combat, |this| card deals {Value1} more damage.
     Deal {Damage} damage.
   Name: Rolling Pebble 
