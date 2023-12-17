@@ -11,6 +11,9 @@ using System.Linq;
 using VariantsC.Shared;
 using static VariantsC.Reimu.C.ChocolateCoinExDef;
 using VariantsC.Reimu.C;
+using VariantsC.Sakuya.C;
+using LBoL.EntityLib.Cards.Character.Sakuya;
+using LBoL.EntityLib.UltimateSkills;
 
 namespace VariantsC
 {
@@ -27,6 +30,16 @@ namespace VariantsC
                 exhibit: nameof(ChocolateCoinEx),
                 deck: new List<string>() { nameof(ReimuAttackR), nameof(ReimuAttackW), nameof(ReimuBlockR), nameof(ReimuBlockW), nameof(BalancedBasicCard), nameof(RollingPebbleCard) }.Concat(baseCards).ToList(),
                 complexity: 2);
+
+
+
+
+            PlayerUnitTemplate.AddLoadout(
+                charId: CharNames.Sakuya,
+                ultimateSkill: nameof(SakuyaUltW),
+                exhibit: nameof(BloodyRipperEx),
+                deck: new List<string>() {  }.Concat(baseCards).ToList(),
+                complexity: 3);
 
         }
     }

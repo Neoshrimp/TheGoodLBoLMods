@@ -1,0 +1,9 @@
+BloodDrainSe:
+    Name: Blood Drain
+    Description: 'When attack damage is dealt, {OwnerName} gains life equal to unblocked damage dealt and |Blood Drain| is removed. |Blood Drain| is removed at the start of a |Natural Turn|.'
+    Brief: 'When attack damage is dealt, {OwnerName} gains life equal to unblocked damage dealt and |Blood Drain| is removed. |Blood Drain| is removed at the start of a |Natural Turn|.'
+
+BloodyRipperSe:
+    Name: Bloody Ripper
+    Description: Cosmetic counter for Bloody Ripper.
+    Brief: Cosmetic counter for Bloody Ripper.
