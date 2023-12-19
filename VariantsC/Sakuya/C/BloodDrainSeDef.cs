@@ -42,7 +42,8 @@ namespace VariantsC.Sakuya.C
         public override StatusEffectConfig MakeConfig()
         {
             var con = StatusEffectConfig.FromId(nameof(Vampire)).Copy();
-            //con.HasLevel = false;
+            con.HasLevel = true;
+            con.LevelStackType = StackType.Add;
             con.HasDuration = true;
             con.DurationStackType = StackType.Keep;
             con.Keywords = Keyword.NaturalTurn;
@@ -50,7 +51,7 @@ namespace VariantsC.Sakuya.C
             
             return con;
         }
-       
+           
     }
 
     [EntityLogic(typeof(BloodDrainSeDef))]
@@ -91,8 +92,12 @@ namespace VariantsC.Sakuya.C
                     yield return new HealAction(unit2, base.Owner, totalHeal, HealType.Vampire, 0f);
                 }
             }
-            if(activated)
-                yield return new RemoveStatusEffectAction(this);
+            if (activated)
+            {
+                Level--;
+                if(Level <= 0)
+                    yield return new RemoveStatusEffectAction(this);
+            }
             yield break;
         }
     }

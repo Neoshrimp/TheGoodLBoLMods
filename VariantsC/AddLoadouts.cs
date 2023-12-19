@@ -36,9 +36,17 @@ namespace VariantsC
 
             PlayerUnitTemplate.AddLoadout(
                 charId: CharNames.Sakuya,
-                ultimateSkill: nameof(SakuyaUltW),
+                ultimateSkill: nameof(BatFormUlt),
                 exhibit: nameof(BloodyRipperEx),
-                deck: new List<string>() {  }.Concat(baseCards).ToList(),
+                deck: new List<string>() { 
+                    nameof(SakuyaAttackU),
+                    nameof(SakuyaAttackW),
+                    nameof(SakuyaBlockU),
+                    nameof(SakuyaBlockW),
+
+                    nameof(ConsequencesOfHickeysCard),
+                    nameof(Shoot),
+                }.Concat(baseCards).ToList(),
                 complexity: 3);
 
         }

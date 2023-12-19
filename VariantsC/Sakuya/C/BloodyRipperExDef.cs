@@ -117,7 +117,7 @@ namespace VariantsC.Sakuya.C
                     NotifyActivating();
                     if (Owner.TryGetStatusEffect<BloodyRipperSe>(out var br))
                         br.NotifyActivating();
-                    yield return new ApplyStatusEffectAction<BloodDrainSe>(Owner, duration: 1);
+                    yield return new ApplyStatusEffectAction<BloodDrainSe>(Owner, level: 1, duration: 1);
                     TrackCounter = 0;
                 }
             }

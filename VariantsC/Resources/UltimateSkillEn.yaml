@@ -1,4 +1,9 @@
 JabReimuCUlt:
-  Title: Jab
-  Content: A Fist in YOUR face
+  Title: A Fist in YOUR face
+  Content: Jab
   Description: Deal {Damage} damage (non-accurate). 
+
+BatFormUlt:
+  Title: Blood Slurping Half-human Psycho Killer
+  Content: Bat Form
+  Description: Gain {Value1} |Blood Drain|. 

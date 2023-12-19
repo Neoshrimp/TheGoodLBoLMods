@@ -10,3 +10,10 @@ RollingPebbleCard:
     |For each <sprite="ManaSprite" name="C"> or <sprite="ManaSprite" name="P"> spent|: Until the end of the combat, |this| card deals {Value1} more damage.
     Deal {Damage} damage.
   Name: Rolling Pebble 
+
+ConsequencesOfHickeysCard:
+  Description: |-
+    Lose {Value1} life.
+    Deal {Damage} damage.
+    Add {Value2} |Throwing Knifes| to the hand.
+  Name: Consequences Of Hickeys

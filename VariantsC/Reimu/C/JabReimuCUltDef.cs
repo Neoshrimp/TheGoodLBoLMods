@@ -12,6 +12,7 @@ using LBoL.Core.Battle;
 using LBoL.Core.Cards;
 using LBoL.Core.Units;
 using LBoLEntitySideloader.Attributes;
+using VariantsC.Sakuya.C;
 
 namespace VariantsC.Reimu.C
 {
@@ -68,7 +69,6 @@ namespace VariantsC.Reimu.C
 
         protected override IEnumerable<BattleAction> Actions(UnitSelector selector)
         {
-
             yield return new DamageAction(Owner, selector.GetEnemy(Battle), Damage, GunName, GunType.Single);
         }
 
