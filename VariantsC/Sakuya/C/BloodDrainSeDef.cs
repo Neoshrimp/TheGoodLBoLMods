@@ -64,10 +64,7 @@ namespace VariantsC.Sakuya.C
 
         private IEnumerable<BattleAction> OnStatisticalDamageDealt(StatisticalDamageEventArgs args)
         {
-            if (base.Battle.BattleShouldEnd)
-            {
-                yield break;
-            }
+
             bool activated = false;
             int totalHeal = 0;
             foreach (KeyValuePair<Unit, IReadOnlyList<DamageEventArgs>> keyValuePair in args.ArgsTable)

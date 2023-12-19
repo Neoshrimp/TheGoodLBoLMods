@@ -11,9 +11,9 @@ RollingPebbleCard:
     Deal {Damage} damage.
   Name: Rolling Pebble 
 
-ConsequencesOfHickeysCard:
+ConsequenceOfHickeysCard:
   Description: |-
     Lose {Value1} life.
     Deal {Damage} damage.
     Add {Value2} |Throwing Knifes| to the hand.
-  Name: Consequences Of Hickeys
+  Name: Consequence of Hickeys

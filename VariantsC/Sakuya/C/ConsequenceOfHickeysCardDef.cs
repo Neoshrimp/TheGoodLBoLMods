@@ -17,9 +17,9 @@ using static VariantsC.BepinexPlugin;
 
 namespace VariantsC.Sakuya.C
 {
-    public sealed class ConsequencesOfHickeysCardDef : CardTemplate
+    public sealed class ConsequenceOfHickeysCardDef : CardTemplate
     {
-        public override IdContainer GetId() => nameof(ConsequencesOfHickeysCard);
+        public override IdContainer GetId() => nameof(ConsequenceOfHickeysCard);
 
         public override CardImages LoadCardImages() => new CardImages(embeddedSource, ResourceLoader.LoadTexture("ConsequencesOfHickeysCard.png", embeddedSource));
 
@@ -91,8 +91,8 @@ namespace VariantsC.Sakuya.C
         }
     }
 
-    [EntityLogic(typeof(ConsequencesOfHickeysCardDef))]
-    public sealed class ConsequencesOfHickeysCard : Card
+    [EntityLogic(typeof(ConsequenceOfHickeysCardDef))]
+    public sealed class ConsequenceOfHickeysCard : Card
     {
         protected override IEnumerable<BattleAction> Actions(UnitSelector selector, ManaGroup consumingMana, Interaction precondition)
         {

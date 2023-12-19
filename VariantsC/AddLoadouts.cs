@@ -44,7 +44,7 @@ namespace VariantsC
                     nameof(SakuyaBlockU),
                     nameof(SakuyaBlockW),
 
-                    nameof(ConsequencesOfHickeysCard),
+                    nameof(ConsequenceOfHickeysCard),
                     nameof(Shoot),
                 }.Concat(baseCards).ToList(),
                 complexity: 3);
