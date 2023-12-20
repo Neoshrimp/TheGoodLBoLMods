@@ -1,14 +1,14 @@
 ChocolateCoinEx:
     Name: Chocolate Coin
     Description: |-
-      Adds {BaseMana} to the mana base.
+      Adds {BaseMana} to the mana base. Cards unique to |Reimu| are added to the card pool.
       At the start of the first {Value1} turns of each combat, |Exile| a random |Basic| card from the drawpile, discard or hand, prioritizing drawpile first, discard second and hand last.
     FlavorText: Melts if exposed to direct sunlight.
 
 BloodyRipperEx:
     Name: Bloody Ripper
     Description: |-
-      Adds {BaseMana} to the mana base.
+      Adds {BaseMana} to the mana base. Cards unique to |Sakuya| are added to the card pool.
       While this Exhibit is in {PlayerName}'s possession increase maximum life by {Value1}.
       After a non-|Knife| card is played lose <color=#B2FFFF>1~3</color> life. This lifeloss can never kill {PlayerName}.
       Whenever {PlayerName} plays {Value2} attack cards in a turn, gain |Blood Drain|.

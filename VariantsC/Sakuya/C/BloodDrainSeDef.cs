@@ -66,13 +66,10 @@ namespace VariantsC.Sakuya.C
         {
 
             bool activated = false;
-            int totalHeal = 0;
-            foreach (KeyValuePair<Unit, IReadOnlyList<DamageEventArgs>> keyValuePair in args.ArgsTable)
+            foreach (KeyValuePair<Unit, IReadOnlyList<DamageEventArgs>> unitDmgs in args.ArgsTable)
             {
-                Unit unit;
-                IReadOnlyList<DamageEventArgs> readOnlyList;
-                keyValuePair.Deconstruct(out unit, out readOnlyList);
-                Unit unit2 = unit;
+                int totalHeal = 0;
+                unitDmgs.Deconstruct(out var unit, out var readOnlyList);
                 foreach (DamageEventArgs damageEventArgs in 
                     from ags in readOnlyList
                     where ags.DamageInfo.DamageType == DamageType.Attack
@@ -82,11 +79,11 @@ namespace VariantsC.Sakuya.C
                     {
                         totalHeal += damageEventArgs.DamageInfo.Damage.ToInt();
                     }
-                if (totalHeal > 0 && !activated)
+                if (totalHeal > 0)
                 {
                     base.NotifyActivating();
                     activated = true;
-                    yield return new HealAction(unit2, base.Owner, totalHeal, HealType.Vampire, 0f);
+                    yield return new HealAction(unit, base.Owner, totalHeal, HealType.Vampire, 0f);
                 }
             }
             if (activated)
