@@ -10,6 +10,6 @@ BloodyRipperEx:
     Description: |-
       Adds {BaseMana} to the mana base.
       While this Exhibit is in {PlayerName}'s possession increase maximum life by {Value1}.
-      After a non-|Knife| card is played lose <color=#B2FFFF>1~3</color> life.
+      After a non-|Knife| card is played lose <color=#B2FFFF>1~3</color> life. This lifeloss can never kill {PlayerName}.
       Whenever {PlayerName} plays {Value2} attack cards in a turn, gain |Blood Drain|.
     FlavorText: Rip and tear, tear and rip.

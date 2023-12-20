@@ -84,7 +84,7 @@ namespace VariantsC.Sakuya.C
                 Owner: "Sakuya",
                 ImageId: "",
                 UpgradeImageId: "",
-                Unfinished: false,
+                Unfinished: false, 
                 Illustrator: "@kon_ypaaa",
                 SubIllustrator: new List<string>()
                 );

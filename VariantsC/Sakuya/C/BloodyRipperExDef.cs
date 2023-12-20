@@ -123,8 +123,15 @@ namespace VariantsC.Sakuya.C
             }
 
             if (args.Card.Id != nameof(Knife))
+            {
                 // could use separate rng
-                yield return new DamageAction(Owner, Owner, DamageInfo.HpLose(GameRun.BattleRng.NextInt(1, 3), dontBreakPerfect: true), gunName: "Sacrifice");
+                var dmg = GameRun.BattleRng.NextInt(1, 3);
+                // could be more robust by reacting to damage/death event
+                if(dmg >= Owner.Hp)
+                    dmg = Owner.Hp - 1;
+                yield return new DamageAction(Owner, Owner, DamageInfo.HpLose(dmg, dontBreakPerfect: true), gunName: "Sacrifice");
+            }
+
             yield break;
         }
 
