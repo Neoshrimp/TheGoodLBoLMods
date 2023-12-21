@@ -71,7 +71,7 @@ namespace VariantsC.Sakuya.C
                 int totalHeal = 0;
                 unitDmgs.Deconstruct(out var unit, out var readOnlyList);
                 foreach (DamageEventArgs damageEventArgs in 
-                    from ags in readOnlyList
+                    from ags in readOnlyList    
                     where ags.DamageInfo.DamageType == DamageType.Attack
                     select ags into amount
                     where amount.DamageInfo.Damage > 0f

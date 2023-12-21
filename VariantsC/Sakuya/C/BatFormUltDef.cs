@@ -31,8 +31,8 @@ namespace VariantsC.Sakuya.C
             return new UltimateSkillConfig(
                 Id: "",
                 Order: 10,
-                PowerCost: 100,
-                PowerPerLevel: 100,
+                PowerCost: 90,
+                PowerPerLevel: 90,
                 MaxPowerLevel: 2,
                 RepeatableType: UsRepeatableType.OncePerTurn,
                 Damage: 0,
