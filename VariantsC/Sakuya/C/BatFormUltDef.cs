@@ -4,6 +4,7 @@ using LBoL.Core;
 using LBoL.Core.Battle;
 using LBoL.Core.Battle.BattleActions;
 using LBoL.Core.Units;
+using LBoL.EntityLib.Cards.Character.Sakuya;
 using LBoLEntitySideloader;
 using LBoLEntitySideloader.Attributes;
 using LBoLEntitySideloader.Entities;
@@ -31,16 +32,17 @@ namespace VariantsC.Sakuya.C
             return new UltimateSkillConfig(
                 Id: "",
                 Order: 10,
-                PowerCost: 90,
-                PowerPerLevel: 90,
+                PowerCost: 100,
+                PowerPerLevel: 100,
                 MaxPowerLevel: 2,
                 RepeatableType: UsRepeatableType.OncePerTurn,
                 Damage: 0,
                 Value1: 2,
-                Value2: 0,
+                Value2: 2,
                 Keywords: Keyword.None,
                 RelativeEffects: new List<string>() { nameof(BloodDrainSe) },
-                RelativeCards: new List<string>());
+                RelativeCards: new List<string>() { nameof(Knife) }
+            );
         }
     }
 
@@ -59,6 +61,7 @@ namespace VariantsC.Sakuya.C
             yield return PerformAction.Effect(Owner, "MoonR", sfxId: "Wolf");
 
             yield return new ApplyStatusEffectAction<BloodDrainSe>(Owner, level: Value1, duration: 1);
+            yield return new AddCardsToHandAction(Library.CreateCards<Knife>(Value2, upgraded: false));
         }
     }
 }

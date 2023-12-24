@@ -64,25 +64,22 @@ namespace VariantsC.Sakuya.C
 
         private IEnumerable<BattleAction> OnStatisticalDamageDealt(StatisticalDamageEventArgs args)
         {
-
             bool activated = false;
-            foreach (KeyValuePair<Unit, IReadOnlyList<DamageEventArgs>> unitDmgs in args.ArgsTable)
+            foreach (var unitDmgs in args.ArgsTable)
             {
                 int totalHeal = 0;
-                unitDmgs.Deconstruct(out var unit, out var readOnlyList);
-                foreach (DamageEventArgs damageEventArgs in 
-                    from ags in readOnlyList    
-                    where ags.DamageInfo.DamageType == DamageType.Attack
-                    select ags into amount
-                    where amount.DamageInfo.Damage > 0f
-                    select amount)
-                    {
-                        totalHeal += damageEventArgs.DamageInfo.Damage.ToInt();
+                unitDmgs.Deconstruct(out var unit, out var damageEvents);
+                foreach (DamageEventArgs dmg in damageEvents)
+                {
+                    if (dmg.DamageInfo.DamageType == DamageType.Attack && dmg.DamageInfo.Amount > 0f )
+                    {  
+                        activated = true;
+                        totalHeal += dmg.DamageInfo.Damage.ToInt();
                     }
+                }
                 if (totalHeal > 0)
                 {
                     base.NotifyActivating();
-                    activated = true;
                     yield return new HealAction(unit, base.Owner, totalHeal, HealType.Vampire, 0f);
                 }
             }

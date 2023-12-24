@@ -99,7 +99,7 @@ namespace VariantsC.Sakuya.C
             yield return PerformAction.Gun(Battle.Player, Battle.Player, "ESakuyaShoot2");
 			yield return SacrificeAction(Value1);
             yield return AttackAction(selector);
-            yield return new AddCardsToHandAction(Library.CreateCards<Knife>(Value2, false));
+            yield return new AddCardsToHandAction(Library.CreateCards<Knife>(Value2, upgraded: false));
         }
     }
 }

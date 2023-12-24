@@ -6,4 +6,6 @@ JabReimuCUlt:
 BatFormUlt:
   Title: Blood Slurping Half-human Psycho Killer
   Content: Bat Form
-  Description: Gain {Value1} |Blood Drain|. 
+  Description: |-
+    Gain {Value1} |Blood Drain|. 
+    Add {Value2} |Throwing Knifes| to the hand.
