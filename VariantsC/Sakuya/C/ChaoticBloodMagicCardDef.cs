@@ -4,8 +4,6 @@ using LBoL.Core;
 using LBoL.Core.Battle;
 using LBoL.Core.Battle.BattleActions;
 using LBoL.Core.Cards;
-using LBoL.Core.Randoms;
-using LBoL.EntityLib.Cards.Character.Sakuya;
 using LBoLEntitySideloader;
 using LBoLEntitySideloader.Attributes;
 using LBoLEntitySideloader.Entities;
@@ -13,18 +11,21 @@ using LBoLEntitySideloader.Resource;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using static VariantsC.BepinexPlugin;
 
 namespace VariantsC.Sakuya.C
 {
-    public sealed class ConsequenceOfHickeysCardDef : CardTemplate
+    public sealed class ChaoticBloodMagicCardDef : CardTemplate
     {
-        public override IdContainer GetId() => nameof(ConsequenceOfHickeysCard);
+        public override IdContainer GetId() => nameof(ChaoticBloodMagicCard);
 
-        public override CardImages LoadCardImages() => new CardImages(embeddedSource, ResourceLoader.LoadTexture("ConsequencesOfHickeysCard.png", embeddedSource));
+        public override CardImages LoadCardImages() 
+        { 
+            var ci = new CardImages(BepinexPlugin.embeddedSource);
+            ci.AutoLoad(this, ".png");
+            return ci;
+        } 
 
-        public override LocalizationOption LoadLocalization() => new GlobalLocalization(embeddedSource);
-
+        public override LocalizationOption LoadLocalization() => new GlobalLocalization(BepinexPlugin.embeddedSource);
 
         public override CardConfig MakeConfig() 
         {
@@ -34,33 +35,33 @@ namespace VariantsC.Sakuya.C
                 Order: 10,
                 AutoPerform: true,
                 Perform: new string[0][],
-                GunName: "Simple1",
-                GunNameBurst: "Simple2",
+                GunName: "RemiZhua", // RemiZhua
+                GunNameBurst: "RemiZhuaB",
                 DebugLevel: 0,
                 Revealable: false,
-                IsPooled: poolNewCards.Value,
+                IsPooled: BepinexPlugin.poolNewCards.Value,
                 HideMesuem: false,
                 IsUpgradable: true,
                 Rarity: Rarity.Common,
                 Type: CardType.Attack,
-                TargetType: TargetType.SingleEnemy,
-                Colors: new List<ManaColor>() { ManaColor.Red },
+                TargetType: TargetType.AllEnemies,
+                Colors: new List<ManaColor>() { ManaColor.Red } ,
                 IsXCost: false,
-                Cost: new ManaGroup() { Red = 1 },
+                Cost: new ManaGroup() { Any = 1, Red = 1 },
                 UpgradedCost: null,
                 MoneyCost: null,
-                Damage: 3,
-                UpgradedDamage: null,
+                Damage: 11,
+                UpgradedDamage: 17,
                 Block: null,
                 UpgradedBlock: null,
                 Shield: null,
                 UpgradedShield: null,
-                Value1: 2,
-                UpgradedValue1: 1,
-                Value2: 2,
-                UpgradedValue2: 3,
-                Mana: null,
-                UpgradedMana: null,
+                Value1: null,
+                UpgradedValue1: null,
+                Value2: null,
+                UpgradedValue2: null,
+                Mana: new ManaGroup() { Red = 2 },
+                UpgradedMana: new ManaGroup() { Red = 1, Philosophy = 1 },
                 Scry: null,
                 UpgradedScry: null,
                 ToolPlayableTimes: null,
@@ -79,27 +80,38 @@ namespace VariantsC.Sakuya.C
                 UpgradedRelativeKeyword: Keyword.None,
                 RelativeEffects: new List<string>(),
                 UpgradedRelativeEffects: new List<string>(),
-                RelativeCards: new List<string>() { nameof(Knife) },
-                UpgradedRelativeCards: new List<string>() { nameof(Knife) },
+                RelativeCards: new List<string>(),
+                UpgradedRelativeCards: new List<string>(),
                 Owner: "Sakuya",
                 ImageId: "",
                 UpgradeImageId: "",
-                Unfinished: false, 
-                Illustrator: "@kon_ypaaa",
+                Unfinished: false,
+                Illustrator: "かわやばぐ",
                 SubIllustrator: new List<string>()
                 );
         }
     }
 
-    [EntityLogic(typeof(ConsequenceOfHickeysCardDef))]
-    public sealed class ConsequenceOfHickeysCard : Card
+    [EntityLogic(typeof(ChaoticBloodMagicCardDef))]
+    public sealed class ChaoticBloodMagicCard : Card
     {
-        protected override IEnumerable<BattleAction> Actions(UnitSelector selector, ManaGroup consumingMana, Interaction precondition)
+
+        protected override void OnEnterBattle(BattleController battle)
         {
-            yield return PerformAction.Gun(Battle.Player, Battle.Player, "ESakuyaShoot2");
-			yield return SacrificeAction(Value1);
+			ReactBattleEvent(Battle.EnemyDied, OnEnemyDied);
+
+        }
+/*        protected override IEnumerable<BattleAction> Actions(UnitSelector selector, ManaGroup consumingMana, Interaction precondition)
+        {
             yield return AttackAction(selector);
-            yield return new AddCardsToHandAction(Library.CreateCards<Knife>(Value2, false));
+        }*/
+
+        private IEnumerable<BattleAction> OnEnemyDied(DieEventArgs args)
+        {
+            if (args.DieSource == this)
+            {
+                yield return new GainManaAction(Mana);
+            }
         }
     }
 }

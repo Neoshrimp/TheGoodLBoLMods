@@ -44,7 +44,7 @@ namespace VariantsC.Reimu.C
                 GunNameBurst: "",
                 DebugLevel: 0,
                 Revealable: false,
-                IsPooled: poolNewCommons.Value,
+                IsPooled: poolNewCards.Value,
                 HideMesuem: false,
                 IsUpgradable: true,
                 Rarity: Rarity.Common,

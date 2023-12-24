@@ -45,8 +45,9 @@ namespace VariantsC
                     nameof(SakuyaBlockW),
 
                     nameof(ConsequenceOfHickeysCard),
-                    nameof(Shoot),
-                }.Concat(baseCards).ToList(),
+                    nameof(ChaoticBloodMagicCard),
+                    nameof(Shoot), nameof(Shoot), nameof(Shoot), nameof(Boundary),
+                }.ToList(),
                 complexity: 3);
 
         }

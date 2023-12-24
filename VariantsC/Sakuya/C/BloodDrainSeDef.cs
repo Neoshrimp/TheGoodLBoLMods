@@ -46,8 +46,8 @@ namespace VariantsC.Sakuya.C
             con.LevelStackType = StackType.Add;
             con.HasDuration = true;
             con.DurationStackType = StackType.Keep;
-            con.Keywords = Keyword.NaturalTurn;
-            con.DurationDecreaseTiming = DurationDecreaseTiming.NormalTurnStart;
+            con.Keywords = Keyword.None;
+            con.DurationDecreaseTiming = DurationDecreaseTiming.TurnStart;
             
             return con;
         }

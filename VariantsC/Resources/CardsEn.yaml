@@ -17,3 +17,15 @@ ConsequenceOfHickeysCard:
     Deal {Damage} damage.
     Add {Value2} |Throwing Knifes| to the hand.
   Name: Consequence of Hickeys
+  
+ChaoticBloodMagicCard:
+  Description: |-
+    Deal {Damage} damage to each enemy.
+    When an enemy is defeated using {SelfName}, gain {Mana}.
+  Name: Chaotic Blood Magic
+
+MoonTipsSpacesuitCard:
+  Description: |-
+    <i>|Bloody Ripper| band-aid</i>
+    |For the rest of the battle|: Whenever {PlayerName} would lose life, reduce life lost by <color=#B2FFFF>1</color>.
+  Name: Broken Spacesuit

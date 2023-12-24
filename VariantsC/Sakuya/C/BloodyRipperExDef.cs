@@ -83,7 +83,7 @@ namespace VariantsC.Sakuya.C
         protected override void OnEnterBattle()
         {
             ReactBattleEvent(Battle.CardUsed, OnCardUsed);
-            HandleBattleEvent(Owner.TurnEnding, (UnitEventArgs args) => { TrackCounter = 0; });
+            HandleBattleEvent(Owner.TurnEnding, (UnitEventArgs args) => { TrackCounter--; });
             HandleBattleEvent(Battle.BattleStarting, (GameEventArgs args) => { React(new ApplyStatusEffectAction<BloodyRipperSe>(Owner, level: Value2, count: 0)); }, (GameEventPriority)(-50));
             TrackCounter = 0;
         }
@@ -97,7 +97,7 @@ namespace VariantsC.Sakuya.C
         {
             get => Counter; set
             {
-                Counter = value;
+                Counter = Math.Max(0, value);
                 if (Owner.TryGetStatusEffect<BloodyRipperSe>(out var br))
                     br.Count = Counter;
             }

@@ -159,7 +159,6 @@
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.Units.Unit.OnLeaveGameRun" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.Units.Unit.OnEnterBattle" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.Units.Unit.OnLeaveBattle" />
-        <DoNotPublicize Include="LBoL.Core:LBoL.Core.Units.Unit.React" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.Units.Unit.Die" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.Units.Unit.OnDie" />
         <DoNotPublicize Include="LBoL.Core:LBoL.Core.Units.Unit.SetView" />

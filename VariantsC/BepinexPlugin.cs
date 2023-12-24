@@ -26,7 +26,7 @@ namespace VariantsC
         // add this for audio loading
         internal static DirectorySource directorySource = new DirectorySource(VariantsC.PInfo.GUID, "");
 
-        internal static BepInEx.Configuration.ConfigEntry<bool> poolNewCommons;
+        internal static BepInEx.Configuration.ConfigEntry<bool> poolNewCards;
             
         private void Awake()
         {
@@ -36,7 +36,7 @@ namespace VariantsC
             DontDestroyOnLoad(gameObject);
             gameObject.hideFlags = HideFlags.HideAndDontSave;
 
-            poolNewCommons = Config.Bind("Pools", "poolNewCommons", true, "Makes starting common, non-basic cards discoverable/undiscoverable during game run.");
+            poolNewCards = Config.Bind("Pools", "poolNewCards", true, "Makes new non-basic starting cards discoverable/undiscoverable during game run.");
 
             EntityManager.RegisterSelf();
 
