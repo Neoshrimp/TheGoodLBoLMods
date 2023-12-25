@@ -3,6 +3,7 @@ using LBoL.ConfigData;
 using LBoL.Core;
 using LBoL.Core.Battle;
 using LBoL.Core.Battle.BattleActions;
+using LBoL.Core.Cards;
 using LBoL.Core.Units;
 using LBoL.EntityLib.Cards.Character.Sakuya;
 using LBoLEntitySideloader;
