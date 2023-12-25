@@ -1,14 +1,26 @@
 ### Variants C v0.0.3000
 *under development*
 
-More starting loadouts for vanilla characters.
+Adds new starting loadouts. Each loadout contains new spell card, cards and shining exhibit. 
+
+Initially, I planned to release this mod once it had a loadout for every character but *Bloody Ripper* turned out pretty good and took way more balancing effort than anticipated. Working on it gave ideas to other exhibits which could dramatically alter the way the game is played. However those might take some time to implement and polish. Hence, I want to make this mod available now instead of leaving it to collect dust.
 
 Reimu C             |  Sakuya C
 :-------------------------:|:-------------------------:
 ![image](https://github.com/Neoshrimp/TheGoodLBoLMods/assets/89428565/4692e714-894b-4ec4-bdce-a24e7a8b8d95) |  ![image](https://github.com/Neoshrimp/TheGoodLBoLMods/assets/89428565/99dba28e-ab95-4e4e-a85b-aae8c2236a1f)
 
+Reimu C nothing special. For the time being.
+
+*Bloody Ripper*
+
+makes the game bloody difficult. It's the kind of exhibit which deck build needs to be centered around. Its effect need to be thought about every turn to capitalize on heal proc. And then hp bleeds out real quick nonetheless.
+
+L7 clear is still very much possible but probably not without a few failures. There are some emerging quirks and dynamics which need to be understood. Balance feedback is very welcome.
 
 
+---
+Mod has a config toggle for making new starting cards pooled or not (pooled by default).
 
 #### Changelog
 ---
+`0.0.3000` Initial upload.
