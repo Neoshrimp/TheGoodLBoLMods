@@ -23,4 +23,6 @@ Mod has a config toggle for making new starting cards pooled or not (pooled by d
 
 #### Changelog
 ---
+`0.0.3100` Exposed localization files.
+
 `0.0.3000` Initial upload.

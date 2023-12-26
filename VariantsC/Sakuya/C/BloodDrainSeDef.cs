@@ -31,7 +31,8 @@ namespace VariantsC.Sakuya.C
         public override LocalizationOption LoadLocalization() 
         { 
             var gl = new GlobalLocalization(BepinexPlugin.embeddedSource);
-            gl.LocalizationFiles.AddLocaleFile(Locale.En, "StatusEffectsEn");
+            //gl.LocalizationFiles.AddLocaleFile(Locale.En, "StatusEffectsEn");
+            gl.DiscoverAndLoadLocFiles(this);
             return gl;
         } 
 

@@ -330,7 +330,14 @@
 
 
     <ItemGroup>
-      <Folder Include="DirResources\" />
+      <EmbeddedResource Include="DirResources\CardEn.yaml" />
+      <EmbeddedResource Include="DirResources\ExhibitEn.yaml" />
+      <EmbeddedResource Include="DirResources\StatusEffectEn.yaml" />
+      <EmbeddedResource Include="DirResources\UltimateSkillEn.yaml" />
+    </ItemGroup>
+
+
+    <ItemGroup>
       <Folder Include="WorkingDir\" />
     </ItemGroup>
 

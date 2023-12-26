@@ -22,8 +22,9 @@ namespace VariantsC.Reimu.C
 
         public override LocalizationOption LoadLocalization()
         {
-            var gl = new GlobalLocalization(embeddedSource);
-            gl.LocalizationFiles.AddLocaleFile(Locale.En, "UltimateSkillEn");
+            var gl = new GlobalLocalization(directorySource);
+            //gl.LocalizationFiles.AddLocaleFile(Locale.En, "UltimateSkillEn");
+            gl.DiscoverAndLoadLocFiles(this);
             return gl;
         }
 
