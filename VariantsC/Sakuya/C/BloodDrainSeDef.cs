@@ -30,7 +30,7 @@ namespace VariantsC.Sakuya.C
 
         public override LocalizationOption LoadLocalization() 
         { 
-            var gl = new GlobalLocalization(BepinexPlugin.embeddedSource);
+            var gl = new GlobalLocalization(BepinexPlugin.directorySource);
             //gl.LocalizationFiles.AddLocaleFile(Locale.En, "StatusEffectsEn");
             gl.DiscoverAndLoadLocFiles(this);
             return gl;

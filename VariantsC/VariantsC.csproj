@@ -318,23 +318,7 @@
     </ItemGroup>
 
 
-    <ItemGroup>
-      <None Remove="Resources\BloodyRipperEx.png" />
-      <None Remove="resources\CardsEn.yaml" />
-      <None Remove="Resources\ChocolateCoinEx.png" />
-      <None Remove="resources\ExhibitsEn.yaml" />
-      <None Remove="Resources\reimu_fist.png" />
-      <None Remove="resources\StatusEffectsEn.yaml" />
-      <None Remove="Resources\UltimateSkillEn.yaml" />
-    </ItemGroup>
 
-
-    <ItemGroup>
-      <EmbeddedResource Include="DirResources\CardEn.yaml" />
-      <EmbeddedResource Include="DirResources\ExhibitEn.yaml" />
-      <EmbeddedResource Include="DirResources\StatusEffectEn.yaml" />
-      <EmbeddedResource Include="DirResources\UltimateSkillEn.yaml" />
-    </ItemGroup>
 
 
     <ItemGroup>
