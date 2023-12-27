@@ -1,6 +1,9 @@
 ### Variants C v0.0.3000
 *under development*
 
+*Korean translation by **raspberry Caffeine Monster***
+
+
 Adds new starting loadouts. Each loadout contains new spell card, cards and shining exhibit. 
 
 Initially, I planned to release this mod once it had a loadout for every character but *Bloody Ripper* turned out pretty good and took way more balancing effort than anticipated. Working on it gave ideas to other exhibits which could dramatically alter the way the game is played. However those might take some time to implement and polish. Hence, I want to make this mod available now instead of leaving it to collect dust.
@@ -23,6 +26,8 @@ Mod has a config toggle for making new starting cards pooled or not (pooled by d
 
 #### Changelog
 ---
+`0.0.3200` Added Korean translation. Thanks raspberry Caffeine Monster!
+
 `0.0.3100` Exposed localization files.
 
 `0.0.3000` Initial upload.

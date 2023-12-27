@@ -1,0 +1,31 @@
+BalancedBasicCard:
+  Description: "|방어|를 {Block} 얻습니다. \n피해를 {Damage} 줍니다."
+  Name: 균형잡힌 경계
+
+RollingPebbleCard:
+  Description: |-
+    피해를 {Damage} 줍니다.
+    |<sprite="ManaSprite" name="C"> 또는 <sprite="ManaSprite" name="P">를 지불할 시|: 이번 전투에서 모든 |굴러가는 돌|의 피해량이 {Value1} 증가합니다.
+  UpgradedDescription: |-
+    |<sprite="ManaSprite" name="C"> 또는 <sprite="ManaSprite" name="P">를 지불할 시|: 이번 전투에서 모든 |굴러가는 돌|의 피해량이 {Value1} 증가합니다.
+    피해를 {Damage} 줍니다.
+  Name: 굴러가는 돌
+
+ConsequenceOfHickeysCard:
+  Description: |-
+    체력을 {Value1} 소모합니다.
+    피해를 {Damage} 줍니다.
+    손에 |단검|을 {Value2}장 가져옵니다.
+  Name: 키스자국의 결과
+
+ChaoticBloodMagicCard:
+  Description: |-
+    모든 적에게 피해를 {Damage} 줍니다.
+    {SelfName}으로 적을 쓰러트릴시 , {Mana}를 얻습니다.
+  Name: 혼돈의 혈마법
+
+MoonTipsSpacesuitCard:
+  Description: |-
+    <i>|핏빛 살인귀| 반창고</i>
+    |남은 전투동안|: {PlayerName}가 체력을 잃을 때마다, 체력소모량을 <color=#B2FFFF>1</color> 줄입니다.
+  Name: 부서진 우주복

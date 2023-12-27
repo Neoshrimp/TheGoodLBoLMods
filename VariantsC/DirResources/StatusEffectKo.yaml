@@ -1,0 +1,14 @@
+BloodDrainSe:
+  Name: 흡혈
+  Description: "막히지 않은 피해만큼 {OwnerName}가 체력을 회복하고, |흡혈|을 <color=#B2FFFF>1</color> 소모합니다. 턴 시작시 |흡혈|은 사라집니다."
+  Brief: "막히지 않은 피해만큼 {OwnerName}가 체력을 회복하고, |흡혈|을 <color=#B2FFFF>1</color> 소모합니다. 턴 시작시 |흡혈|은 사라집니다."
+
+BloodyRipperSe:
+  Name: 핏빛 살인귀
+  Description: 핏빛 살인귀 카운터.
+  Brief: 핏빛 살인귀 카운터.
+
+MoonTipsSpacesuitSe:
+  Name: 비디오 게임 디자인
+  Description: '{PlayerName}가 체력을 잃을 때마다, 체력소모량을 <color=#B2FFFF>1</color> 줄입니다.'
+  Brief: "{PlayerName}가 체력을 잃을 때마다, 체력소모량을 <color=#B2FFFF>1</color> 줄입니다."

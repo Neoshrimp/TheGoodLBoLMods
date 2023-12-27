@@ -1,0 +1,11 @@
+JabReimuCUlt:
+  Title: 니 얼굴에 주먹을
+  Content: 잽
+  Description: 피해를 {Damage} 줍니다. (명중 아님).
+
+BatFormUlt:
+  Title: 피를 빠는 미치광이 반인 살인마
+  Content: 박쥐 태세
+  Description: |-
+    |흡혈|을 {Value1} 얻습니다. 
+    손에 |단검|을 {Value2}장 가져옵니다.
