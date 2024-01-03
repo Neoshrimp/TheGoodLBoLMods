@@ -28,13 +28,7 @@ namespace VariantsC.Sakuya.C
         public override IdContainer GetId() => nameof(BloodDrainSe);
 
 
-        public override LocalizationOption LoadLocalization() 
-        { 
-            var gl = new GlobalLocalization(BepinexPlugin.directorySource);
-            //gl.LocalizationFiles.AddLocaleFile(Locale.En, "StatusEffectsEn");
-            gl.DiscoverAndLoadLocFiles(this);
-            return gl;
-        } 
+        public override LocalizationOption LoadLocalization() => BepinexPlugin.StatusEffectBatchLoc.AddEntity(this);
 
 
         public override Sprite LoadSprite() => ResourcesHelper.TryGetSprite<StatusEffect>(nameof(Vampire));

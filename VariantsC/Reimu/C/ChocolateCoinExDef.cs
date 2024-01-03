@@ -25,13 +25,7 @@ namespace VariantsC.Reimu.C
         public override IdContainer GetId() => nameof(ChocolateCoinEx);
 
 
-        public override LocalizationOption LoadLocalization()
-        {
-            var gl = new GlobalLocalization(directorySource);
-            //gl.LocalizationFiles.AddLocaleFile(Locale.En, "ExhibitsEn");
-            gl.DiscoverAndLoadLocFiles(this);
-            return gl;
-        }
+        public override LocalizationOption LoadLocalization() => ExhibitBatchLoc.AddEntity(this);
 
         public override ExhibitSprites LoadSprite()
         {

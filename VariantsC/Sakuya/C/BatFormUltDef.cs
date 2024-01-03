@@ -21,10 +21,7 @@ namespace VariantsC.Sakuya.C
     {
         public override IdContainer GetId() => nameof(BatFormUlt);
 
-        public override LocalizationOption LoadLocalization() 
-        {
-            return new GlobalLocalization(BepinexPlugin.embeddedSource);
-        }
+        public override LocalizationOption LoadLocalization() => BepinexPlugin.UltimateSkillBatchLoc.AddEntity(this);
 
         public override Sprite LoadSprite() => ResourceLoader.LoadSprite("BatFormUlt.png",BepinexPlugin.embeddedSource);
 

@@ -23,7 +23,7 @@ namespace VariantsC.Sakuya.C
 
         public override CardImages LoadCardImages() => new CardImages(embeddedSource, ResourceLoader.LoadTexture("ConsequencesOfHickeysCard.png", embeddedSource));
 
-        public override LocalizationOption LoadLocalization() => new GlobalLocalization(embeddedSource);
+        public override LocalizationOption LoadLocalization() => BepinexPlugin.CardBatchLoc.AddEntity(this);
 
 
         public override CardConfig MakeConfig() 
