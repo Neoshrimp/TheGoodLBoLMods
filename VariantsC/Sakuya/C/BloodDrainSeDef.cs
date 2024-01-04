@@ -87,7 +87,7 @@ namespace VariantsC.Sakuya.C
         {
             bool activated = false;
 
-            if (dmgSources.Peek() != args.ActionSource)
+            if (dmgSources.Count <= 0 || dmgSources.Peek() != args.ActionSource)
             {
                 yield break;
             }
