@@ -47,7 +47,7 @@ namespace VariantsC.Sakuya.C
                 Colors: new List<ManaColor>() { ManaColor.Red },
                 IsXCost: false,
                 Cost: new ManaGroup() { Red = 1 },
-                UpgradedCost: null,
+                UpgradedCost: new ManaGroup() { Any = 1 },
                 MoneyCost: null,
                 Damage: 3,
                 UpgradedDamage: null,

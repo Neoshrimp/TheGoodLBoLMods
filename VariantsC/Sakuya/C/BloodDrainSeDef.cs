@@ -20,6 +20,7 @@ using System.Linq;
 using LBoL.Base;
 using LBoL.Core.Cards;
 using LBoL.Presentation.I10N;
+using static VariantsC.BepinexPlugin;
 
 namespace VariantsC.Sakuya.C
 {
@@ -61,18 +62,43 @@ namespace VariantsC.Sakuya.C
         protected override void OnAdded(Unit unit)
         {
             ReactOwnerEvent(Owner.StatisticalTotalDamageDealt, OnStatisticalDamageDealt);
+            HandleOwnerEvent(Owner.DamageDealt, OnDamageDealt);
         }
+
+        bool CouldActivate(DamageInfo damageInfo) => damageInfo.DamageType == DamageType.Attack && damageInfo.Amount > 0f;
+
+        Stack<GameEntity> dmgSources = new Stack<GameEntity>();
+
+
+        void OnDamageDealt(DamageEventArgs args) 
+        {
+            if (args.Cause != ActionCause.OnlyCalculate
+                && CouldActivate(args.DamageInfo)
+                && dmgSources.Count < Level
+                && !dmgSources.Contains(args.ActionSource)
+                )
+            {
+                dmgSources.Push(args.ActionSource);
+            }
+        }
+
 
         private IEnumerable<BattleAction> OnStatisticalDamageDealt(StatisticalDamageEventArgs args)
         {
             bool activated = false;
+
+            if (dmgSources.Peek() != args.ActionSource)
+            {
+                yield break;
+            }
+
             foreach (var unitDmgs in args.ArgsTable)
             {
                 int totalHeal = 0;
                 unitDmgs.Deconstruct(out var unit, out var damageEvents);
                 foreach (DamageEventArgs dmg in damageEvents)
                 {
-                    if (dmg.DamageInfo.DamageType == DamageType.Attack && dmg.DamageInfo.Amount > 0f )
+                    if (CouldActivate(dmg.DamageInfo))
                     {  
                         activated = true;
                         totalHeal += dmg.DamageInfo.Damage.ToInt();
@@ -90,7 +116,9 @@ namespace VariantsC.Sakuya.C
                 if(Level <= 0)
                     yield return new RemoveStatusEffectAction(this);
             }
-            yield break;
+            dmgSources.Pop();
+
+
         }
     }
 }
