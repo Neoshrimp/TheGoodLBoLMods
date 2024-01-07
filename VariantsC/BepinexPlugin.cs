@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using HarmonyLib;
 using LBoLEntitySideloader;
+using LBoLEntitySideloader.Entities;
 using LBoLEntitySideloader.Resource;
 using System.Reflection;
 using UnityEngine;
@@ -27,7 +28,13 @@ namespace VariantsC
         internal static DirectorySource directorySource = new DirectorySource(VariantsC.PInfo.GUID, "");
 
         internal static BepInEx.Configuration.ConfigEntry<bool> poolNewCards;
-            
+
+        internal static BatchLocalization CardBatchLoc = new BatchLocalization(directorySource, typeof(CardTemplate), "Card");
+        internal static BatchLocalization StatusEffectBatchLoc = new BatchLocalization(directorySource, typeof(StatusEffectTemplate), "StatusEffect");
+        internal static BatchLocalization ExhibitBatchLoc = new BatchLocalization(directorySource, typeof(ExhibitTemplate), "Exhibit");
+        internal static BatchLocalization UltimateSkillBatchLoc = new BatchLocalization(directorySource, typeof(UltimateSkillTemplate), "UltimateSkill");
+
+
         private void Awake()
         {
             log = Logger;

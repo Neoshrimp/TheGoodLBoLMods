@@ -27,7 +27,7 @@ namespace VariantsC.Sakuya.C
         public override IdContainer GetId() => nameof(BloodyRipperEx);
 
 
-        public override LocalizationOption LoadLocalization() => new GlobalLocalization(embeddedSource);
+        public override LocalizationOption LoadLocalization() => ExhibitBatchLoc.AddEntity(this);
 
 
         public override ExhibitSprites LoadSprite() => new ExhibitSprites(ResourceLoader.LoadSprite("BloodyRipperEx.png", embeddedSource));
@@ -144,7 +144,7 @@ namespace VariantsC.Sakuya.C
         public override IdContainer GetId() => nameof(BloodyRipperSe);
 
 
-        public override LocalizationOption LoadLocalization() => new GlobalLocalization(embeddedSource);
+        public override LocalizationOption LoadLocalization() => StatusEffectBatchLoc.AddEntity(this);
 
 
         public override Sprite LoadSprite() => ResourceLoader.LoadSprite("BloodyRipperEx.png", embeddedSource);

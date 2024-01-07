@@ -26,12 +26,7 @@ namespace VariantsC.Sakuya.C.BunniesCorrection
         public override IdContainer GetId() => nameof(MoonTipsSpacesuitSe);
 
 
-        public override LocalizationOption LoadLocalization()
-        {
-            var gl = new GlobalLocalization(BepinexPlugin.embeddedSource);
-            return gl;
-        }
-
+        public override LocalizationOption LoadLocalization() => BepinexPlugin.StatusEffectBatchLoc.AddEntity(this);
 
         public override Sprite LoadSprite() => ResourcesHelper.TryGetSprite<Exhibit>(nameof(Yuhangfu));
 

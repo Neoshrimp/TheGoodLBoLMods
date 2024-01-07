@@ -20,13 +20,7 @@ namespace VariantsC.Reimu.C
     {
         public override IdContainer GetId() => nameof(JabReimuCUlt);
 
-        public override LocalizationOption LoadLocalization()
-        {
-            var gl = new GlobalLocalization(directorySource);
-            //gl.LocalizationFiles.AddLocaleFile(Locale.En, "UltimateSkillEn");
-            gl.DiscoverAndLoadLocFiles(this);
-            return gl;
-        }
+        public override LocalizationOption LoadLocalization() => UltimateSkillBatchLoc.AddEntity(this);
 
         public override Sprite LoadSprite()
         {

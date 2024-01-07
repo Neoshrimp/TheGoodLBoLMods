@@ -23,9 +23,9 @@ namespace VariantsC.Sakuya.C
             var ci = new CardImages(BepinexPlugin.embeddedSource);
             ci.AutoLoad(this, ".png");
             return ci;
-        } 
+        }
 
-        public override LocalizationOption LoadLocalization() => new GlobalLocalization(BepinexPlugin.embeddedSource);
+        public override LocalizationOption LoadLocalization() => BepinexPlugin.CardBatchLoc.AddEntity(this);
 
         public override CardConfig MakeConfig() 
         {
@@ -101,10 +101,7 @@ namespace VariantsC.Sakuya.C
 			ReactBattleEvent(Battle.EnemyDied, OnEnemyDied);
 
         }
-/*        protected override IEnumerable<BattleAction> Actions(UnitSelector selector, ManaGroup consumingMana, Interaction precondition)
-        {
-            yield return AttackAction(selector);
-        }*/
+
 
         private IEnumerable<BattleAction> OnEnemyDied(DieEventArgs args)
         {

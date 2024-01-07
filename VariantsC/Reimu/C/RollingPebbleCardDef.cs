@@ -25,13 +25,7 @@ namespace VariantsC.Reimu.C
             return ci;
         }
 
-        public override LocalizationOption LoadLocalization()
-        {
-            var gl = new GlobalLocalization(directorySource);
-            //gl.LocalizationFiles.AddLocaleFile(Locale.En, "CardsEn");
-            gl.DiscoverAndLoadLocFiles(this);
-            return gl;
-        }
+        public override LocalizationOption LoadLocalization() => CardBatchLoc.AddEntity(this);
 
         public override CardConfig MakeConfig()
         {

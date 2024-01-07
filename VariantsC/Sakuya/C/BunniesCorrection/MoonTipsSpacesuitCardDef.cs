@@ -26,11 +26,10 @@ namespace VariantsC.Sakuya.C.BunniesCorrection
             var ci = new CardImages(BepinexPlugin.embeddedSource);
             ci.AutoLoad(this, ".png");
             return ci;
-            /*            var ci = new CardImages(BepinexPlugin.embeddedSource, (Texture2D)ResourcesHelper.TryGetCardImage(nameof(MoonTipsDefense)));
-                        return ci;*/
+
         }
 
-        public override LocalizationOption LoadLocalization() => new GlobalLocalization(BepinexPlugin.embeddedSource);
+        public override LocalizationOption LoadLocalization() => BepinexPlugin.CardBatchLoc.AddEntity(this);
 
         public override CardConfig MakeConfig()
         {

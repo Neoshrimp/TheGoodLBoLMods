@@ -25,7 +25,7 @@ namespace VariantsC.Shared
             return ca;
         }
 
-        public override LocalizationOption LoadLocalization() => new GlobalLocalization(embeddedSource);
+        public override LocalizationOption LoadLocalization() => CardBatchLoc.AddEntity(this);
 
         public override CardConfig MakeConfig()
         {
