@@ -1,0 +1,19 @@
+﻿FullEliteBox:
+  Name: 정예 총 출동
+  Description: 모든 일반 적이 정예 적으로 대체된다.
+
+RainbowFullEliteBox:
+  Name: 무지개빛 정예 총 출동
+  Description: 모든 일반 적이 정예 적으로 대체된다. 모든 정예 적을 만날 수 있고 적절하게 조정됩니다(진짜로).
+
+StartingDraftBox:
+  Name: "|정예 총 출동 보너스| 초기 설계"
+  Description: 시작 전에 카드 {Value1}장을 설계합니다.
+
+PowerBonusBox:
+  Name: "|정예 총 출동 보너스| 추가 파워"
+  Description: 시작시 <sprite="Point" name="Power">를 추가로 {Value1} 얻습니다.
+
+BlockToysBonusBox:
+  Name: "|정예 총 출동 보너스| 장난감 블럭"
+  Description: "|장난감 블럭| 전시품을 가지고 시작합니다."

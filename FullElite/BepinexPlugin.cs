@@ -113,7 +113,7 @@ using Untitled;
 using Untitled.ConfigDataBuilder;
 using Untitled.ConfigDataBuilder.Base;
 using Debug = UnityEngine.Debug;
-
+using LBoLEntitySideloader.Entities;
 
 namespace FullElite
 {
@@ -135,6 +135,7 @@ namespace FullElite
         // add this for audio loading
         internal static DirectorySource directorySource = new DirectorySource(FullElite.PInfo.GUID, "");
 
+        internal static BatchLocalization jadeboxBatchLoc = new BatchLocalization(embeddedSource, typeof(JadeBoxTemplate), "Jadeboxes");
 
         private void Awake()
         {
@@ -151,6 +152,7 @@ namespace FullElite
             if (BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(AddWatermark.API.GUID))
                 WatermarkWrapper.ActivateWatermark();
 
+            
 
             EliteModifiers.Innitialize();
 

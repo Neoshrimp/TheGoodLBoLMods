@@ -330,12 +330,12 @@
 
     <ItemGroup>
       <None Remove="resources\JadeboxesEn.yaml" />
+      <None Remove="Resources\JadeboxesKo.yaml" />
     </ItemGroup>
 
 
     <ItemGroup>
       <Folder Include="DirResources\" />
-      <Folder Include="Resources\" />
     </ItemGroup>
 
 

@@ -1,5 +1,7 @@
 ### Full Elite
 
+*Korean translation by **raspberry Caffeine Monster***
+
 ![bigRin](https://github.com/Neoshrimp/TheGoodLBoLMods/assets/89428565/b0c00804-c679-47d8-a31f-93919b27719e)
 *Find Big Rin in Rainbow box!*
 
@@ -12,6 +14,8 @@ Challenge is selectable and configurable via jadeboxes. Jadebox bonuses are pret
 
 ---
 *Change log*
+
+`1.1.2` Add Korean localization.
 
 `1.1.0` Nerf act 1 Youmu and terminator drone Defense Matrix.
 
