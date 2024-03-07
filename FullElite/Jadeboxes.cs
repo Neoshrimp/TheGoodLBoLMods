@@ -37,8 +37,11 @@ namespace FullElite
 
         public const string JdBoxGroup = "FullElite";
 
-        public override LocalizationOption LoadLocalization() => jadeboxBatchLoc.AddEntity(this);
-
+        public override LocalizationOption LoadLocalization() 
+        {
+            var gl = new GlobalLocalization(BepinexPlugin.embeddedSource);
+            return gl;
+        }
 
         public override JadeBoxConfig MakeConfig()
         {
@@ -74,6 +77,14 @@ namespace FullElite
     {
         public override IdContainer GetId() => nameof(FullEliteBox);
 
+        public override LocalizationOption LoadLocalization()
+        {
+            var gl = new GlobalLocalization(BepinexPlugin.embeddedSource);
+            gl.LocalizationFiles.AddLocaleFile(LBoL.Core.Locale.En, "JadeboxesEn");
+            gl.LocalizationFiles.AddLocaleFile(LBoL.Core.Locale.Ko, "JadeboxesKo");
+
+            return gl;
+        }
 
         [EntityLogic(typeof(FullEliteJadeboxDef))]
         public sealed class FullEliteBox : BaseFullElite
@@ -156,8 +167,7 @@ namespace FullElite
     {
         public override IdContainer GetId() => nameof(StartingDraftBox);
 
-        public override LocalizationOption LoadLocalization() => jadeboxBatchLoc.AddEntity(this);
-
+        public override LocalizationOption LoadLocalization() => new GlobalLocalization(embeddedSource);
         public override JadeBoxConfig MakeConfig()
         {
             var con = DefaultConfig();
@@ -200,8 +210,8 @@ namespace FullElite
     public sealed class PowerBonusBoxDef : JadeBoxTemplate
     {
         public override IdContainer GetId() => nameof(PowerBonusBox);
-        public override LocalizationOption LoadLocalization() => jadeboxBatchLoc.AddEntity(this);
 
+        public override LocalizationOption LoadLocalization() => new GlobalLocalization(embeddedSource);
         public override JadeBoxConfig MakeConfig()
         {
             var con = DefaultConfig();
@@ -224,9 +234,7 @@ namespace FullElite
     {
         public override IdContainer GetId() => nameof(BlockToysBonusBox);
 
-        public override LocalizationOption LoadLocalization() => jadeboxBatchLoc.AddEntity(this);
-
-
+        public override LocalizationOption LoadLocalization() => new GlobalLocalization(embeddedSource);
         public override JadeBoxConfig MakeConfig()
         {
             var con = DefaultConfig();
