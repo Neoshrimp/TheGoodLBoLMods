@@ -135,7 +135,7 @@ namespace FullElite
         // add this for audio loading
         internal static DirectorySource directorySource = new DirectorySource(FullElite.PInfo.GUID, "");
 
-        internal static BatchLocalization jadeboxBatchLoc = new BatchLocalization(embeddedSource, typeof(JadeBoxTemplate), "Jadeboxes");
+        internal static BatchLocalization jadeboxBatchLoc = new BatchLocalization(embeddedSource, typeof(JadeBoxTemplate));
 
         private void Awake()
         {
@@ -152,7 +152,7 @@ namespace FullElite
             if (BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(AddWatermark.API.GUID))
                 WatermarkWrapper.ActivateWatermark();
 
-            
+            jadeboxBatchLoc.DiscoverAndLoadLocFiles("Jadeboxes");
 
             EliteModifiers.Innitialize();
 
