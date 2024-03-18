@@ -243,6 +243,8 @@ namespace FullElite
                 // order matters for Doremy
                 a1um.mods.Add(LazyArg(nextFloat(0.28f, 0.33f), MulEffetiveHp));
 
+
+
                 if (VanillaElites.eikiSummons.Contains(id))
                     a1um.mods.Add(AddSE(typeof(FirepowerNegative), 4));
                 else if (id == nameof(Doremy))
@@ -253,6 +255,17 @@ namespace FullElite
                 }
                 else
                     a1um.mods.Add(AddSE(typeof(FirepowerNegative), 5));
+
+                if (id == nameof(DreamAya))
+                    a1um.mods.Add(DoSomeAction((Unit aya) =>
+                    {
+                        if (aya.TryGetStatusEffect<FastAttack>(out var fastAttack))
+                        {
+                            aya.React(new RemoveStatusEffectAction(fastAttack));
+                            aya.React(new ApplySEnoTriggers(typeof(FastAttack), aya, 10));
+                        }
+                        return aya;
+                    }));
 
                 if (id == nameof(Clownpiece))
                     a1um.mods.Add(MultiplyHp(1.15f));
@@ -273,7 +286,19 @@ namespace FullElite
                 a2um.mods.Add(LazyArg(nextFloat(0.48f, 0.55f), MulEffetiveHp));
 
                 if (VanillaElites.dreamGirls.Contains(id))
+                { 
                     a2um.mods.Add(AddSE(typeof(FirepowerNegative), 2));
+                    if (id == nameof(DreamAya))
+                        a2um.mods.Add(DoSomeAction((Unit aya) =>
+                        {
+                            if (aya.TryGetStatusEffect<FastAttack>(out var fastAttack))
+                            {
+                                aya.React(new RemoveStatusEffectAction(fastAttack));
+                                aya.React(new ApplySEnoTriggers(typeof(FastAttack), aya, 15));
+                            }
+                            return aya;
+                        }));
+                }
                 else if (id == nameof(Doremy))
                 {
                     a2um.mods.Add(AddSE(typeof(FirepowerNegative), 5));
