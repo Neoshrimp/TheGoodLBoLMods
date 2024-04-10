@@ -40,6 +40,7 @@ namespace VariantsC.Sakuya.C
                 DebugLevel: 0,
                 Revealable: false,
                 IsPooled: BepinexPlugin.poolNewCards.Value,
+                FindInBattle: true,
                 HideMesuem: false,
                 IsUpgradable: true,
                 Rarity: Rarity.Common,

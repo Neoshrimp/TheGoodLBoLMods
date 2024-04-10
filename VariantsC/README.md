@@ -26,6 +26,8 @@ Mod has a config toggle for making new starting cards pooled or not (pooled by d
 
 #### Changelog
 ---
+`0.0.4200` Update for LBoL 1.42.
+
 `0.0.4100` Start using batch loc, instead of global loc.
 
 `0.0.4000` Hickeys+ cost 1 instead of R. Adjust Blood Drain trigger order when discarding a Knife (matters for Mito no Mitsukuni).

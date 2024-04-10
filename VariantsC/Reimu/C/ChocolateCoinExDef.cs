@@ -39,7 +39,7 @@ namespace VariantsC.Reimu.C
                 Id: "",
                 Order: -5,
                 IsDebug: false,
-                IsPooled: false,
+                IsPooled: false, 
                 IsSentinel: false,
                 Revealable: false,
                 Appearance: AppearanceType.Anywhere,

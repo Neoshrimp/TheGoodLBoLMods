@@ -40,7 +40,7 @@ namespace VariantsC.Sakuya.C
                 Id: "",
                 Order: 25,
                 IsDebug: false,
-                IsPooled: false,
+                IsPooled: false, 
                 IsSentinel: false,
                 Revealable: false,
                 Appearance: AppearanceType.Anywhere,
