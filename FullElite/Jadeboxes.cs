@@ -26,7 +26,6 @@ using HarmonyLib;
 using JetBrains.Annotations;
 using System.Linq;
 using System.Reflection;
-using FullElite.BattleModifiers;
 using LBoL.Core.Units;
 using LBoL.EntityLib.StatusEffects.Reimu;
 

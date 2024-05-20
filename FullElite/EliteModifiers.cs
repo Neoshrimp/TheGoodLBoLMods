@@ -1,5 +1,4 @@
-﻿using FullElite.BattleModifiers;
-using LBoL.Core.StatusEffects;
+﻿using LBoL.Core.StatusEffects;
 using LBoL.EntityLib.EnemyUnits.Character.DreamServants;
 using LBoL.EntityLib.EnemyUnits.Character;
 using LBoL.EntityLib.EnemyUnits.Normal.Drones;
@@ -17,14 +16,16 @@ using LBoL.Presentation;
 using LBoL.EntityLib.Stages.NormalStages;
 using LBoL.Base;
 using LBoL.EntityLib.StatusEffects.Enemy;
-using static FullElite.BattleModifiers.ModFactory;
-using static FullElite.BattleModifiers.PrecondFactory;
+using static LBoLEntitySideloader.BattleModifiers.ModFactory;
+using static LBoLEntitySideloader.BattleModifiers.PrecondFactory;
 using DG.Tweening;
 using LBoL.Core.Battle.BattleActions;
-using FullElite.BattleModifiers.Actions;
 using LBoL.Presentation.Units;
 using UnityEngine;
 using LBoL.Core.Battle;
+using LBoL.Core;
+using LBoLEntitySideloader.BattleModifiers;
+using LBoLEntitySideloader.BattleModifiers.Actions;
 
 namespace FullElite
 {
@@ -40,11 +41,11 @@ namespace FullElite
             Func<RandomGen> getRng = () => GameMaster.Instance.CurrentGameRun.EnemyBattleRng;
             Func<int, int, Func<int>> nextInt = (int l, int u) => () => getRng().NextInt(l, u);
             Func<float, float, Func<float>> nextFloat = (float l, float u) => () => getRng().NextFloat(l, u);
-            Func<Type, Func<int, ModMod>> seWiLevel = (Type se) => (int level) => AddSE(se, level);
+            Func<Type, Func<int, ModUnit>> seWiLevel = (Type se) => (int level) => AddSE(se, level);
 
             ModPrecond isRainbow = HasJadeboxes(new HashSet<string>() { new RainbowFullEliteJadeboxDef().UniqueId });
 
-            Func<Vector3, ModMod> fairyShenanigans = (Vector3 targetPos) => (Unit unit) => {
+            Func<Vector3, ModUnit> fairyShenanigans = (Vector3 targetPos) => (Unit unit) => {
                 var uv = unit.View as UnitView;
                 var scale = UnityEngine.Random.Range(1.5f, 1.85f);
                 uv?.transform.DOLocalMove(
@@ -221,14 +222,42 @@ namespace FullElite
             }
 
 
-            ModMod adjustDoremySleep = (Unit unit) => {
+            ModUnit adjustDoremySleep = (Unit unit) => {
                 var doremy = unit as Doremy;
                 if (doremy?.Sleep != null)
                 {
                     unit.React(new RemoveStatusEffectAction(doremy.Sleep));
-                    unit.React(new ApplySEnoTriggers(typeof(Sleep), unit, unit.Shield, count: 3));
+                    var newSleep = new ApplySEnoTriggers(typeof(Sleep), unit, unit.Shield, count: 3);
+                    unit.React(newSleep);
+                    doremy.Sleep = newSleep.Args.Effect;
                 }
                 return unit;
+            };
+
+
+
+            Func<float, ModUnit> DoremyReduceShieldnHpGainFac = (float mul) => {
+                return (Unit unit) => {
+                    var doremy = unit as Doremy;
+                    unit.HandleBattleEvent(unit.BlockShieldGaining, (BlockShieldEventArgs args) =>
+                    {
+                        if (args.ActionSource != doremy.Sleep)
+                        { 
+                            args.Shield *= mul;
+                        }
+                    });
+
+                    unit.HandleBattleEvent(unit.StatusEffectAdding, (StatusEffectApplyEventArgs args) =>
+                    {
+                        if (args.Unit == doremy && args.Effect is Sleep)
+                        {
+                            args.Effect.Level = (int)Math.Round(args.Effect.Level * mul);
+                        }
+                    });
+
+                    Doremy_Hp_Patch.MulStore.SetHpGainMul(doremy, mul);
+                    return unit;
+                };
             };
 
             // A3 elites
@@ -251,6 +280,7 @@ namespace FullElite
                 { 
                     a1um.mods.Add(AddSE(typeof(FirepowerNegative), 7));
                     a1um.mods.Add(DoSomeAction(adjustDoremySleep));
+                    a1um.mods.Add(DoSomeAction(LazyArg(nextFloat(0.28f, 0.31f), DoremyReduceShieldnHpGainFac)));
                     a1um.mods.Add(MultiplyHp(0.95f));
                 }
                 else
@@ -303,6 +333,8 @@ namespace FullElite
                 {
                     a2um.mods.Add(AddSE(typeof(FirepowerNegative), 5));
                     a2um.mods.Add(DoSomeAction(adjustDoremySleep));
+                    a2um.mods.Add(DoSomeAction(LazyArg(nextFloat(0.67f, 0.7f), DoremyReduceShieldnHpGainFac)));
+
                 }
                 else
                     a2um.mods.Add(AddSE(typeof(FirepowerNegative), 3));
