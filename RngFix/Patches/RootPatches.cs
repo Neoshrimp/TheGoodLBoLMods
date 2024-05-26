@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using LBoL.Base;
 using LBoL.Core;
+using LBoL.Core.Stations;
 using LBoL.EntityLib.Exhibits.Shining;
 using RngFix.CustomRngs;
 using System;
@@ -9,6 +10,8 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
+using static RngFix.BepinexPlugin;
+
 
 namespace RngFix.Patches
 {
@@ -27,6 +30,7 @@ namespace RngFix.Patches
             var grRngs = GrRngs.GetOrCreate(gr);
             grRngs.rootBattleRng = new RandomGen(gr.RootRng.NextULong());
             grRngs.rootStationRng = new RandomGen(gr.RootRng.NextULong());
+            grRngs.AssignStationRngs(() => new RandomGen(grRngs.rootStationRng.NextULong()));
 
         }
 
@@ -41,6 +45,30 @@ namespace RngFix.Patches
                 .InstructionEnumeration();
         }
 
+    }
+
+
+    [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.EnterStation))]
+    class GameRunController_EnterStation_Patch
+    {
+        static void Prefix(GameRunController __instance, Station station)
+        {
+            var grRngs = GrRngs.GetOrCreate(__instance);
+            var st = station.Type;
+            if ((st is StationType.Entry && (station.Level != 0 || station.Act != 1))
+                || st is StationType.Select
+                || st is StationType.Supply
+                || st is StationType.Trade)
+            {
+                log.LogDebug($"station type: {st}");
+
+                grRngs.AssignStationRngs(() => new RandomGen(grRngs.rootStationRng.NextULong()));
+            }
+
+            var battleRng = grRngs.rootBattleRng;
+            GrRngs.AssignNodeRngs(__instance, () => new RandomGen(battleRng.NextULong()));
+
+        }
     }
 
 

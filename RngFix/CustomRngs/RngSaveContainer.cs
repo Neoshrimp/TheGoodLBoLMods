@@ -15,6 +15,10 @@ namespace RngFix.CustomRngs
             grRngs.rootBattleRng = RandomGen.FromState(rootBattleRngState);
             grRngs.rootStationRng = RandomGen.FromState(rootStationRngState);
 
+            grRngs.enemyStationRng = RandomGen.FromState(enemyStationRngState);
+            grRngs.eliteStationRng = RandomGen.FromState(eliteStationRngState);
+            grRngs.eventStationRng = RandomGen.FromState(eventStationRngState);
+
         }
 
         public override void Save(GameRunController gameRun)
@@ -22,9 +26,17 @@ namespace RngFix.CustomRngs
             var grRngs = GrRngs.GetOrCreate(gameRun);
             rootBattleRngState = grRngs.rootBattleRng.State;
             rootStationRngState = grRngs.rootStationRng.State;
+
+            enemyStationRngState = grRngs.enemyStationRng.State;
+            eliteStationRngState = grRngs.eliteStationRng.State;
+            eventStationRngState = grRngs.eventStationRng.State;
         }
 
         public ulong rootBattleRngState;
         public ulong rootStationRngState;
+
+        public ulong enemyStationRngState;
+        public ulong eliteStationRngState;
+        public ulong eventStationRngState;
     }
 }

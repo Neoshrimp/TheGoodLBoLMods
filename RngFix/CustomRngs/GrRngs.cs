@@ -16,14 +16,28 @@ namespace RngFix.CustomRngs
         public RandomGen rootStationRng;
 
         public RandomGen battleLootRng;
-        
 
 
-        public static void AssignBattleRngs(GameRunController gr, Func<RandomGen> rngProvider)
+        //2do needs to be saved
+        public RandomGen enemyStationRng;
+        public static RandomGen GetEnemyStationRng(GameRunController gr) => GetOrCreate(gr).enemyStationRng;
+        public RandomGen eliteStationRng;
+        public static RandomGen GetEliteStationRng(GameRunController gr) => GetOrCreate(gr).eliteStationRng;
+        public RandomGen eventStationRng;
+        public static RandomGen GetEventStationRng(GameRunController gr) => GetOrCreate(gr).eventStationRng;
+
+
+
+        public void AssignStationRngs(Func<RandomGen> rngProvider)
         {
-            // blue point and P loot
-            // 2do bleeds through and is generally wacko af
-            // gr.GameRunEventRng = rngProvider();
+            enemyStationRng = rngProvider();
+            eliteStationRng = rngProvider();
+            eventStationRng = rngProvider();
+        }   
+
+        public static void AssignNodeRngs(GameRunController gr, Func<RandomGen> rngProvider)
+        {
+            gr.GameRunEventRng = rngProvider(); // this still leaves some manipulation possible but w/e
             gr.BattleRng = rngProvider();
             gr.BattleCardRng = rngProvider();
             gr.ShuffleRng = rngProvider();
