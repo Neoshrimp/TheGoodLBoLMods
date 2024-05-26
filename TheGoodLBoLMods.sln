@@ -5,7 +5,9 @@ VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VariantsC", "VariantsC\VariantsC.csproj", "{0CAD073A-D529-4D8A-AEE6-B82CFDCE8A01}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FullElite", "FullElite\FullElite.csproj", "{5065F7AA-C640-47CE-B647-930647E1054E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FullElite", "FullElite\FullElite.csproj", "{5065F7AA-C640-47CE-B647-930647E1054E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RngFix", "RngFix\RngFix.csproj", "{370F8342-AFCC-433D-8D73-F019224B150A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{5065F7AA-C640-47CE-B647-930647E1054E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5065F7AA-C640-47CE-B647-930647E1054E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5065F7AA-C640-47CE-B647-930647E1054E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{370F8342-AFCC-433D-8D73-F019224B150A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{370F8342-AFCC-433D-8D73-F019224B150A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{370F8342-AFCC-433D-8D73-F019224B150A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{370F8342-AFCC-433D-8D73-F019224B150A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
