@@ -10,7 +10,7 @@ using static RngFix.BepinexPlugin;
 namespace RngFix.Patches
 {
 
-    [HarmonyPatch]
+    //[HarmonyPatch]
     class RngGetDebug_Patch
     {
 

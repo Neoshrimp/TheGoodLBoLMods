@@ -12,31 +12,31 @@ namespace RngFix.CustomRngs
         public override void Restore(GameRunController gameRun)
         {
             var grRngs = GrRngs.GetOrCreate(gameRun);
-            grRngs.rootBattleRng = RandomGen.FromState(rootBattleRngState);
-            grRngs.rootStationRng = RandomGen.FromState(rootStationRngState);
+            grRngs.rootNodeRng = RandomGen.FromState(rootNodeRngState);
+            grRngs.rootActRng = RandomGen.FromState(rootActRngState);
 
-            grRngs.enemyStationRng = RandomGen.FromState(enemyStationRngState);
-            grRngs.eliteStationRng = RandomGen.FromState(eliteStationRngState);
-            grRngs.eventStationRng = RandomGen.FromState(eventStationRngState);
+            grRngs.enemyActRng = RandomGen.FromState(enemyActRngState);
+            grRngs.eliteActRng = RandomGen.FromState(eliteActRngState);
+            grRngs.eventActRng = RandomGen.FromState(eventActRngState);
 
         }
 
         public override void Save(GameRunController gameRun)
         {
             var grRngs = GrRngs.GetOrCreate(gameRun);
-            rootBattleRngState = grRngs.rootBattleRng.State;
-            rootStationRngState = grRngs.rootStationRng.State;
+            rootNodeRngState = grRngs.rootNodeRng.State;
+            rootActRngState = grRngs.rootActRng.State;
 
-            enemyStationRngState = grRngs.enemyStationRng.State;
-            eliteStationRngState = grRngs.eliteStationRng.State;
-            eventStationRngState = grRngs.eventStationRng.State;
+            enemyActRngState = grRngs.enemyActRng.State;
+            eliteActRngState = grRngs.eliteActRng.State;
+            eventActRngState = grRngs.eventActRng.State;
         }
 
-        public ulong rootBattleRngState;
-        public ulong rootStationRngState;
+        public ulong rootNodeRngState;
+        public ulong rootActRngState;
 
-        public ulong enemyStationRngState;
-        public ulong eliteStationRngState;
-        public ulong eventStationRngState;
+        public ulong enemyActRngState;
+        public ulong eliteActRngState;
+        public ulong eventActRngState;
     }
 }
