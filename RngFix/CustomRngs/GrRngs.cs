@@ -1,4 +1,5 @@
 ﻿using LBoL.Base;
+using LBoL.Base.Extensions;
 using LBoL.Core;
 using LBoL.Core.Stations;
 using RngFix.Patches;
@@ -11,52 +12,75 @@ using static RngFix.BepinexPlugin;
 
 namespace RngFix.CustomRngs
 {
-    // problems - sample size affect rng adavance calls?
-    // 2do separate card rngs
+    // problems - sample size affect rng advance calls? +
+    // onlyRare exhibit rolls
+    // 2do lightBulb
+    // 2do on exhibitGain rng
+    // 2do test Doremy jump
+    // 2do mana base wildly affects card reward (same state, different pool problem)
+    // 2do Aya not in the pool inconsistencies (same problem)
+    // 2do in-battle manipulations?
     public class GrRngs
     {
         static ConditionalWeakTable<GameRunController, GrRngs> table = new ConditionalWeakTable<GameRunController, GrRngs>();
 
-        public RandomGen rootNodeRng;
-        public RandomGen rootActRng;
+        // persistent rngs
+        public class PersRngs
+        {
+            public StageMasterRng stageMasterRng; // => eventRng, eliteRng
+            public ActMasterRng actMasterRng; // => battleQueue
 
-        public RandomGen enemyActRng;
-        public static RandomGen GetEnemyActRng(GameRunController gr) => GetOrCreate(gr).enemyActRng;
-        public RandomGen eliteActRng;
-        public static RandomGen GetEliteActRng(GameRunController gr) => GetOrCreate(gr).eliteActRng;
-        public RandomGen eventActRng;
-        public static RandomGen GetEventActRng(GameRunController gr) => GetOrCreate(gr).eventActRng;
+            //act
+            public RandomGen enemyActQueueRng;
+            public RandomGen battleInitRng;
+            // stage
+            public RandomGen eliteQueueRng;
+            public RandomGen eventQueueRng;
+            public RandomGen bossInitRng;
+            public RandomGen eliteInitRng;
+            public RandomGen adventureInitRng;
+            public RandomGen transitionInitRng;
+            // run
+            public RandomGen gapInitRng;
+            public RandomGen shopInitRng;
+            public RandomGen rareExhibitQueueRng;
 
-        // no need to save
+            public RandomGen fallbackInitRng;
+
+
+        }
+
+        public PersRngs persRngs = new PersRngs();
+
+
+        public static RandomGen GetEnemyActQueueRng(GameRunController gr) => GetOrCreate(gr).persRngs.enemyActQueueRng;
+        public static RandomGen GetEliteQueueRng(GameRunController gr) => GetOrCreate(gr).persRngs.eliteQueueRng;
+        public static RandomGen GetEventQueueRng(GameRunController gr) => GetOrCreate(gr).persRngs.eventQueueRng;
+
+
+
+        private NodeMasterRng nodeMaster;
+
+        public RandomGen transitionRng;
+        public static RandomGen GetTransitionRng(GameRunController gr) => GetOrCreate(gr).transitionRng;
         public RandomGen battleLootRng;
+        public RandomGen bossCardRewardRng;
+        public static RandomGen GetBoobossCardRewardRng(GameRunController gr) => GetOrCreate(gr).bossCardRewardRng;
 
-
-        public static void AssignActRngs(GameRunController gr, Func<RandomGen> rngProvider)
-        {
-            var grRngs = GetOrCreate(gr);
-
-            grRngs.enemyActRng = rngProvider();
-            grRngs.eliteActRng = rngProvider();
-            grRngs.eventActRng = rngProvider();
-
-            gr.AdventureRng = rngProvider();
-
-        }
-
-        public static void AssignNodeRngs(GameRunController gr, Func<RandomGen> rngProvider)
-        {
-            gr.GameRunEventRng = rngProvider(); // this still leaves some manipulation possible but w/e
-            gr.BattleRng = rngProvider();
-            gr.BattleCardRng = rngProvider();
-            gr.ShuffleRng = rngProvider();
-            gr.EnemyMoveRng = rngProvider();
-            gr.EnemyBattleRng = rngProvider();
-            GetOrCreate(gr).battleLootRng = rngProvider();
-
-        }
+        public NodeMasterRng NodeMaster { get => nodeMaster; set => nodeMaster = value; }
 
         /// <summary>
         /// 
+        /// </summary>
+        /// <param name=""></param>
+        public void AdvaceNodeMaster(GameRunController gr)
+        {
+            NodeMaster.Advance(gr);
+        }
+
+
+        /// <summary>
+        /// deeznuts
         /// </summary>
         /// <param name="gr"></param>
         /// <param name="jumpToNode"></param>
@@ -72,27 +96,18 @@ namespace RngFix.CustomRngs
             }
             log.LogDebug($"c: {cStation.X}, jumpTo:{jumpToNode.X}");
 
-            AdvanceNodeRng(gr, jumpToNode.X - cStation.X - 1); // -1 due to node enter advancement?
-            AdvanceActRngs(gr, jumpToNode.Act - cStation.Act - (Helpers.IsActTransition(jumpToNode) ? 1 : 0));
+            var grRngs = GetOrCreate(gr);
+            var steps = jumpToNode.Act - cStation.Act - (Helpers.IsActTransition(jumpToNode) ? 1 : 0);
+
+            grRngs.persRngs.actMasterRng.AdvanceSteps(gr, steps);
+            // makes sure current and future transition stations receive the same rng state as if they would have been reached without teleporting
+            // in reality transitionInitRng isn't used for much
+            for (int i = 0; i < steps; i++)
+                GetTransitionRng(gr).NextULong();
+
+
         }
 
-        public static void AdvanceNodeRng(GameRunController gr, int steps)
-        {
-            var nodeRng = GetOrCreate(gr).rootNodeRng;
-            for (var i = 0; i < steps; i++)
-            {
-                AssignNodeRngs(gr, () => new RandomGen(nodeRng.NextULong()));
-            }
-        }
-
-        public static void AdvanceActRngs(GameRunController gr, int steps)
-        {
-            var actRng = GetOrCreate(gr).rootActRng;
-            for (var i = 0; i < steps; i++)
-            {
-                AssignActRngs(gr, () => new RandomGen(actRng.NextULong()));
-            }
-        }
 
         static public GrRngs GetOrCreate(GameRunController gr)
         {

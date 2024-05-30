@@ -28,9 +28,14 @@ namespace RngFix.Patches
         static void InitRngs(GameRunController gr)
         {
             var grRngs = GrRngs.GetOrCreate(gr);
-            grRngs.rootNodeRng = new RandomGen(gr.RootRng.NextULong());
-            grRngs.rootActRng = new RandomGen(gr.RootRng.NextULong());
-            GrRngs.AssignActRngs(gr ,() => new RandomGen(grRngs.rootActRng.NextULong()));
+            grRngs.persRngs.stageMasterRng = new StageMasterRng(gr.RootRng.NextULong());
+            grRngs.persRngs.actMasterRng = new ActMasterRng(gr.RootRng.NextULong());
+
+            grRngs.persRngs.gapInitRng = new RandomGen(gr.RootRng.NextULong());
+            grRngs.persRngs.shopInitRng = new RandomGen(gr.RootRng.NextULong());
+            grRngs.persRngs.rareExhibitQueueRng = new RandomGen(gr.RootRng.NextULong());
+
+            grRngs.persRngs.fallbackInitRng = new RandomGen(gr.RootRng.NextULong());
 
         }
 
@@ -53,19 +58,73 @@ namespace RngFix.Patches
     {
         static void Prefix(GameRunController __instance)
         {
-            var grRngs = GrRngs.GetOrCreate(__instance);
-            var node = __instance.CurrentMap.VisitingNode;
-            if (Helpers.IsActTransition(node))
+            var gr = __instance;
+            var grRngs = GrRngs.GetOrCreate(gr);
+            var node = gr.CurrentMap.VisitingNode;
+
+            RandomGen nodeInitRng = null;
+
+            switch (node.StationType)
             {
-                log.LogDebug("advancing act rng");
-
-                GrRngs.AssignActRngs(__instance, () => new RandomGen(grRngs.rootActRng.NextULong()));
+                case StationType.None:
+                    nodeInitRng = grRngs.persRngs.fallbackInitRng;
+                    log.LogWarning($"Node({node.X}, {node.Y}) station type is {StationType.None} using fallback rng.");
+                    break;
+                case StationType.Enemy:
+                    log.LogDebug("regular fight");
+                    nodeInitRng = grRngs.persRngs.battleInitRng;
+                    break;
+                case StationType.EliteEnemy:
+                    log.LogDebug("elite fight");
+                    nodeInitRng = grRngs.persRngs.eliteInitRng;
+                    break;
+                case StationType.Supply:
+                    grRngs.persRngs.actMasterRng.Advance(gr);
+                    nodeInitRng = grRngs.persRngs.transitionInitRng;
+                    break;
+                case StationType.Gap:
+                    nodeInitRng = grRngs.persRngs.gapInitRng;
+                    break;
+                case StationType.Shop:
+                    nodeInitRng = grRngs.persRngs.shopInitRng;
+                    break;
+                case StationType.Adventure:
+                    nodeInitRng = grRngs.persRngs.adventureInitRng;
+                    break;
+                case StationType.Entry:
+                    log.LogDebug("entry deeznuts");
+                    grRngs.persRngs.stageMasterRng.Advance(gr);
+                    grRngs.persRngs.actMasterRng.Advance(gr);
+                    nodeInitRng = grRngs.persRngs.transitionInitRng;
+                    break;
+                case StationType.Select:
+                    grRngs.persRngs.actMasterRng.Advance(gr);
+                    nodeInitRng = grRngs.persRngs.transitionInitRng;
+                    break;
+                case StationType.Trade:
+                    grRngs.persRngs.actMasterRng.Advance(gr);
+                    nodeInitRng = grRngs.persRngs.transitionInitRng;
+                    break;
+                case StationType.Boss:
+                    nodeInitRng = grRngs.persRngs.bossInitRng;
+                    break;
+                case StationType.BattleAdvTest:
+                    nodeInitRng = grRngs.persRngs.fallbackInitRng;
+                    break;
+                default:
+                    break;
             }
-            log.LogDebug("advancing node rng");
 
-            var nodeRng = grRngs.rootNodeRng;
-            GrRngs.AssignNodeRngs(__instance, () => new RandomGen(nodeRng.NextULong()));
+            if (nodeInitRng != null)
+            {
+                grRngs.NodeMaster = new NodeMasterRng(nodeInitRng.NextULong());
+                grRngs.NodeMaster.Advance(gr);
 
+            }
+            else
+            {
+                log.LogError($"NodeRngs were not assigned for station {node.StationType}");
+            }
         }
     }
 

@@ -17,7 +17,7 @@ namespace RngFix.Patches.RngGetters
     {
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            var newCall = AccessTools.Method(typeof(GrRngs), nameof(GrRngs.GetEnemyActRng));
+            var newCall = AccessTools.Method(typeof(GrRngs), nameof(GrRngs.GetEnemyActQueueRng));
             return new CodeMatcher(instructions)
                 .ReplaceRngGetter(nameof(GameRunController.StationRng), newCall)
                 .ReplaceRngGetter(nameof(GameRunController.StationRng), newCall)
@@ -39,7 +39,7 @@ namespace RngFix.Patches.RngGetters
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             return new CodeMatcher(instructions)
-                .ReplaceRngGetter(nameof(GameRunController.StationRng), AccessTools.Method(typeof(GrRngs), nameof(GrRngs.GetEliteActRng)))
+                .ReplaceRngGetter(nameof(GameRunController.StationRng), AccessTools.Method(typeof(GrRngs), nameof(GrRngs.GetEliteQueueRng)))
                 .InstructionEnumeration();
         }
     }
@@ -50,38 +50,9 @@ namespace RngFix.Patches.RngGetters
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             return new CodeMatcher(instructions)
-                 .ReplaceRngGetter(nameof(GameRunController.StationRng), AccessTools.Method(typeof(GrRngs), nameof(GrRngs.GetEventActRng)))
+                 .ReplaceRngGetter(nameof(GameRunController.StationRng), AccessTools.Method(typeof(GrRngs), nameof(GrRngs.GetEventQueueRng)))
                  .InstructionEnumeration();
         }
     }
-
-
-
-    [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.GetOpponentCandidates))]
-    class GameRunController_GetOpponentCandidates_Patch
-    {
-        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-        {
-            return new CodeMatcher(instructions)
-                 .ReplaceRngGetter(nameof(GameRunController.StationRng), AccessTools.PropertyGetter(typeof(GameRunController), nameof(GameRunController.AdventureRng)))
-                 .InstructionEnumeration();
-        }
-    }
-
-
-
-    [HarmonyPatch(typeof(MiyoiBartender), nameof(MiyoiBartender.InitVariables))]
-    class MiyoiBartender_InitVariables_Patch
-    {
-        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-        {
-            return new CodeMatcher(instructions)
-                 .ReplaceRngGetter(nameof(GameRunController.StationRng), AccessTools.PropertyGetter(typeof(GameRunController), nameof(GameRunController.AdventureRng)))
-                 .InstructionEnumeration();
-        }
-    }
-
-
-
 
 }

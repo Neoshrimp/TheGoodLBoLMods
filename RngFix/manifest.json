@@ -3,5 +3,5 @@
   "version_number": "1.0.0",
   "website_url": "",
   "description": "",
-  "dependencies": [ "BepInEx-BepInExPack-5.4.2100", "TeamNeo-Sideloader-0.5.0"]
+  "dependencies": [ "BepInEx-BepInExPack-5.4.2100", "TeamNeo-Sideloader-0.9.6410"]
 }

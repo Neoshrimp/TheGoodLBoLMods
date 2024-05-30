@@ -1,9 +1,11 @@
 ﻿using LBoL.Base;
 using LBoL.Core;
 using LBoLEntitySideloader.PersistentValues;
+using LBoLEntitySideloader.PersistentValues.TypeConverters;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using YamlDotNet.Serialization;
 
 namespace RngFix.CustomRngs
 {
@@ -12,31 +14,25 @@ namespace RngFix.CustomRngs
         public override void Restore(GameRunController gameRun)
         {
             var grRngs = GrRngs.GetOrCreate(gameRun);
-            grRngs.rootNodeRng = RandomGen.FromState(rootNodeRngState);
-            grRngs.rootActRng = RandomGen.FromState(rootActRngState);
 
-            grRngs.enemyActRng = RandomGen.FromState(enemyActRngState);
-            grRngs.eliteActRng = RandomGen.FromState(eliteActRngState);
-            grRngs.eventActRng = RandomGen.FromState(eventActRngState);
-
+            grRngs.persRngs = persRngs;
         }
 
         public override void Save(GameRunController gameRun)
         {
             var grRngs = GrRngs.GetOrCreate(gameRun);
-            rootNodeRngState = grRngs.rootNodeRng.State;
-            rootActRngState = grRngs.rootActRng.State;
+            persRngs = grRngs.persRngs;
 
-            enemyActRngState = grRngs.enemyActRng.State;
-            eliteActRngState = grRngs.eliteActRng.State;
-            eventActRngState = grRngs.eventActRng.State;
         }
 
-        public ulong rootNodeRngState;
-        public ulong rootActRngState;
+        public override IEnumerable<IYamlTypeConverter> TypeConverters()
+        {
+            yield return new RandomGenTypeConverter();
+        }
 
-        public ulong enemyActRngState;
-        public ulong eliteActRngState;
-        public ulong eventActRngState;
+
+        public GrRngs.PersRngs persRngs;
+
+
     }
 }

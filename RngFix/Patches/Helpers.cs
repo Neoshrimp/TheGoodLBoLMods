@@ -24,7 +24,8 @@ namespace RngFix.Patches
                  .Set(OpCodes.Call, newCall);
         }
 
-        public static bool IsActTransition(MapNode node) => (node.StationType is StationType.Entry && (node.X != 0 || node.Act != 1))
+        public static bool IsActTransition(MapNode node) => 
+                   node.StationType is StationType.Entry 
                 || node.StationType is StationType.Select
                 || node.StationType is StationType.Supply
                 || node.StationType is StationType.Trade;
