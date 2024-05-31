@@ -31,6 +31,42 @@ namespace RngFix.Patches.RngGetters
                .Set(OpCodes.Call, AccessTools.Method(typeof(GenerateEnemyPoints_Patch), nameof(GenerateEnemyPoints_Patch.GetLootGen)))
                .InstructionEnumeration();
         }
+    }
+
+
+
+    [HarmonyPatch]
+    class MoneyReward_Patch
+    {
+
+        static IEnumerable<MethodBase> TargetMethods()
+        {
+            yield return AccessTools.Method(typeof(BossStation), nameof(BossStation.GenerateRewards));
+            yield return AccessTools.Method(typeof(Station), nameof(Station.GenerateEliteEnemyRewards));
+            yield return AccessTools.Method(typeof(Station), nameof(BossStation.GenerateEnemyRewards));
+        }
+
+
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+
+            var matcher = new CodeMatcher(instructions);
+            while (true)
+            {
+                try
+                {
+                    matcher = matcher.ReplaceRngGetter(nameof(GameRunController.GameRunEventRng), AccessTools.Method(typeof(GrRngs), nameof(GrRngs.GetMoneyRewardRng)));
+                }
+                catch (InvalidOperationException)
+                {
+                    break;
+                }
+            }
+            return matcher.InstructionEnumeration();
+        }
 
     }
+
+
+
 }

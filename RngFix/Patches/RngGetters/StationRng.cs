@@ -50,7 +50,7 @@ namespace RngFix.Patches.RngGetters
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             return new CodeMatcher(instructions)
-                 .ReplaceRngGetter(nameof(GameRunController.StationRng), AccessTools.Method(typeof(GrRngs), nameof(GrRngs.GetEventQueueRng)))
+                 .ReplaceRngGetter(nameof(GameRunController.StationRng), AccessTools.Method(typeof(GrRngs), nameof(GrRngs.GetAdventureQueueRng)))
                  .InstructionEnumeration();
         }
     }

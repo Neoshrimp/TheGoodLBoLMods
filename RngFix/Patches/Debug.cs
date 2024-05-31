@@ -1,9 +1,11 @@
 ﻿using HarmonyLib;
 using LBoL.Base;
 using LBoL.Core;
+using LBoL.Presentation.UI.Panels;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -12,7 +14,7 @@ using static RngFix.BepinexPlugin;
 namespace RngFix.Patches
 {
 
-    [HarmonyPatch]
+    //[HarmonyPatch]
     class RngGetDebug_Patch
     {
 
@@ -47,37 +49,69 @@ namespace RngFix.Patches
     }
 
 
-/*    [HarmonyPatch(typeof(RandomGen), nameof(RandomGen.NextInt))]
-    class RandomGen_Patch
+    //[HarmonyPatch(typeof(NazrinDetectPanel), nameof(NazrinDetectPanel.Roll))]
+    class naz_Patch
     {
-        static void Prefix()
+        static void Prefix(int resultIndex)
         {
 
-        }
-        static void Postfix(RandomGen __instance)
-        {
+            log.LogDebug($"rez: {resultIndex}");
             var st = new StackTrace();
-            bool isSampleMany = false;
-            bool isAdventureRng = false;
 
             log.LogDebug($"---------------");
             foreach (var f in st.GetFrames())
             {
-                log.LogDebug($"{f.GetMethod().Name}");
-
-                if (f.GetMethod().Name.StartsWith("SampleMany"))
-                    isSampleMany = true;
-                if (f.GetMethod().Name.StartsWith("get_Adventure"))
-                    isAdventureRng = true;
+                log.LogDebug($"{f.GetMethod().DeclaringType.FullName}::{f.GetMethod().Name}");
             }
             log.LogDebug($"---------------");
-
-            if (isSampleMany && isAdventureRng)
-                log.LogDebug($"adv rng call state: {__instance.State}");
-
-
         }
-    }*/
+    }
+
+
+    //[HarmonyPatch(typeof(VnPanel), nameof(VnPanel.RunCommand))]
+    class VnPanel_Patch
+    {
+        static void Prefix(string command, RuntimeCommandHandler extraCommandHandler)
+        {
+            log.LogDebug($"{command}, {extraCommandHandler}");
+        }
+    }
+
+
+
+
+
+    /*    [HarmonyPatch(typeof(RandomGen), nameof(RandomGen.NextInt))]
+        class RandomGen_Patch
+        {
+            static void Prefix()
+            {
+
+            }
+            static void Postfix(RandomGen __instance)
+            {
+                var st = new StackTrace();
+                bool isSampleMany = false;
+                bool isAdventureRng = false;
+
+                log.LogDebug($"---------------");
+                foreach (var f in st.GetFrames())
+                {
+                    log.LogDebug($"{f.GetMethod().Name}");
+
+                    if (f.GetMethod().Name.StartsWith("SampleMany"))
+                        isSampleMany = true;
+                    if (f.GetMethod().Name.StartsWith("get_Adventure"))
+                        isAdventureRng = true;
+                }
+                log.LogDebug($"---------------");
+
+                if (isSampleMany && isAdventureRng)
+                    log.LogDebug($"adv rng call state: {__instance.State}");
+
+
+            }
+        }*/
 
 
 

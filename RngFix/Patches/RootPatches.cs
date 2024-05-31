@@ -34,8 +34,18 @@ namespace RngFix.Patches
             grRngs.persRngs.gapInitRng = new RandomGen(gr.RootRng.NextULong());
             grRngs.persRngs.shopInitRng = new RandomGen(gr.RootRng.NextULong());
             grRngs.persRngs.rareExhibitQueueRng = new RandomGen(gr.RootRng.NextULong());
+            grRngs.persRngs.upgradeQueueRng = new RandomGen(gr.RootRng.NextULong());
 
             grRngs.persRngs.fallbackInitRng = new RandomGen(gr.RootRng.NextULong());
+
+            grRngs.ExhibitSelfRngs = new ExhibitSelfRngs(gr.RootRng.NextULong());
+            grRngs.ExhibitSelfRngs.InitialiseExRngs();
+
+            grRngs.unusedRoot0 = new RandomGen(gr.RootRng.NextULong());
+            grRngs.unusedRoot1 = new RandomGen(gr.RootRng.NextULong());
+            grRngs.unusedRoot2 = new RandomGen(gr.RootRng.NextULong());
+            grRngs.unusedRoot3 = new RandomGen(gr.RootRng.NextULong());
+            grRngs.unusedRoot4 = new RandomGen(gr.RootRng.NextULong());
 
         }
 
@@ -71,11 +81,9 @@ namespace RngFix.Patches
                     log.LogWarning($"Node({node.X}, {node.Y}) station type is {StationType.None} using fallback rng.");
                     break;
                 case StationType.Enemy:
-                    log.LogDebug("regular fight");
                     nodeInitRng = grRngs.persRngs.battleInitRng;
                     break;
                 case StationType.EliteEnemy:
-                    log.LogDebug("elite fight");
                     nodeInitRng = grRngs.persRngs.eliteInitRng;
                     break;
                 case StationType.Supply:
@@ -92,7 +100,6 @@ namespace RngFix.Patches
                     nodeInitRng = grRngs.persRngs.adventureInitRng;
                     break;
                 case StationType.Entry:
-                    log.LogDebug("entry deeznuts");
                     grRngs.persRngs.stageMasterRng.Advance(gr);
                     grRngs.persRngs.actMasterRng.Advance(gr);
                     nodeInitRng = grRngs.persRngs.transitionInitRng;
@@ -135,7 +142,6 @@ namespace RngFix.Patches
     {
         static void Prefix(DoremyPortal.Overrider __instance)
         {
-            log.LogDebug("Doremy deeznuts");
             var gr = __instance._gameRun;
             GrRngs.AdvanceRngsOnJump(gr, gr.CurrentMap.BossNode);
         }

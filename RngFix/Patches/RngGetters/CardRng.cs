@@ -9,7 +9,6 @@ using System.Text;
 
 namespace RngFix.Patches.RngGetters
 {
-    //2do Modaoshu (Magic Guide Book) can be used to manipulate card rng slightly on reruns
 
     [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.GetRewardCards))]
     class BossCardReward_Patch
@@ -30,7 +29,6 @@ namespace RngFix.Patches.RngGetters
                 try
                 {
                     matcher = matcher.ReplaceRngGetter(nameof(GameRunController.CardRng), AccessTools.Method(typeof(BossCardReward_Patch), nameof(BossCardReward_Patch.GetBossCardRng)));
-                    BepinexPlugin.log.LogDebug("Deez");
                 }
                 catch (InvalidOperationException)
                 {

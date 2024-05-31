@@ -1,28 +1,28 @@
-## Template for [Sideloader](https://github.com/Neoshrimp/LBoL-Entity-Sideloader/tree/master) mod.
+### Rng Fix
 
-Use is highly encouraged as it has dependencies, publicizer and common boilerplate setup.
+Vanilla seeding is a clusterfuck. Encounters are path dependent, past choices affect future rolls, battle rngs are not isolated. Needless to say using the same seed will result in very different experience.
+
+*Mod is still in early release so reports of inconsistencies in reruns or same seed co-op runs are greatly appreciated*
+
+This mod roughly tries to ensure that n'th node of the same type will have the same rng state no matter where or when encountered. I.e. first 1-2 regular battle will always be the fixed for the same seed, including deck shuffle state and random enemy moves. 
+
+What this fixes:
+- Pathing no longer affects encounters
+- Isolates battle and adventure rngs. Card discovery, shuffles etc. will not affect future encounters.
+- More consistent adventure queue.
+- Rare card rewards are unaffected by amount card rewards seen previously.
+- Consistent money rewards.
+- Random boss select is fixed by seed.
+- Much other rng dependence on player actions removed.
 
 
-Instructions:
-- Copy [`LBoL Sideloader Template.zip`](https://github.com/Neoshrimp/LBoL-ModdingTools/raw/master/src/SideloaderTemplate/LBoL%20Sideloader%20Template.zip) to `<User>\Documents\Visual Studio 2022\Templates\ProjectTemplates` do NOT unzip.
-
-- Create a new project, search for LBoL Sideloader template.
-
-![image](https://user-images.githubusercontent.com/89428565/236344254-6eefaa12-c897-4406-867c-1abfa2259f65.png)
-- Change _GameFolder_ in .csproj file to target the game installation folder.
-
-![image](https://user-images.githubusercontent.com/89428565/236344281-02c506b5-42bf-4398-a8fc-19a07d727785.png)
-- In `PluginInfo.cs` class fill out `GUID` and `Name`. Mod will fail to load without GUID!
-
-![image](https://user-images.githubusercontent.com/89428565/236587701-cbeea462-62ff-4762-a1b0-54175b8a0918.png)
+What this does **not** fix:
+- Card rewards are wildly affected by player's manabase (same state, different pool issue)
+- Weight shifts in adventure and exhibit pools sometimes produce completely different outcomes.
 
 
-For first time setup:
-- Download [Sideloader.dll](https://github.com/Neoshrimp/LBoL-Entity-Sideloader/blob/master/src/LBoL-Entity-Sideloader/LBoL-Entity-Sideloader.dll) and put it in `BepInEx/plugins` folder. It will be used as reference in the project.
-- Download [scriptengine.dll](https://github.com/Neoshrimp/BepInEx.Debug/blob/master/src/ScriptEngine/ScriptEngine.dll), put in plugins folder. Create `BepInEx/plugins/scripts` directory. Technically, this is optional but workflow without scriptengine is 10 times slower.
+---
+*Change log*
 
-Change post-build command to copy to `plugins` folder instead of `scripts` if ScriptEngine is not used.
 
-`https://nuget.bepinex.dev/v3/index.json` might need to be added as a source for nuget manager for BepInEx packages to be installed correctly.
-
-![image](https://user-images.githubusercontent.com/89428565/236344506-aeba2284-a134-418c-aa65-39967290f6cc.png)
+`0.8.0` Initial release.

@@ -19,10 +19,10 @@ namespace RngFix.CustomRngs
         {
             var grRngs = GrRngs.GetOrCreate(gr);
 
-            log.LogDebug($"advancing stage rng. {rng.State}");
+            //log.LogDebug($"advancing stage rng. {rng.State}");
 
             grRngs.persRngs.eliteQueueRng = new RandomGen(rng.NextULong());
-            grRngs.persRngs.eventQueueRng = new RandomGen(rng.NextULong());
+            grRngs.persRngs.adventureQueueRng = new RandomGen(rng.NextULong());
 
             grRngs.persRngs.eliteInitRng = new RandomGen(rng.NextULong());
             grRngs.persRngs.bossInitRng = new RandomGen(rng.NextULong());
@@ -41,7 +41,7 @@ namespace RngFix.CustomRngs
         {
             var grRngs = GrRngs.GetOrCreate(gr);
 
-            log.LogDebug($"advancing act rng. {rng.State}");
+            //log.LogDebug($"advancing act rng. {rng.State}");
 
             grRngs.persRngs.enemyActQueueRng = new RandomGen(rng.NextULong());
             grRngs.persRngs.battleInitRng = new RandomGen(rng.NextULong());
@@ -57,7 +57,9 @@ namespace RngFix.CustomRngs
         {
             var grRngs = GrRngs.GetOrCreate(gr);
 
-            gr.GameRunEventRng = new RandomGen(rng.NextULong()); // this still leaves some manipulation possible but w)/e
+            //log.LogDebug($"node master state: {rng.State}");
+
+            gr.GameRunEventRng = new RandomGen(rng.NextULong()); // almost unused after all the patches
             gr.BattleRng = new RandomGen(rng.NextULong());
             gr.BattleCardRng = new RandomGen(rng.NextULong());
             gr.ShuffleRng = new RandomGen(rng.NextULong());
@@ -69,6 +71,14 @@ namespace RngFix.CustomRngs
             grRngs.transitionRng = new RandomGen(rng.NextULong());
 
             grRngs.bossCardRewardRng = new RandomGen(rng.NextULong());
+            grRngs.moneyRewardRng = new RandomGen(rng.NextULong());
+
+
+            grRngs.unusedNode0 = new RandomGen(rng.NextULong());
+            grRngs.unusedNode1 = new RandomGen(rng.NextULong());
+            grRngs.unusedNode2 = new RandomGen(rng.NextULong());
+            grRngs.unusedNode3 = new RandomGen(rng.NextULong());
+            grRngs.unusedNode4 = new RandomGen(rng.NextULong());
 
         }
     }
