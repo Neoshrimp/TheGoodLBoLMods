@@ -24,5 +24,6 @@ What this does **not** fix:
 ---
 *Change log*
 
+`0.8.1` Make supply station use separate rng for rolling exhibit.
 
 `0.8.0` Initial release.
