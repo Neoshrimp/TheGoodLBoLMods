@@ -1,14 +1,20 @@
 ﻿using HarmonyLib;
 using LBoL.Base;
 using LBoL.Core;
+using LBoL.Core.Cards;
+using LBoL.Core.Randoms;
 using LBoL.Presentation.UI.Panels;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using System.Text;
+using UnityEngine;
 using static RngFix.BepinexPlugin;
 
 namespace RngFix.Patches
@@ -112,6 +118,69 @@ namespace RngFix.Patches
 
             }
         }*/
+
+
+
+    [HarmonyPatch]
+    //[HarmonyDebug]
+    class Up_Patch
+    {
+
+        static IEnumerable<MethodBase> TargetMethods()
+        {
+            //yield return AccessTools.Method(typeof(UniqueRandomPool<>), "Sample", new Type[] { typeof(Func<float, float, float>) });
+
+
+            yield return typeof(UniqueRandomPool<>).MakeGenericType(typeof(Card)).GetMethod("Sample", new Type[] { typeof(Func<float, float, float>) });
+        }
+
+
+
+        static bool CheckSt()
+        {
+            var st = new StackTrace();
+            return st.GetFrames().FirstOrDefault(st => st.GetMethod().Name.StartsWith("RollCards")) != null;
+        }
+
+        static void W1(float w)
+        {
+            if (!CheckSt())
+                return;
+
+            Logger.i.Log($"total weights: {w}");
+
+
+        }
+
+        static void W2(float w)
+        {
+            if (!CheckSt())
+                return;
+            Logger.i.Log($"rolled weight: {w}");
+            Logger.i.Log("-----");
+
+        }
+
+
+
+
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            return new CodeMatcher(instructions)
+                .MatchForward(true, new CodeInstruction(OpCodes.Stloc_0))
+                .Insert(new CodeInstruction(OpCodes.Dup))
+                .Advance(1)
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Up_Patch), nameof(Up_Patch.W1))))
+
+
+                .MatchForward(true, new CodeInstruction(OpCodes.Stloc_1))
+                .Insert(new CodeInstruction(OpCodes.Dup))
+                .Advance(1)
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Up_Patch), nameof(Up_Patch.W2))))
+                .InstructionEnumeration();
+        }
+
+    }
 
 
 
