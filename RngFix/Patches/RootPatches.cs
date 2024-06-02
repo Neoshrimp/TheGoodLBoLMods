@@ -4,6 +4,7 @@ using LBoL.Core;
 using LBoL.Core.Stations;
 using LBoL.EntityLib.Adventures.FirstPlace;
 using LBoL.EntityLib.Exhibits.Shining;
+using LBoL.Presentation;
 using RngFix.CustomRngs;
 using System;
 using System.Collections.Generic;
@@ -63,11 +64,40 @@ namespace RngFix.Patches
     }
 
 
+    // alternative way to 'enter' node after reloading
+    [HarmonyPatch(typeof(GameMaster), nameof(GameMaster.BattleStationFlowFromEndSave))]
+    class ReEnterAfterBattle_Patch
+    {
+        static void Prefix(GameMaster __instance)
+        {
+            //log.LogDebug("reentering..");
+            
+
+            var gr = __instance.CurrentGameRun;
+            var grRngs = GrRngs.GetOrCreate(gr);
+
+            if (grRngs.NodeMaster == null)
+            {
+
+                grRngs.NodeMaster = new NodeMasterRng
+                {
+                    rng = RandomGen.FromState(grRngs.persRngs.prevNodeMasterState)
+                };
+                grRngs.NodeMaster.Advance(gr);
+            }
+
+            
+        }
+    }
+
+
+
     [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.EnterStation))]
-    class GameRunController_EnterStation_Patch
+    class EnterStation_Patch
     {
         static void Prefix(GameRunController __instance)
         {
+            //log.LogDebug("seeding..");
             var gr = __instance;
             var grRngs = GrRngs.GetOrCreate(gr);
             var node = gr.CurrentMap.VisitingNode;

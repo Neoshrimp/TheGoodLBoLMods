@@ -28,6 +28,8 @@ namespace RngFix.CustomRngs
             public StageMasterRng stageMasterRng; // => eventRng, eliteRng
             public ActMasterRng actMasterRng; // => battleQueue
 
+            // node
+            public ulong prevNodeMasterState;
             // act
             public RandomGen enemyActQueueRng;
             public RandomGen battleInitRng;
@@ -57,7 +59,7 @@ namespace RngFix.CustomRngs
         public static RandomGen GetAdventureQueueRng(GameRunController gr) => GetOrCreate(gr).persRngs.adventureQueueRng;
         public static RandomGen GetUpgradeQueueRng(GameRunController gr) => GetOrCreate(gr).persRngs.upgradeQueueRng;
 
-        private NodeMasterRng nodeMaster;
+        public NodeMasterRng nodeMaster;
 
         public RandomGen transitionRng;
         public static RandomGen GetTransitionRng(GameRunController gr) => GetOrCreate(gr).transitionRng;
@@ -65,6 +67,8 @@ namespace RngFix.CustomRngs
         public RandomGen bossCardRewardRng;
         public RandomGen moneyRewardRng;
         public static RandomGen GetMoneyRewardRng(GameRunController gr) => GetOrCreate(gr).moneyRewardRng;
+
+
 
         // to keep nodeRng advancements consistent in-case of future requirements
         public RandomGen unusedNode0;
@@ -82,7 +86,7 @@ namespace RngFix.CustomRngs
 
 
 
-        public static RandomGen GetBoobossCardRewardRng(GameRunController gr) => GetOrCreate(gr).bossCardRewardRng;
+        public static RandomGen GetBossCardRewardRng(GameRunController gr) => GetOrCreate(gr).bossCardRewardRng;
 
         public NodeMasterRng NodeMaster { get => nodeMaster; set => nodeMaster = value; }
 

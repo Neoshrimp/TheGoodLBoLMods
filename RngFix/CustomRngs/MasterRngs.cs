@@ -57,7 +57,9 @@ namespace RngFix.CustomRngs
         {
             var grRngs = GrRngs.GetOrCreate(gr);
 
-            //log.LogDebug($"node master state: {rng.State}");
+            //log.LogDebug($"node master state BEFORE: {rng.State}");
+
+            grRngs.persRngs.prevNodeMasterState = rng.State;
 
             gr.GameRunEventRng = new RandomGen(rng.NextULong()); // almost unused after all the patches
             gr.BattleRng = new RandomGen(rng.NextULong());
@@ -79,6 +81,9 @@ namespace RngFix.CustomRngs
             grRngs.unusedNode2 = new RandomGen(rng.NextULong());
             grRngs.unusedNode3 = new RandomGen(rng.NextULong());
             grRngs.unusedNode4 = new RandomGen(rng.NextULong());
+
+            //log.LogDebug($"node master state AFTER: {rng.State}");
+
 
         }
     }

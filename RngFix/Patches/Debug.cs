@@ -121,8 +121,7 @@ namespace RngFix.Patches
 
 
 
-    [HarmonyPatch]
-    //[HarmonyDebug]
+    //[HarmonyPatch]
     class Up_Patch
     {
 

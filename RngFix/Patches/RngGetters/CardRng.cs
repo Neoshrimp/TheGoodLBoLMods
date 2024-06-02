@@ -17,7 +17,7 @@ namespace RngFix.Patches.RngGetters
         static RandomGen GetBossCardRng(GameRunController gr)
         {
             if(gr.CurrentMap.VisitingNode.StationType == StationType.Boss)
-                return GrRngs.GetBoobossCardRewardRng(gr);
+                return GrRngs.GetBossCardRewardRng(gr);
             return gr.CardRng;
         }
 

@@ -14,7 +14,6 @@ namespace RngFix.CustomRngs
         public override void Restore(GameRunController gameRun)
         {
             var grRngs = GrRngs.GetOrCreate(gameRun);
-
             grRngs.persRngs = persRngs;
         }
 
@@ -22,7 +21,6 @@ namespace RngFix.CustomRngs
         {
             var grRngs = GrRngs.GetOrCreate(gameRun);
             persRngs = grRngs.persRngs;
-
         }
 
         public override IEnumerable<IYamlTypeConverter> TypeConverters()
