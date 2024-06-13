@@ -1,8 +1,10 @@
 ﻿using BepInEx;
+using BepInEx.Configuration;
 using HarmonyLib;
 using LBoLEntitySideloader;
 using LBoLEntitySideloader.Resource;
 using RngFix.CustomRngs;
+using RngFix.Patches.Debug;
 using System.Reflection;
 using UnityEngine;
 
@@ -28,6 +30,10 @@ namespace RngFix
         internal static DirectorySource directorySource = new DirectorySource(RngFix.PInfo.GUID, "");
 
 
+        public static ConfigEntry<bool> ignoreFactorsTableConf;
+
+
+
         private void Awake()
         {
             log = Logger;
@@ -38,6 +44,8 @@ namespace RngFix
 
             EntityManager.RegisterSelf();
 
+            ignoreFactorsTableConf = Config.Bind("Rng", "IgnoreFactorsTable", true, "Disables the mechanic where card chance of appearing as a card reward is decreased if an offered card is not picked. Setting this to true greatly increases card reward consistency.");
+
             harmony.PatchAll();
 
             if (BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(AddWatermark.API.GUID))
@@ -45,6 +53,7 @@ namespace RngFix
 
 
             new RngSaveContainer().RegisterSelf(PInfo.GUID);
+            PickCardLog.RegisterOnCardsAdded();
         }
 
         private void OnDestroy()

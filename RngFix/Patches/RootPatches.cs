@@ -35,18 +35,25 @@ namespace RngFix.Patches
             grRngs.persRngs.gapInitRng = new RandomGen(gr.RootRng.NextULong());
             grRngs.persRngs.shopInitRng = new RandomGen(gr.RootRng.NextULong());
             grRngs.persRngs.rareExhibitQueueRng = new RandomGen(gr.RootRng.NextULong());
-            grRngs.persRngs.upgradeQueueRng = new RandomGen(gr.RootRng.NextULong());
+            grRngs.persRngs.qingeUpgradeQueueRng = new RandomGen(gr.RootRng.NextULong());
 
             grRngs.persRngs.fallbackInitRng = new RandomGen(gr.RootRng.NextULong());
 
             grRngs.ExhibitSelfRngs = new ExhibitSelfRngs(gr.RootRng.NextULong());
             grRngs.ExhibitSelfRngs.InitialiseExRngs();
+            // 0.9.x
+            var cardRngInit = new RandomGen(gr.RootRng.NextULong());
+
+            grRngs.persRngs.cardUpgradeQueueRng = new RandomGen(cardRngInit.NextULong());
+            grRngs.persRngs.eliteCardRng = new RandomGen(cardRngInit.NextULong());
+            grRngs.persRngs.bossCardRng = new RandomGen(cardRngInit.NextULong());
+
+            grRngs.persRngs.exhibitWeightRng = new RandomGen(gr.RootRng.NextULong());
 
             grRngs.unusedRoot0 = new RandomGen(gr.RootRng.NextULong());
             grRngs.unusedRoot1 = new RandomGen(gr.RootRng.NextULong());
             grRngs.unusedRoot2 = new RandomGen(gr.RootRng.NextULong());
-            grRngs.unusedRoot3 = new RandomGen(gr.RootRng.NextULong());
-            grRngs.unusedRoot4 = new RandomGen(gr.RootRng.NextULong());
+
 
         }
 

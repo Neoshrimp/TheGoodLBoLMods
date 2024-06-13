@@ -16,6 +16,7 @@ namespace RngFix.CustomRngs
     // 2do mana base wildly affects card reward (same state, different pool problem)
     // 2do Aya not in the pool inconsistencies (same problem)
     // 2do in-battle manipulations?
+    // 2do enemy move manip
     // 2do event pools are act (a tiny bit) interdependent
     // 2do FallbackShinning uses ExhibitRng (doesn't really matter)
     public class GrRngs
@@ -44,7 +45,13 @@ namespace RngFix.CustomRngs
             public RandomGen gapInitRng;
             public RandomGen shopInitRng;
             public RandomGen rareExhibitQueueRng;
-            public RandomGen upgradeQueueRng;
+            public RandomGen qingeUpgradeQueueRng;
+            public RandomGen cardUpgradeQueueRng;
+
+            public RandomGen eliteCardRng;
+            public RandomGen bossCardRng;
+
+            public RandomGen exhibitWeightRng;
 
             public RandomGen fallbackInitRng;
             public ExhibitSelfRngs exhibitSelfRngs;
@@ -57,17 +64,22 @@ namespace RngFix.CustomRngs
         public static RandomGen GetEnemyActQueueRng(GameRunController gr) => GetOrCreate(gr).persRngs.enemyActQueueRng;
         public static RandomGen GetEliteQueueRng(GameRunController gr) => GetOrCreate(gr).persRngs.eliteQueueRng;
         public static RandomGen GetAdventureQueueRng(GameRunController gr) => GetOrCreate(gr).persRngs.adventureQueueRng;
-        public static RandomGen GetUpgradeQueueRng(GameRunController gr) => GetOrCreate(gr).persRngs.upgradeQueueRng;
+        public static RandomGen GetQingeUpgradeQueueRng(GameRunController gr) => GetOrCreate(gr).persRngs.qingeUpgradeQueueRng;
+        public static RandomGen GetCardUpgradeQueueRng(GameRunController gr) => GetOrCreate(gr).persRngs.cardUpgradeQueueRng;
+
+        public static RandomGen GetEliteCardRng(GameRunController gr) => GetOrCreate(gr).persRngs.eliteCardRng;
 
         public NodeMasterRng nodeMaster;
 
         public RandomGen transitionRng;
         public static RandomGen GetTransitionRng(GameRunController gr) => GetOrCreate(gr).transitionRng;
         public RandomGen battleLootRng;
-        public RandomGen bossCardRewardRng;
+        public RandomGen bossCardRewardRng; // unused
         public RandomGen moneyRewardRng;
         public static RandomGen GetMoneyRewardRng(GameRunController gr) => GetOrCreate(gr).moneyRewardRng;
 
+
+        public static RandomGen GetExhibitWeightRng(GameRunController gr) => GetOrCreate(gr).persRngs.exhibitWeightRng;
 
 
         // to keep nodeRng advancements consistent in-case of future requirements
@@ -80,13 +92,12 @@ namespace RngFix.CustomRngs
         public RandomGen unusedRoot0;
         public RandomGen unusedRoot1;
         public RandomGen unusedRoot2;
-        public RandomGen unusedRoot3;
-        public RandomGen unusedRoot4;
+        
 
 
 
 
-        public static RandomGen GetBossCardRewardRng(GameRunController gr) => GetOrCreate(gr).bossCardRewardRng;
+        public static RandomGen GetBossCardRng(GameRunController gr) => GetOrCreate(gr).persRngs.bossCardRng;
 
         public NodeMasterRng NodeMaster { get => nodeMaster; set => nodeMaster = value; }
 

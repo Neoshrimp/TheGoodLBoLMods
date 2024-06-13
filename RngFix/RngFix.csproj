@@ -314,6 +314,10 @@
         <Reference Include="YamlDotNet">
             <HintPath>$(GameFolder)\LBoL_Data\Managed\YamlDotNet.dll</HintPath>
         </Reference>
+
+        <Reference Include="Logging">
+            <HintPath>$(ProjectFolder)\DirResources\Logging.dll</HintPath>
+        </Reference>
     </ItemGroup>
 
 
@@ -323,7 +327,6 @@
 
 
     <ItemGroup>
-      <Folder Include="DirResources\" />
       <Folder Include="Resources\" />
     </ItemGroup>
 

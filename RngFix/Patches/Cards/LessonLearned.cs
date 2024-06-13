@@ -23,7 +23,7 @@ namespace RngFix.Patches.Cards
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             return new CodeMatcher(instructions)
-                 .ReplaceRngGetter(nameof(GameRunController.GameRunEventRng), AccessTools.Method(typeof(GrRngs), nameof(GrRngs.GetUpgradeQueueRng)))
+                 .ReplaceRngGetter(nameof(GameRunController.GameRunEventRng), AccessTools.Method(typeof(GrRngs), nameof(GrRngs.GetQingeUpgradeQueueRng)))
                  .InstructionEnumeration();
         }
     }

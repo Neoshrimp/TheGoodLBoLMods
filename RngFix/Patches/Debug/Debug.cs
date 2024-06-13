@@ -21,7 +21,7 @@ using static RngFix.BepinexPlugin;
 namespace RngFix.Patches.Debug
 {
 
-    [HarmonyPatch]
+    //[HarmonyPatch]
     class RngGetDebug_Patch
     {
 
@@ -134,7 +134,7 @@ namespace RngFix.Patches.Debug
 
 
 
-    [HarmonyPatch]
+    //[HarmonyPatch]
     //[HarmonyDebug]
     class Up_Patch
     {

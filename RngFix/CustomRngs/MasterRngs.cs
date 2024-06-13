@@ -72,7 +72,7 @@ namespace RngFix.CustomRngs
             gr.AdventureRng = new RandomGen(rng.NextULong());
             grRngs.transitionRng = new RandomGen(rng.NextULong());
 
-            grRngs.bossCardRewardRng = new RandomGen(rng.NextULong());
+            grRngs.bossCardRewardRng = new RandomGen(rng.NextULong()); // unused
             grRngs.moneyRewardRng = new RandomGen(rng.NextULong());
 
 
