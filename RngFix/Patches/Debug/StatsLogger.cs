@@ -12,9 +12,12 @@ namespace RngFix.Patches.Debug
     public class StatsLogger
     {
 
-        public static string[] cardsHeader = new string[] { "Card1", "Card2", "Card3", "Card4", "RFbefore", "RFAfter", "CardRngAfter", "Station", "Picked" };
+        //public static string[] cardsHeader = new string[] { "Card1", "Card2", "Card3", "Card4", "RFbefore", "RFAfter", "CardRngAfter", "Station", "Picked" };
 
-        public static string[] exHeader = new string[] { "Exhibit", "Rarity", "Pool", "WeightWhenRolled", "TW", "ExRngStateAfter", "Station" };
+        public static string[] cardsHeader = new string[] { "Card", "Rarity", "Pool", "WeightWhenRolled", "TW", "RFAfter", "CardRngAfter", "Station" };
+
+
+        public static string[] exHeader = new string[] { "Exhibit", "Rarity", "WeightWhenRolled", "TW", "ExRngStateAfter", "Station" };
 
         // stinky ass hacks
         private static CsvLogger GetLog(GameRunController gr, string prefix ="", string ext = ".csv", bool plusOne = false, int countMod = 0)
@@ -38,6 +41,8 @@ namespace RngFix.Patches.Debug
     {
         static void Postfix(GameRunController __result)
         {
+            if (!BepinexPlugin.doLoggingConf.Value)
+                return;
             var log = StatsLogger.GetCardLog(__result, plusOne: true, countMod: 0);
             log.Log(StatsLogger.cardsHeader);
             var exLog = StatsLogger.GetExLog(__result, plusOne: true);

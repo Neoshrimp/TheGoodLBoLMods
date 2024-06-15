@@ -1,10 +1,16 @@
 ﻿using LBoL.Base;
 using LBoL.Base.Extensions;
+using LBoL.ConfigData;
 using LBoL.Core;
+using LBoL.Core.Adventures;
+using LBoL.Core.Cards;
 using LBoL.Core.Stations;
+using LBoL.Presentation;
+using RngFix.CustomRngs.Sampling;
 using RngFix.Patches;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using static RngFix.BepinexPlugin;
@@ -92,10 +98,35 @@ namespace RngFix.CustomRngs
         public RandomGen unusedRoot0;
         public RandomGen unusedRoot1;
         public RandomGen unusedRoot2;
-        
+
+
+        private Lazy<SlotSampler<Exhibit>> normalExSampler = new Lazy<SlotSampler<Exhibit>>(() => new SlotSampler<Exhibit>(
+            requirements: new List<ISlotRequirement>() { new ExInPool(), new ExHasManaColour() },
+            initAction: (t) => Library.CreateExhibit(t),
+            successAction: (ex) => Gr().ExhibitPool.Remove(ex.GetType()),
+            failureAction: null,
+            potentialPool: ExhibitConfig.AllConfig().Where(c => c.Rarity is Rarity.Common || c.Rarity is Rarity.Uncommon || c.Rarity is Rarity.Rare).Select(ec => TypeFactory<Exhibit>.GetType(ec.Id)).Where(t => t != null).ToList()
+            ));
+        public SlotSampler<Exhibit> NormalExSampler { get => normalExSampler.Value; }
+
+
+        private Lazy<SlotSampler<Card>> cardSampler = new Lazy<SlotSampler<Card>>(() => new SlotSampler<Card>(
+            requirements: new List<ISlotRequirement>() { new CardInPool() },
+            initAction: (t) => { var c = Library.CreateCard(t); c.GameRun = Gr(); return c; },
+            successAction: null,
+            failureAction: () => log.LogDebug("deeznuts"),
+            potentialPool: CardConfig.AllConfig().Where(cc => cc.IsPooled && cc.DebugLevel < Gr().CardValidDebugLevel).Select(cc => TypeFactory<Card>.TryGetType(cc.Id)).Where(t => t != null).ToList()));
+        public SlotSampler<Card> CardSampler { get => cardSampler.Value; }
 
 
 
+        private Lazy<SlotSampler<Type>> adventureSampler = new Lazy<SlotSampler<Type>>(() => new SlotSampler<Type>(
+            requirements: new List<ISlotRequirement>() { new AdventureInPool(), new AdventureNOTinHistory() },
+            initAction: (t) => { return t; },
+            successAction: null,
+            failureAction: null,
+            potentialPool: AdventureConfig.AllConfig().Select(cc => TypeFactory<Adventure>.TryGetType(cc.Id)).Where(t => t != null).ToList()));
+        public SlotSampler<Type> AdventureSampler { get => adventureSampler.Value; }
 
         public static RandomGen GetBossCardRng(GameRunController gr) => GetOrCreate(gr).persRngs.bossCardRng;
 
@@ -124,7 +155,7 @@ namespace RngFix.CustomRngs
             var cStation = gr.CurrentMap.VisitingNode;
             if (jumpToNode.X < cStation.X)
             {
-                if(!suppressWarning)
+                if (!suppressWarning)
                     log.LogWarning("Jumping to a previous level or act. Rngs cannot be reversed, seed consistency will be lost.");
                 return;
             }
@@ -139,6 +170,8 @@ namespace RngFix.CustomRngs
 
 
         }
+
+        public static GameRunController Gr() => GameMaster.Instance?.CurrentGameRun;
 
 
         static public GrRngs GetOrCreate(GameRunController gr)

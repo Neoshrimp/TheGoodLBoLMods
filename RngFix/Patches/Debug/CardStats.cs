@@ -14,7 +14,7 @@ namespace RngFix.Patches.Debug
 {
 
 
-    [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.GetRewardCards))]
+    //[HarmonyPatch(typeof(GameRunController), nameof(GameRunController.GetRewardCards))]
     class CardRewardsLog_Patch
     {
         static void Prefix(GameRunController __instance, ref float __state)
@@ -44,6 +44,7 @@ namespace RngFix.Patches.Debug
     {
         public static void RegisterOnCardsAdded()
         {
+            return;
             CHandlerManager.RegisterGameEventHandler((gr) => gr.DeckCardsAdded, args =>
             {
                 var log = StatsLogger.GetCardLog(StatsLogger.Gr());
@@ -55,7 +56,7 @@ namespace RngFix.Patches.Debug
         }
     }
 
-    [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.EnterStation))]
+    //[HarmonyPatch(typeof(GameRunController), nameof(GameRunController.EnterStation))]
     class Flush_Patch
     {
         static void Prefix(GameRunController __instance)

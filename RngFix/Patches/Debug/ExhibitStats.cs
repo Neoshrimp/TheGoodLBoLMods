@@ -17,8 +17,8 @@ using static RngFix.BepinexPlugin;
 namespace RngFix.Patches.Debug
 {
 
-    [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.RollNormalExhibit))]
-    [HarmonyPriority(Priority.High)]
+    //[HarmonyPatch(typeof(GameRunController), nameof(GameRunController.RollNormalExhibit))]
+    //[HarmonyPriority(Priority.High)]
     class ExStat_Patch
     {
 
@@ -82,7 +82,7 @@ namespace RngFix.Patches.Debug
     }
 
 
-    [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.RollNormalExhibit))]
+    //[HarmonyPatch(typeof(GameRunController), nameof(GameRunController.RollNormalExhibit))]
     class ExConsistentQueue_Patch
     {
         public const int MaxAttempts = (int)1E6;
@@ -91,14 +91,15 @@ namespace RngFix.Patches.Debug
         static bool Prefix(GameRunController __instance, ref Exhibit __result, RandomGen rng, ExhibitWeightTable weightTable, Func<Exhibit> fallback, Predicate<ExhibitConfig> filter)
         {
             var gr = __instance;
-
-
             var grngs = GrRngs.GetOrCreate(gr);
             //var exWrng = GrRngs.GetExhibitWeightRng(gr);
             float totalW = 0f;
             float maxW = 0f;
             var exRollRng = new RandomGen(rng.NextULong());
-            var rollingPool = new RepeatableRandomPool<Type>();
+
+            //var rollingPool = new RepeatableRandomPool<Type>();
+            var rollingPool = new UniqueRandomPool<Type>();
+
 
             if (gr.ExhibitPool.Empty())
             { 
@@ -112,6 +113,8 @@ namespace RngFix.Patches.Debug
                 return weightTable.WeightFor(exConfig) * Library.WeightForExhibit(exType, gr);
             };
 
+            var poolSet = new HashSet<Type>(gr.ExhibitPool);
+
 
             foreach (var exConfig in ExhibitConfig.AllConfig().Where(c => c.Rarity is Rarity.Common || c.Rarity is Rarity.Uncommon || c.Rarity is Rarity.Rare))
             {
@@ -122,11 +125,11 @@ namespace RngFix.Patches.Debug
                 var w = GetExW(exT);
                 totalW += w;
                 maxW = Math.Max(maxW, w);
+
                 rollingPool.Add(exT, 1f);
             }
 
             var wThreshold = rng.NextFloat(0, maxW);
-            var poolSet = new HashSet<Type>(gr.ExhibitPool);
 
 
             int i = 0;

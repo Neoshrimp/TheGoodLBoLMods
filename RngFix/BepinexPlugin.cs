@@ -32,6 +32,9 @@ namespace RngFix
 
         public static ConfigEntry<bool> ignoreFactorsTableConf;
 
+        public static ConfigEntry<bool> doLoggingConf;
+
+
 
 
         private void Awake()
@@ -45,6 +48,8 @@ namespace RngFix
             EntityManager.RegisterSelf();
 
             ignoreFactorsTableConf = Config.Bind("Rng", "IgnoreFactorsTable", true, "Disables the mechanic where card chance of appearing as a card reward is decreased if an offered card is not picked. Setting this to true greatly increases card reward consistency.");
+
+            doLoggingConf = Config.Bind("Stats", "DoLogging", false, "Log card, exhibit roll results to csv files (WIP, Experimental)");
 
             harmony.PatchAll();
 

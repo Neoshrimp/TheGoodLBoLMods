@@ -1,5 +1,7 @@
 ### Rng Fix
 
+*v0.9 Oni sampling methods*
+
 Vanilla seeding is a clusterfuck. Encounters are path dependent, past choices affect future rolls, battle rngs are not isolated. Needless to say using the same seed will result in very different experience.
 
 *Mod is still in early release so reports of inconsistencies in reruns or same seed co-op runs are greatly appreciated*
@@ -23,6 +25,11 @@ What this does **not** fix:
 
 ---
 *Change log*
+
+`0.9.0` Partly addresses the issues the mod hasn't addressed before:
+* Exhibits seen should be very consistent. 
+* Elites have separate rng for card rewards.
+* Experimental encountered event queue.
 
 `0.8.2` Fix bug when restarting on battle reward screen.
 
