@@ -19,15 +19,6 @@ namespace RngFix.CustomRngs.Sampling
 {
     public class SlotSampler<T>
     {
-        public class LogInfo
-        {
-            public float totalW;
-            public float maxW;
-            public int rolls;
-            public float wThreshold;
-            public float exW;
-        }
-
         public List<ISlotRequirement> requirements = new List<ISlotRequirement>();
         Func<Type, T> initAction;
         public Action<T> successAction = null;
@@ -35,8 +26,6 @@ namespace RngFix.CustomRngs.Sampling
 
         List<Type> potentialPool = new List<Type>();
 
-        public LogInfo logInfo = new LogInfo();
-        
 
         public SlotSampler(List<ISlotRequirement> requirements, Func<Type, T> initAction, Action<T> successAction, Action failureAction, List<Type> potentialPool)
         {
@@ -50,7 +39,7 @@ namespace RngFix.CustomRngs.Sampling
 
 
 
-        public T Roll(RandomGen rng, Func<Type, float> getW, Predicate<Type> filter = null, Func<T> fallback = null)
+        public T Roll(RandomGen rng, Func<Type, float> getW, out SamplerLogInfo logInfo, Predicate<Type> filter = null, Func<T> fallback = null)
         {
             T rez = default;
             bool rezFound = false;
@@ -59,6 +48,8 @@ namespace RngFix.CustomRngs.Sampling
 
             float totalW = 0f;
             float maxW = 0f;
+
+            logInfo = new SamplerLogInfo();
 
             foreach (var t in potentialPool)
             {
@@ -100,7 +91,7 @@ namespace RngFix.CustomRngs.Sampling
                     && requirements.All(r => r.IsSatisfied(t))
                     && (filter == null || filter(t)))
                 {
-                    logInfo.exW = w;
+                    logInfo.itemW = w;
                     rezFound = true;
                     rez = initAction(t);
                     break;
@@ -134,6 +125,15 @@ namespace RngFix.CustomRngs.Sampling
         }
     }
 
+
+    public class SamplerLogInfo
+    {
+        public float totalW;
+        public float maxW;
+        public int rolls;
+        public float wThreshold;
+        public float itemW;
+    }
 
 
 }

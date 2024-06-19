@@ -6,6 +6,7 @@ using LBoL.EntityLib.Adventures.FirstPlace;
 using LBoL.EntityLib.Exhibits.Shining;
 using LBoL.Presentation;
 using RngFix.CustomRngs;
+using RngFix.Patches.Debug;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -169,6 +170,11 @@ namespace RngFix.Patches
             {
                 log.LogError($"NodeRngs were not assigned for station {node.StationType}");
             }
+
+            StatsLogger.LogGeneral(gr);
+            StatsLogger.LogVanillaRngs(gr);
+            StatsLogger.LogPersistentRngs(gr);
+
         }
     }
 

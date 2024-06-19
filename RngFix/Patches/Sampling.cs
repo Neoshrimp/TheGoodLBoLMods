@@ -30,26 +30,12 @@ namespace RngFix.Patches
             __result = grngs.NormalExSampler.Roll(
                 rng: rng,
                 getW: (t) => weightTable.WeightFor(ExhibitConfig.FromId(t.Name)) * Library.WeightForExhibit(t, gr),
+                logInfo: out var logInfo,
                 filter: (t) => filter == null || filter(ExhibitConfig.FromId(t.Name)),
                 fallback: fallback);
 
-            if (BepinexPlugin.doLoggingConf.Value)
-            {
-                var exLog = StatsLogger.GetExLog(gr);
-                var ex = __result;
-                var logInfo = grngs.NormalExSampler.logInfo;
 
-                exLog.AddVal(ex.Name);
-                exLog.AddVal(ex.Config.Rarity);
-                exLog.AddVal(ex.Config.Appearance);
-
-                exLog.AddVal($"{logInfo.wThreshold}<{logInfo.exW}");
-                exLog.AddVal(logInfo.totalW);
-
-                exLog.AddVal(gr.ExhibitRng.State);
-                exLog.AddVal(gr.CurrentStation.Type);
-                exLog.FlushVals();
-            }
+            StatsLogger.LogEx(__result, gr, logInfo);
 
 
             return false;
@@ -82,8 +68,11 @@ namespace RngFix.Patches
                     t2W.TryGetValue(t, out w);
                     return w * Library.WeightForAdventure(t, gr);
                 },
+                logInfo: out var logInfo,
                 fallback: () => typeof(FakeAdventure)
                 );
+
+            StatsLogger.LogEvent(__result, gr, logInfo);
 
             return false;
         }
@@ -92,8 +81,8 @@ namespace RngFix.Patches
 
 
 
-    //[HarmonyPatch(typeof(GameRunController), nameof(GameRunController.RollCards), new Type[] { typeof(RandomGen ), typeof(CardWeightTable), typeof(int) , typeof(ManaGroup?), typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(Predicate<CardConfig>) })]
-    //[HarmonyPriority(Priority.Low)]
+    [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.RollCards), new Type[] { typeof(RandomGen ), typeof(CardWeightTable), typeof(int) , typeof(ManaGroup?), typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(Predicate<CardConfig>) })]
+    [HarmonyPriority(Priority.Low)]
     class GameRunController_Patch
     {
         static bool Prefix(GameRunController __instance, ref Card[] __result, RandomGen rng, CardWeightTable weightTable, int count, ManaGroup? manaLimit, bool colorLimit, bool applyFactors = false, bool battleRolling = false, bool ensureCount = false, [MaybeNull] Predicate<CardConfig> filter = null)
@@ -123,41 +112,25 @@ namespace RngFix.Patches
             for (var i = 0; i < count; i++)
             {
                 var prevState = rng.State;
-                var rolledCard = grngs.CardSampler.Roll(rng, getW, t => rolledCards.All(c => c.GetType() != t));
-                Action doLog = () => {
-                    if (!BepinexPlugin.doLoggingConf.Value)
-                        return;
+                var card = grngs.CardSampler.Roll(rng, getW, logInfo: out var logInfo, filter: t => rolledCards.All(c => c.GetType() != t));
+               
 
-                    var logInfo = grngs.CardSampler.logInfo;
-                    log.AddVal(rolledCard?.Name);
-                    log.AddVal(rolledCard?.Config.Rarity);
-
-                    log.AddVal($"{logInfo.wThreshold}<{logInfo.exW}+{logInfo.rolls}");
-                    log.AddVal($"{logInfo.totalW}({logInfo.maxW})");
-
-                    log.AddVal(gr.CardRng.State);
-                    log.AddVal(gr.CurrentStation.Type);
-
-
-                    log.FlushVals();
-                };
-
-                if (rolledCard == null)
+                if (card == null)
                     if (ensureCount)
                     {
                         BepinexPlugin.log.LogWarning("ENSURING COUNT ENSURING COUNT ENSURING COUNT");
                         rng.State = prevState;
-                        rolledCard = grngs.CardSampler.Roll(rng, getW);
+                        card = grngs.CardSampler.Roll(rng, getW, logInfo: out logInfo);
                     }
                     else
                     {
-                        doLog();
+                        StatsLogger.LogCard(card, gr, logInfo);
                         break;
                     }
 
-                rolledCards.Add(rolledCard);
+                rolledCards.Add(card);
 
-                doLog();
+                StatsLogger.LogCard(card, gr, logInfo);
 
             }
 
