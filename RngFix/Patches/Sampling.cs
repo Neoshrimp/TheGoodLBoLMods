@@ -105,8 +105,6 @@ namespace RngFix.Patches
                 return wt * bw;
             };
 
-            var log = StatsLogger.GetCardLog(gr);
-
 
 
             for (var i = 0; i < count; i++)

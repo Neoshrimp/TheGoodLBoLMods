@@ -40,6 +40,8 @@ namespace RngFix.Patches.Debug
 
         public static void LogGeneral(GameRunController gr)
         {
+            if (!BepinexPlugin.doLoggingConf.Value)
+                return;
             var log = GetGeneralLog(gr);
             log.SetValSafe(gr.BaseMana, "ManaBase");
             log.SetValSafe(gr.Player.Name, "Char");
@@ -50,6 +52,8 @@ namespace RngFix.Patches.Debug
 
         public static void LogEvent(Type adv, GameRunController gr, SamplerLogInfo li)
         {
+            if (!BepinexPlugin.doLoggingConf.Value)
+                return;
             var log = GetEventLog(gr);
             var grRngs = GrRngs.GetOrCreate(gr);
 
@@ -63,6 +67,8 @@ namespace RngFix.Patches.Debug
 
         public static void LogEx(Exhibit ex, GameRunController gr, SamplerLogInfo li)
         {
+            if (!BepinexPlugin.doLoggingConf.Value)
+                return;
             var log = GetExLog(gr);
             var grRngs = GrRngs.GetOrCreate(gr);
 
@@ -79,6 +85,8 @@ namespace RngFix.Patches.Debug
 
         public static void LogVanillaRngs(GameRunController gr)
         {
+            if (!BepinexPlugin.doLoggingConf.Value)
+                return;
             var log = GetVanillaRngsLog(gr);
             foreach (var kv in vanillaRngsHead)
             {
@@ -94,6 +102,8 @@ namespace RngFix.Patches.Debug
 
         public static void LogPersistentRngs(GameRunController gr)
         {
+            if (!BepinexPlugin.doLoggingConf.Value)
+                return;
             var log = GetPersistentRngsLog(gr);
             var grRngs = GrRngs.GetOrCreate(gr);
 
@@ -111,6 +121,8 @@ namespace RngFix.Patches.Debug
 
         public static void LogCard(Card card, GameRunController gr, SamplerLogInfo li)
         {
+            if (!BepinexPlugin.doLoggingConf.Value)
+                return;
             var log = GetCardLog(gr);
             var grRngs = GrRngs.GetOrCreate(gr);
 
@@ -129,6 +141,8 @@ namespace RngFix.Patches.Debug
 
         public static void LogPickedCard(Card card, int amount, GameRunController gr)
         {
+            if (!BepinexPlugin.doLoggingConf.Value)
+                return;
             var log = GetPickedCardLog(gr);
 
             log.SetValSafe(card?.Name, "AddedCard");
@@ -141,6 +155,8 @@ namespace RngFix.Patches.Debug
 
         public static void LogRoll(CsvLogger logger, SamplerLogInfo li)
         {
+            if (!BepinexPlugin.doLoggingConf.Value)
+                return;
             logger.SetValSafe(li.itemW, "ItemW");
             logger.SetValSafe(li.wThreshold, "WThreshold");
             logger.SetValSafe(li.totalW, "TotalW");
@@ -150,9 +166,11 @@ namespace RngFix.Patches.Debug
 
         public static void LogCommonAndFlush(CsvLogger logger, GameRunController gr, bool flush = true)
         {
+            if (!BepinexPlugin.doLoggingConf.Value)
+                return;
             logger.SetValSafe(gr.CurrentMap.VisitingNode.StationType, "Station");
             logger.SetValSafe(gr.CurrentMap.VisitingNode.Act, "Act");
-            logger.SetValSafe(gr.CurrentStage.Name, "Stage");
+            logger.SetValSafe(gr.CurrentStage.Id, "Stage");
             logger.SetValSafe(gr.CurrentMap.VisitingNode.X, "X");
             logger.SetValSafe(gr.CurrentMap.VisitingNode.Y, "Y");
 
@@ -177,18 +195,23 @@ namespace RngFix.Patches.Debug
                 logger.FlushVals();
         }
 
+        public static string currentGrId = "";
 
         private static CsvLogger GetLog(GameRunController gr, string prefix ="", string ext = ".csv", bool isEnabled = true)
         {
             var ss = RandomGen.SeedToString(gr.RootSeed);
-            var logId = prefix + "_" + ss;
-            var logger = CsvLogger.GetOrCreateLog(
-                logFile: logId,
+            var logName = prefix + "_" + ss ;
+            if (CsvLogger.TryGetLogger(logName + currentGrId, out var logger))
+                return logger;
+
+            var tupple = CsvLogger.GetOrCreateLog(
+                logFile: logName,
                 ass: gr,
                 ext: ext,
                 subFolder: "RngFix",
                 isEnabled: isEnabled);
-            return logger;
+            currentGrId = tupple.Item2.ToString();
+            return tupple.Item1;
         }
 
         public static CsvLogger GetCardLog(GameRunController gr, bool isEnabled = true) => GetLog(gr, "cards", isEnabled: isEnabled);
@@ -204,47 +227,62 @@ namespace RngFix.Patches.Debug
         public static GameRunController Gr() => GameMaster.Instance?.CurrentGameRun;
 
 
+        static void InitLogs(GameRunController gr)
+        {
+            var doLog = BepinexPlugin.doLoggingConf.Value;
+            if (!doLog)
+                return;
+
+            GetCardLog(gr, doLog).SetHeader(cardsHeader.Concat(rollHead).Concat(commonHead));
+            GetCardLog(gr).LogHead();
+
+            GetGeneralLog(gr, doLog).SetHeader(generalHead.Concat(commonHead));
+            GetGeneralLog(gr).LogHead();
+
+            GetPickedCardLog(gr, doLog).SetHeader(addedCardHead.Concat(commonHead));
+            GetPickedCardLog(gr).LogHead();
+
+            GetExLog(gr, doLog).SetHeader(exHeader.Concat(rollHead).Concat(commonHead));
+            GetExLog(gr).LogHead();
+
+            GetEventLog(gr, doLog).SetHeader(eventHead.Concat(rollHead).Concat(commonHead));
+            GetEventLog(gr).LogHead();
+
+
+            vanillaRngsHead.Clear();
+            GetVanillaRngsLog(gr, doLog).SetHeader(AccessTools.GetDeclaredProperties(typeof(GameRunController))
+                .Where(p => p.GetMethod?.Name.EndsWith("Rng") ?? false)
+                .Select(p => { vanillaRngsHead.Add(new KeyValuePair<string, MethodInfo>(p.Name, p.GetMethod)); return p.Name; })
+                .Concat(commonHead));
+            GetVanillaRngsLog(gr).LogHead();
+
+            persistentRngsHead.Clear();
+            GetPersistentRngsLog(gr, doLog).SetHeader(AccessTools.GetDeclaredFields(typeof(GrRngs.PersRngs))
+                .Where(f => f.FieldType == typeof(RandomGen))
+                .Select(f => { persistentRngsHead.Add(new KeyValuePair<string, FieldInfo>(f.Name, f)); return f.Name; })
+                .Concat(commonHead));
+            GetPersistentRngsLog(gr).LogHead();
+        }
+
         [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.Create))]
+        [HarmonyPriority(Priority.LowerThanNormal)]
         class InitLog
         {
             static void Postfix(GameRunController __result)
             {
                 var gr = __result;
+                currentGrId = "";
+                InitLogs(gr);
+            }
+        }
 
-
-                var doLog = BepinexPlugin.doLoggingConf.Value;
-
-
-                GetCardLog(gr, doLog).SetHeader(cardsHeader.Concat(rollHead).Concat(commonHead));
-                GetCardLog(gr).LogHead();
-
-                GetGeneralLog(gr, doLog).SetHeader(generalHead.Concat(commonHead));
-                GetGeneralLog(gr).LogHead();
-
-                GetPickedCardLog(gr, doLog).SetHeader(addedCardHead.Concat(commonHead));
-                GetPickedCardLog(gr).LogHead();
-
-                GetExLog(gr, doLog).SetHeader(exHeader.Concat(rollHead).Concat(commonHead));
-                GetExLog(gr).LogHead();
-
-                GetEventLog(gr, doLog).SetHeader(eventHead.Concat(rollHead).Concat(commonHead));
-                GetEventLog(gr).LogHead();
-
-
-                vanillaRngsHead.Clear();
-                GetVanillaRngsLog(gr, doLog).SetHeader(AccessTools.GetDeclaredProperties(typeof(GameRunController))
-                    .Where(p => p.GetMethod?.Name.EndsWith("Rng") ?? false)
-                    .Select(p => { vanillaRngsHead.Add(new KeyValuePair<string, MethodInfo>(p.Name, p.GetMethod)); return p.Name; })
-                    .Concat(commonHead));
-                GetVanillaRngsLog(gr).LogHead();
-
-                persistentRngsHead.Clear();
-                GetPersistentRngsLog(gr, doLog).SetHeader(AccessTools.GetDeclaredFields(typeof(GrRngs.PersRngs))
-                    .Where(f => f.FieldType == typeof(RandomGen))
-                    .Select(f => { persistentRngsHead.Add(new KeyValuePair<string, FieldInfo>(f.Name, f)); return f.Name; })
-                    .Concat(commonHead));
-                GetPersistentRngsLog(gr).LogHead();
-
+        [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.Restore))]
+        [HarmonyPriority(Priority.LowerThanNormal)]
+        class RestoreLogs
+        {
+            static void PostFix(GameRunController __result)
+            {
+                InitLogs(__result);
             }
         }
     }

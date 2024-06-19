@@ -2,6 +2,7 @@
 using LBoL.Core;
 using LBoLEntitySideloader.PersistentValues;
 using LBoLEntitySideloader.PersistentValues.TypeConverters;
+using RngFix.Patches.Debug;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,12 +16,14 @@ namespace RngFix.CustomRngs
         {
             var grRngs = GrRngs.GetOrCreate(gameRun);
             grRngs.persRngs = persRngs;
+            StatsLogger.currentGrId = currentGrId;
         }
 
         public override void Save(GameRunController gameRun)
         {
             var grRngs = GrRngs.GetOrCreate(gameRun);
             persRngs = grRngs.persRngs;
+            currentGrId = StatsLogger.currentGrId;
         }
 
         public override IEnumerable<IYamlTypeConverter> TypeConverters()
@@ -31,6 +34,7 @@ namespace RngFix.CustomRngs
 
         public GrRngs.PersRngs persRngs;
 
+        public string currentGrId;
 
     }
 }
