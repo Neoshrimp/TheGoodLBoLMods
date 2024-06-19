@@ -102,8 +102,8 @@ namespace RngFix.CustomRngs
 
         private Lazy<SlotSampler<Exhibit>> normalExSampler = new Lazy<SlotSampler<Exhibit>>(() => new SlotSampler<Exhibit>(
             requirements: new List<ISlotRequirement>() { new ExInPool(), new ExHasManaColour() },
-            initAction: (t) => Library.CreateExhibit(t),
-            successAction: (ex) => Gr().ExhibitPool.Remove(ex.GetType()),
+            initAction: (t) => { var ex = Library.CreateExhibit(t); Gr().ExhibitPool.Remove(ex.GetType()); return ex; },
+            successAction: null,
             failureAction: null,
             potentialPool: ExhibitConfig.AllConfig().Where(c => c.Rarity is Rarity.Common || c.Rarity is Rarity.Uncommon || c.Rarity is Rarity.Rare).Select(ec => TypeFactory<Exhibit>.GetType(ec.Id)).Where(t => t != null).ToList()
             ));

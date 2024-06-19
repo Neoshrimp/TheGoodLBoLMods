@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using LBoL.Base;
 using LBoL.ConfigData;
+using LBoL.Core;
 using LBoL.Core.Cards;
 using LBoL.Core.GapOptions;
 using LBoL.Core.Randoms;
@@ -51,12 +52,15 @@ namespace RngFix.CustomRngs.Sampling
 
             logInfo = new SamplerLogInfo();
 
+            requirements.Do(r => r.PrepReq());
+
             foreach (var t in potentialPool)
             {
                 var w = getW(t);
                 if (requirements.All(r => r.IsSatisfied(t))
                     && (filter == null || filter(t)))
                 {
+
                     totalW += w;
                     maxW = Math.Max(maxW, w);
                 }
@@ -67,7 +71,6 @@ namespace RngFix.CustomRngs.Sampling
             var wThrehold = rollingRng.NextFloat(0, maxW);
 
 
-            requirements.Do(r => r.PrepReq());
 
             //var shitToLog = new List<string>();
 
