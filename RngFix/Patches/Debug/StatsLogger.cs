@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using BepInEx.Bootstrap;
+using HarmonyLib;
 using LBoL.Base;
 using LBoL.Core;
 using LBoL.Core.Cards;
@@ -21,7 +22,7 @@ namespace RngFix.Patches.Debug
 
         public static string[] generalHead = new string[] { "ManaBase", "Char", "Exhibits" };
 
-        public static string[] cardsHeader = new string[] { "Card", "Rarity", "Colors", "RareFactorAfter", "CardRng", "ShopRng", "UpgradeRng"};
+        public static string[] cardsHeader = new string[] { "Card", "Rarity", "Colors", "RareFactorAfter", "CardRng", "ShopRng", "UpgradeRng" };
 
         public static string[] addedCardHead = new string[] { "AddedCard", "Amount", "Rarity", "Colors" };
 
@@ -32,11 +33,27 @@ namespace RngFix.Patches.Debug
 
         public static string[] eventHead = new string[] { "Adventure", "AdvInitRng" };
 
+        public static string[] grInfoHead = new string[] { "GameVersion", "Jadeboxes", "Mods" };
 
         public static string[] rollHead = new string[] { "ItemW", "WThreshold", "MaxW", "TotalW", "Rolls" };
         public static string[] commonHead = new string[] { "Station", "Event", "Stage", "Act", "X", "Y" };
 
         static MethodInfo mi_rngState = AccessTools.PropertyGetter(typeof(RandomGen), nameof(RandomGen.State));
+
+        public static void InitAndLogGrInfo(GameRunController gr)
+        {
+            if (!BepinexPlugin.doLoggingConf.Value)
+                return;
+            var log = GetGrInfoLog(gr);
+            log.SetHeader(grInfoHead);
+            log.LogHead();
+
+            log.SetValSafe(VersionInfo.Current.Version, "GameVersion");
+            log.SetValSafe(string.Join(";", gr.JadeBoxes.Select(jb => jb.Name)), "Jadeboxes");
+            log.SetValSafe(string.Join(";", Chainloader.PluginInfos.Values.Select(pi => $"{pi.Metadata.GUID}|{pi.Metadata.Version}")), "Mods");
+
+            log.FlushVals();
+        }
 
         public static void LogGeneral(GameRunController gr)
         {
@@ -222,6 +239,7 @@ namespace RngFix.Patches.Debug
         public static CsvLogger GetVanillaRngsLog(GameRunController gr, bool isEnabled = true) => GetLog(gr, prefix: "vanillaRngs", isEnabled: isEnabled);
         public static CsvLogger GetPersistentRngsLog(GameRunController gr, bool isEnabled = true) => GetLog(gr, prefix: "persistentRngs", isEnabled: isEnabled);
 
+        public static CsvLogger GetGrInfoLog(GameRunController gr, bool isEnabled = true) => GetLog(gr, prefix: "grInfo", isEnabled: isEnabled);
 
 
         public static GameRunController Gr() => GameMaster.Instance?.CurrentGameRun;
@@ -272,6 +290,7 @@ namespace RngFix.Patches.Debug
             {
                 var gr = __result;
                 currentGrId = "";
+                InitAndLogGrInfo(gr);
                 InitLogs(gr);
             }
         }
