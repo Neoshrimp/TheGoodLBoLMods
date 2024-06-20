@@ -8,6 +8,8 @@ using LBoL.Core.Randoms;
 using LBoL.EntityLib.Cards.Character.Sakuya;
 using LBoL.EntityLib.Cards.Neutral.White;
 using Logging;
+using RngFix.Patches.Debug;
+using Spine.Unity;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,7 +27,11 @@ namespace RngFix.CustomRngs.Sampling
         public Action<T> successAction = null;
         public Action failureAction = null;
 
+        public Action<int, Type, float> debugAction = null;
+
         List<Type> potentialPool = new List<Type>();
+
+        public ulong maxWRollAttemts = (ulong)1E8;
 
 
         public SlotSampler(List<ISlotRequirement> requirements, Func<Type, T> initAction, Action<T> successAction, Action failureAction, List<Type> potentialPool)
@@ -45,10 +51,16 @@ namespace RngFix.CustomRngs.Sampling
             T rez = default;
             bool rezFound = false;
             var rollingPool = new UniformUniqueRandomPool<Type>();
-            var rollingRng = new RandomGen(rng.NextULong());
 
-            float totalW = 0f;
-            float maxW = 0f;
+
+            var itemRollingRng = new RandomGen(rng.NextULong());
+            var wRollingRng = new RandomGen(itemRollingRng.NextULong());
+
+            float rawTotalW = 0f;
+            float rawMaxW = 0f;
+
+            float possibleTotalW = 0f;
+            float possibleMaxW = 0f;
 
             logInfo = new SamplerLogInfo();
 
@@ -61,34 +73,50 @@ namespace RngFix.CustomRngs.Sampling
                     && (filter == null || filter(t)))
                 {
 
-                    totalW += w;
-                    maxW = Math.Max(maxW, w);
+                    possibleTotalW += w;
+                    possibleMaxW = Math.Max(possibleMaxW, w);
                 }
+                rawTotalW += w;
+                rawMaxW = Math.Max(rawMaxW, w);
 
                 rollingPool.Add(t);
             }
 
-            var wThrehold = rollingRng.NextFloat(0, maxW);
 
 
+            var wThrehold = 0f;
+            ulong wAttemts = 0;
+            bool wFound = false;
+            while (wAttemts < maxWRollAttemts)
+            {
 
-            //var shitToLog = new List<string>();
+                var w = itemRollingRng.NextFloat(0, rawMaxW);
+                if (w <= possibleMaxW)
+                {
+                    log.LogDebug($"wAttemtps: {wAttemts}");
+                    wThrehold = w;
+                    wFound = true;
+                    break;
+                }
+
+                wAttemts++;
+            }
+
+            if (!wFound)
+            {
+                log.LogWarning($"Possible weight not found in {maxWRollAttemts}. Using a safe roll.");
+                wThrehold = itemRollingRng.NextFloat(0, possibleMaxW);
+            }
 
             var i = 0;
             while (rollingPool.Count > 0)
             {
                 i++;
-                var t = rollingPool.Sample(rollingRng);
+                var t = rollingPool.Sample(itemRollingRng);
                 var w = getW(t);
-/*                if (typeof(T) == typeof(Card))
-                {
-                    var cc = CardConfig.FromId(t.Name);
-                    var gr = GrRngs.Gr();
-                    var wt = CardWeightTable.ShopSkillAndFriend.WeightFor(cc, gr.Player.Id, new HashSet<string>());
-                    var bw = gr.BaseCardWeight(cc, false);
-                    shitToLog.Add($"{t.Name};{String.Join("", cc.Colors)};{w};wt:{wt};bw:{bw}");
-                }*/
-                
+
+                debugAction?.Invoke(i, t, w);
+
 
                 if (wThrehold < w
                     && requirements.All(r => r.IsSatisfied(t))
@@ -101,20 +129,17 @@ namespace RngFix.CustomRngs.Sampling
                 }
             }
 
-            logInfo.maxW = maxW;
+            logInfo.maxW = possibleMaxW;
             logInfo.wThreshold = wThrehold;
             logInfo.rolls = i;
-            logInfo.totalW = totalW;
+            logInfo.totalW = possibleTotalW;
+
 
             if (rezFound)
             {
                 if (successAction != null)
                     successAction(rez);
 
-/*                if (rez is YukariFlyObject || rez is SakuyaTea) 
-                {
-                    shitToLog.Do(s => log.LogDebug(s));
-                }*/
             }
             else
             {
@@ -123,6 +148,7 @@ namespace RngFix.CustomRngs.Sampling
                 if (failureAction != null)
                     failureAction();
             }
+
 
             return rez;
         }
@@ -136,6 +162,11 @@ namespace RngFix.CustomRngs.Sampling
         public int rolls;
         public float wThreshold;
         public float itemW;
+
+        public override string ToString()
+        {
+            return $"ItemW:{itemW};WThreshold:{wThreshold};MaxW:{maxW};TotalW:{totalW};";
+        }
     }
 
 

@@ -1,8 +1,10 @@
 ﻿using HarmonyLib;
 using LBoL.Base;
+using LBoL.ConfigData;
 using LBoL.Core;
 using LBoL.Core.Cards;
 using LBoL.Core.Randoms;
+using LBoL.EntityLib.Adventures;
 using LBoL.Presentation;
 using LBoL.Presentation.UI.Panels;
 using System;
@@ -52,7 +54,7 @@ namespace RngFix.Patches.Debug
 
             if (__originalMethod.Name.StartsWith("get_CardRng"))
             {
-                log.LogDebug($"cardRng state: {__result.State}");
+                //log.LogDebug($"cardRng state: {__result.State}");
                 /*                var st = new StackTrace();
 
                                 log.LogDebug($"---------------");
@@ -64,8 +66,57 @@ namespace RngFix.Patches.Debug
                                 }
                                 log.LogDebug($"---------------");*/
             }
+
+            if (__originalMethod.Name.StartsWith("get_DebutRng"))
+            {
+                //log.LogDebug(new StackFrame(2).GetMethod().Name);
+                log.LogDebug($"debutRng state: {__result.State}");
+            }
+
+
         }
     }
+
+    //[HarmonyPatch(typeof(GameRunController), nameof(GameRunController.RollCards), new Type[] { typeof(RandomGen), typeof(CardWeightTable), typeof(int), typeof(ManaGroup?), typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(Predicate<CardConfig>) })]
+    class rollDeez_patch
+    {
+        static void Prefix()
+        {
+            log.LogDebug("rolling Deez");
+        }
+
+    }
+
+
+    [HarmonyPatch(typeof(Debut), nameof(Debut.InitVariables))]
+    class debutdeez_Patch
+    {
+
+        static void nuts(RandomGen rng) => log.LogDebug($"true debutRng state: {rng.State}");
+
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+        {
+            return new CodeMatcher(instructions)
+               /* .MatchEndForward(new CodeInstruction(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(GameRunController), nameof(GameRunController.DebutRng))))
+                .Advance(1)
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Dup))
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(debutdeez_Patch), nameof(debutdeez_Patch.nuts))))
+                                
+                .MatchEndForward(new CodeInstruction(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(GameRunController), nameof(GameRunController.DebutRng))))
+                .Advance(1)
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Dup))
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(debutdeez_Patch), nameof(debutdeez_Patch.nuts))))
+
+                .MatchEndForward(new CodeInstruction(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(GameRunController), nameof(GameRunController.DebutRng))))
+                .Advance(1)
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Dup))
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(debutdeez_Patch), nameof(debutdeez_Patch.nuts))))*/
+                .InstructionEnumeration();
+        }
+
+    }
+
+
 
 
     //[HarmonyPatch(typeof(NazrinDetectPanel), nameof(NazrinDetectPanel.Roll))]
@@ -131,6 +182,40 @@ namespace RngFix.Patches.Debug
 
             }
         }*/
+
+
+
+
+    //[HarmonyPatch(typeof(RandomGen), nameof(RandomGen.Next), new Type[] { })]
+    class RandomGenNext_Patch
+    {
+        static bool CheckSt(StackTrace st)
+        {
+            return st.GetFrames().FirstOrDefault(st => st.GetMethod().Name.Contains("RollCards")) != null;
+        }
+
+        static void Prefix(RandomGen __instance)
+        {
+            var st = new StackTrace();
+            if (!CheckSt(st))
+                return;
+            log.LogDebug($"before{__instance.State}---------------");
+        }
+
+
+        static void Postfix(RandomGen __instance)
+        {
+            var st = new StackTrace();
+            if (!CheckSt(st))
+                return;
+
+            foreach (var f in st.GetFrames())
+            {
+                log.LogDebug($"{f.GetMethod().DeclaringType.FullName}::{f.GetMethod().Name}");
+            }
+            log.LogDebug($"after{__instance.State}---------------");
+        }
+    }
 
 
 
@@ -223,6 +308,7 @@ namespace RngFix.Patches.Debug
         }
 
     }
+
 
 
 

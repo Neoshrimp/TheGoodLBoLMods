@@ -59,6 +59,7 @@ namespace RngFix.Patches.Debug
         {
             if (!BepinexPlugin.doLoggingConf.Value)
                 return;
+
             var log = GetGeneralLog(gr);
             log.SetValSafe(gr.BaseMana, "ManaBase");
             log.SetValSafe(gr.Player.Name, "Char");
@@ -193,19 +194,19 @@ namespace RngFix.Patches.Debug
 
             if (gr.CurrentStation is AdventureStation adventureStation)
             {
-                logger.SetValSafe("adventure:" + adventureStation.Adventure.HostName, "Event");
+                logger.SetValSafe("adventure:" + adventureStation.Adventure?.Title ?? "", "Event");
             }
             else if (gr.CurrentStation is BattleStation bs)
             {
-                logger.SetValSafe("battle:" + bs.EnemyGroup.Id, "Event");
+                logger.SetValSafe("battle:" + bs.EnemyGroup?.Id ?? "", "Event");
             }
             else if (gr.CurrentStation is EliteEnemyStation es)
             {
-                logger.SetValSafe("elite:" + es.EnemyGroup.Id, "Event");
+                logger.SetValSafe("elite:" + es.EnemyGroup?.Id ?? "", "Event");
             }
             else if (gr.CurrentStation is BossStation bos)
             {
-                logger.SetValSafe("boss:" + bos.EnemyGroup.Id, "Event");
+                logger.SetValSafe("boss:" + bos.EnemyGroup?.Id ?? "", "Event");
             }
 
             if(flush)
@@ -218,17 +219,25 @@ namespace RngFix.Patches.Debug
         {
             var ss = RandomGen.SeedToString(gr.RootSeed);
             var logName = prefix + "_" + ss ;
-            if (CsvLogger.TryGetLogger(logName + currentGrId, out var logger))
-                return logger;
 
-            var tupple = CsvLogger.GetOrCreateLog(
-                logFile: logName,
-                ass: gr,
-                ext: ext,
-                subFolder: "RngFix",
-                isEnabled: isEnabled);
-            currentGrId = tupple.Item2.ToString();
-            return tupple.Item1;
+            if (string.IsNullOrEmpty(currentGrId))
+            {
+                var tupple = CsvLogger.GetOrCreateLog(
+                    logFile: logName,
+                    ass: gr,
+                    ext: ext,
+                    subFolder: "RngFix",
+                    isEnabled: isEnabled);
+                currentGrId = tupple.Item2.ToString();
+                return tupple.Item1;
+            }
+            else
+                return CsvLogger.GetOrCreateLog(
+                    logFile: logName,
+                    id: currentGrId,
+                    ext: ext,
+                    subFolder: "RngFix",
+                    isEnabled: isEnabled);
         }
 
         public static CsvLogger GetCardLog(GameRunController gr, bool isEnabled = true) => GetLog(gr, "cards", isEnabled: isEnabled);
@@ -292,19 +301,25 @@ namespace RngFix.Patches.Debug
                 currentGrId = "";
                 InitAndLogGrInfo(gr);
                 InitLogs(gr);
+
             }
         }
+
 
         [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.Restore))]
         [HarmonyPriority(Priority.LowerThanNormal)]
         class RestoreLogs
         {
-            static void PostFix(GameRunController __result)
+            static void Postfix(GameRunController __result)
             {
                 InitLogs(__result);
             }
         }
+
+
     }
+
+
 
 
     public static class CsvLoggerExt

@@ -106,12 +106,13 @@ namespace RngFix.Patches
             };
 
 
-
             for (var i = 0; i < count; i++)
             {
+
                 var prevState = rng.State;
                 var card = grngs.CardSampler.Roll(rng, getW, logInfo: out var logInfo, filter: t => rolledCards.All(c => c.GetType() != t));
-               
+
+
 
                 if (card == null)
                     if (ensureCount)

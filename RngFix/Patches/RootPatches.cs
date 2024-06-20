@@ -171,10 +171,15 @@ namespace RngFix.Patches
                 log.LogError($"NodeRngs were not assigned for station {node.StationType}");
             }
 
+
+        }
+
+        static void Postfix(GameRunController __instance)
+        {
+            var gr = __instance;
             StatsLogger.LogGeneral(gr);
             StatsLogger.LogVanillaRngs(gr);
             StatsLogger.LogPersistentRngs(gr);
-
         }
     }
 
