@@ -14,7 +14,7 @@ namespace RngFix.CustomRngs.Sampling
 {
     public static class SamplerDebug
     {
-        public static void SimulateCardRoll(ulong state, CardWeightTable weightTable)
+        public static void SimulateCardRoll(ulong state, CardWeightTable weightTable, bool fullRoll = false, ManaGroup? manaBase = null)
         {
             var gr = GrRngs.Gr();
 
@@ -27,7 +27,7 @@ namespace RngFix.CustomRngs.Sampling
 
             var cardPoolReq = sampler.requirements.Find(r => r is CardInPool) as CardInPool;
 
-            cardPoolReq.poolSet = new HashSet<Type>(gr.CreateValidCardsPool(weightTable, new ManaGroup?(gr.BaseMana), gr.RewardAndShopCardColorLimitFlag == 0, false, false, null).Select(re => re.Elem));
+            cardPoolReq.poolSet = new HashSet<Type>(gr.CreateValidCardsPool(weightTable, manaBase ?? new ManaGroup?(gr.BaseMana), gr.RewardAndShopCardColorLimitFlag == 0, false, false, null).Select(re => re.Elem));
 
             var charExSet = new HashSet<string>(gr.Player.Exhibits.Where(e => e.OwnerId != null).Select(e => e.OwnerId));
 
@@ -42,18 +42,25 @@ namespace RngFix.CustomRngs.Sampling
                 return wt * bw;
             };
 
+
+
             sampler.debugAction = (i, t, w) => {
                 logWBreakdown = true;
-                log.LogDebug($"i:{i};card:{t};colors:{string.Join("", CardConfig.FromId(t.Name).Colors)};w:{w};"); 
+                log.LogDebug($"i:{i};card:{t.Name};colors:{string.Join("", CardConfig.FromId(t.Name).Colors)};w:{w};"); 
             };
+
+            sampler.fullRoll = fullRoll;
 
             sampler.Roll(rng, getW, out var logInfo);
 
 
             log.LogDebug(logInfo);
 
+            sampler.fullRoll = false;
             sampler.debugAction = null;
 
         }
     }
+
+
 }

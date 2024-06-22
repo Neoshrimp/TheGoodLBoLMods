@@ -35,7 +35,7 @@ namespace RngFix.Patches.Debug
 
         public static string[] grInfoHead = new string[] { "GameVersion", "Jadeboxes", "Mods" };
 
-        public static string[] rollHead = new string[] { "ItemW", "WThreshold", "MaxW", "TotalW", "Rolls" };
+        public static string[] rollHead = new string[] { "ItemW", "WThreshold", "MaxW", "rawMaxW", "TotalW", "wRollAttempts", "Rolls" };
         public static string[] commonHead = new string[] { "Station", "Event", "Stage", "Act", "X", "Y" };
 
         static MethodInfo mi_rngState = AccessTools.PropertyGetter(typeof(RandomGen), nameof(RandomGen.State));
@@ -179,6 +179,8 @@ namespace RngFix.Patches.Debug
             logger.SetValSafe(li.wThreshold, "WThreshold");
             logger.SetValSafe(li.totalW, "TotalW");
             logger.SetValSafe(li.maxW, "MaxW");
+            logger.SetValSafe(li.rawMaxW, "rawMaxW");
+            logger.SetValSafe(li.wRollAttempts, "wRollAttempts");
             logger.SetValSafe(li.rolls, "Rolls");
         }
 
@@ -191,6 +193,8 @@ namespace RngFix.Patches.Debug
             logger.SetValSafe(gr.CurrentStage.Id, "Stage");
             logger.SetValSafe(gr.CurrentMap.VisitingNode.X, "X");
             logger.SetValSafe(gr.CurrentMap.VisitingNode.Y, "Y");
+
+            logger.SetCollumnToSanitize("Event", false);
 
             if (gr.CurrentStation is AdventureStation adventureStation)
             {
@@ -261,15 +265,19 @@ namespace RngFix.Patches.Debug
                 return;
 
             GetCardLog(gr, doLog).SetHeader(cardsHeader.Concat(rollHead).Concat(commonHead));
+            GetCardLog(gr).SetCollumnToSanitize("Card");
             GetCardLog(gr).LogHead();
 
             GetGeneralLog(gr, doLog).SetHeader(generalHead.Concat(commonHead));
+            GetGeneralLog(gr).SetCollumnToSanitize("Exhibits", false);
             GetGeneralLog(gr).LogHead();
 
             GetPickedCardLog(gr, doLog).SetHeader(addedCardHead.Concat(commonHead));
+            GetPickedCardLog(gr).SetCollumnToSanitize("AddedCard");
             GetPickedCardLog(gr).LogHead();
 
             GetExLog(gr, doLog).SetHeader(exHeader.Concat(rollHead).Concat(commonHead));
+            GetExLog(gr).SetCollumnToSanitize("Exhibit");
             GetExLog(gr).LogHead();
 
             GetEventLog(gr, doLog).SetHeader(eventHead.Concat(rollHead).Concat(commonHead));

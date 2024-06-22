@@ -31,7 +31,8 @@ namespace RngFix.CustomRngs.Sampling
 
         List<Type> potentialPool = new List<Type>();
 
-        public ulong maxWRollAttemts = (ulong)1E8;
+        public uint maxWRollAttemts = (uint)1E7;
+        public bool fullRoll = false;
 
 
         public SlotSampler(List<ISlotRequirement> requirements, Func<Type, T> initAction, Action<T> successAction, Action failureAction, List<Type> potentialPool)
@@ -83,9 +84,15 @@ namespace RngFix.CustomRngs.Sampling
             }
 
 
+            logInfo.rawMaxW = rawMaxW;
+            logInfo.totalW = possibleTotalW;
+            logInfo.maxW = possibleMaxW;
+
 
             var wThrehold = 0f;
-            ulong wAttemts = 0;
+            uint wAttemts = 0;
+
+            //wThrehold = itemRollingRng.NextFloat(0, 1);
             bool wFound = false;
             while (wAttemts < maxWRollAttemts)
             {
@@ -93,7 +100,6 @@ namespace RngFix.CustomRngs.Sampling
                 var w = itemRollingRng.NextFloat(0, rawMaxW);
                 if (w <= possibleMaxW)
                 {
-                    log.LogDebug($"wAttemtps: {wAttemts}");
                     wThrehold = w;
                     wFound = true;
                     break;
@@ -108,6 +114,10 @@ namespace RngFix.CustomRngs.Sampling
                 wThrehold = itemRollingRng.NextFloat(0, possibleMaxW);
             }
 
+            logInfo.wRollAttempts = wAttemts;
+            logInfo.wThreshold = wThrehold;
+
+
             var i = 0;
             while (rollingPool.Count > 0)
             {
@@ -120,19 +130,19 @@ namespace RngFix.CustomRngs.Sampling
 
                 if (wThrehold < w
                     && requirements.All(r => r.IsSatisfied(t))
-                    && (filter == null || filter(t)))
+                    && (filter == null || filter(t))
+                    && !rezFound)
                 {
                     logInfo.itemW = w;
                     rezFound = true;
                     rez = initAction(t);
-                    break;
+                    if(!fullRoll)
+                        break;
                 }
             }
 
-            logInfo.maxW = possibleMaxW;
-            logInfo.wThreshold = wThrehold;
+
             logInfo.rolls = i;
-            logInfo.totalW = possibleTotalW;
 
 
             if (rezFound)
@@ -159,13 +169,16 @@ namespace RngFix.CustomRngs.Sampling
     {
         public float totalW;
         public float maxW;
+        public float rawMaxW;
         public int rolls;
         public float wThreshold;
         public float itemW;
 
+        public uint wRollAttempts;
+
         public override string ToString()
         {
-            return $"ItemW:{itemW};WThreshold:{wThreshold};MaxW:{maxW};TotalW:{totalW};";
+            return $"ItemW:{itemW};WThreshold:{wThreshold};MaxW:{maxW};rawMaxW:{rawMaxW};TotalW:{totalW};wRollAttempts:{wRollAttempts};";
         }
     }
 
