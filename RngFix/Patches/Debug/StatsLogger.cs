@@ -76,7 +76,7 @@ namespace RngFix.Patches.Debug
             var grRngs = GrRngs.GetOrCreate(gr);
 
             log.SetValSafe(adv.Name, "Adventure");
-            log.SetValSafe(grRngs.persRngs.adventureInitRng.State, "AdvInitRng");
+            log.SetValSafe(grRngs.persRngs.adventureSelfRngs.GetRng(adv.Name).State, "AdvInitRng");
 
             LogRoll(log, li);
             LogCommonAndFlush(log, gr);

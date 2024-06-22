@@ -1,6 +1,9 @@
 ﻿using HarmonyLib;
 using LBoL.Base;
+using LBoL.ConfigData;
 using LBoL.Core;
+using LBoL.Core.Adventures;
+using LBoL.Core.Cards;
 using LBoL.Core.Stations;
 using LBoL.EntityLib.Adventures.FirstPlace;
 using LBoL.EntityLib.Exhibits.Shining;
@@ -10,6 +13,7 @@ using RngFix.Patches.Debug;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
@@ -40,16 +44,17 @@ namespace RngFix.Patches
 
             grRngs.persRngs.fallbackInitRng = new RandomGen(gr.RootRng.NextULong());
 
-            grRngs.ExhibitSelfRngs = new ExhibitSelfRngs(gr.RootRng.NextULong());
-            grRngs.ExhibitSelfRngs.InitialiseExRngs();
-            // 0.9.x
+            grRngs.ExhibitSelfRngs = new EntitySelfRngs<Exhibit>(ex => ex.Id, gr.RootRng.NextULong());
+            grRngs.ExhibitSelfRngs.InitialiseRngs(ExhibitConfig.AllConfig().OrderBy(ec => ec.Order).Select(ec => ec.Id));
+
             var cardRngInit = new RandomGen(gr.RootRng.NextULong());
 
             grRngs.persRngs.cardUpgradeQueueRng = new RandomGen(cardRngInit.NextULong());
             grRngs.persRngs.eliteCardRng = new RandomGen(cardRngInit.NextULong());
             grRngs.persRngs.bossCardRng = new RandomGen(cardRngInit.NextULong());
 
-            grRngs.persRngs.exhibitWeightRng = new RandomGen(gr.RootRng.NextULong());
+            grRngs.persRngs.adventureSelfRngs = new EntitySelfRngs<Adventure>(a => a.Id, gr.RootRng.NextULong());
+            grRngs.persRngs.adventureSelfRngs.InitialiseRngs(AdventureConfig.AllConfig().OrderBy(ac => ac.No).Select(ac => ac.Id));
 
             grRngs.unusedRoot0 = new RandomGen(gr.RootRng.NextULong());
             grRngs.unusedRoot1 = new RandomGen(gr.RootRng.NextULong());
@@ -103,7 +108,7 @@ namespace RngFix.Patches
     [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.EnterStation))]
     class EnterStation_Patch
     {
-        static void Prefix(GameRunController __instance)
+        static void Prefix(GameRunController __instance, Station station) // station is not fully initialized 
         {
             //log.LogDebug("seeding..");
             var gr = __instance;
@@ -135,7 +140,7 @@ namespace RngFix.Patches
                     nodeInitRng = grRngs.persRngs.shopInitRng;
                     break;
                 case StationType.Adventure:
-                    nodeInitRng = grRngs.persRngs.adventureInitRng;
+                    grRngs.NodeMaster = null; // initialized once adventure type is known
                     break;
                 case StationType.Entry:
                     grRngs.persRngs.stageMasterRng.Advance(gr);
@@ -166,7 +171,7 @@ namespace RngFix.Patches
                 grRngs.NodeMaster.Advance(gr);
 
             }
-            else
+            else if(node.StationType != StationType.Adventure)
             {
                 log.LogError($"NodeRngs were not assigned for station {node.StationType}");
             }
@@ -182,6 +187,25 @@ namespace RngFix.Patches
             StatsLogger.LogPersistentRngs(gr);
         }
     }
+
+
+    [HarmonyPatch(typeof(Stage), nameof(Stage.GetAdventure))]
+    class InitAdventureNode_Patch
+    {
+        static void Postfix(Stage __instance, Type __result)
+        {
+            var stage = __instance;
+            var gr = stage.GameRun;
+            var grngs = GrRngs.GetOrCreate(gr);
+
+            ulong seed = grngs.persRngs.adventureSelfRngs.GetRng(__result.Name).NextULong();
+
+            grngs.NodeMaster = new NodeMasterRng(seed);
+            grngs.NodeMaster.Advance(gr);
+        }
+    }
+
+
 
 
 

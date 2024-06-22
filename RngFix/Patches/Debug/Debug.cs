@@ -49,8 +49,8 @@ namespace RngFix.Patches.Debug
 
         static void Postfix(MethodBase __originalMethod, RandomGen __result)
         {
-            /*            if (__originalMethod.Name.StartsWith("get_Adventure"))
-                            log.LogDebug($"adventureRng state: {__result.State}");*/
+            if (__originalMethod.Name.StartsWith("get_Adventure"))
+                log.LogDebug($"adventureRng state: {__result?.State}");
 
             if (__originalMethod.Name.StartsWith("get_CardRng"))
             {
@@ -70,7 +70,7 @@ namespace RngFix.Patches.Debug
             if (__originalMethod.Name.StartsWith("get_DebutRng"))
             {
                 //log.LogDebug(new StackFrame(2).GetMethod().Name);
-                log.LogDebug($"debutRng state: {__result.State}");
+                //log.LogDebug($"debutRng state: {__result.State}");
             }
 
 

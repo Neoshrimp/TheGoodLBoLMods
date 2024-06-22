@@ -18,13 +18,14 @@ using static RngFix.BepinexPlugin;
 
 namespace RngFix.CustomRngs
 {
+    // 2do shop prices
+    // 2do shop rare factor
     // problems - sample size affect rng advance calls? +
-    // 2do mana base wildly affects card reward (same state, different pool problem)
     // 2do Aya not in the pool inconsistencies (same problem)
     // 2do in-battle manipulations?
     // 2do enemy move manip
-    // 2do event pools are act (a tiny bit) interdependent
     // 2do FallbackShinning uses ExhibitRng (doesn't really matter)
+    // 2do transform card double roll (never happens in practice)
     public class GrRngs
     {
         static ConditionalWeakTable<GameRunController, GrRngs> table = new ConditionalWeakTable<GameRunController, GrRngs>();
@@ -42,10 +43,11 @@ namespace RngFix.CustomRngs
             public RandomGen battleInitRng;
             // stage
             public RandomGen eliteQueueRng;
-            public RandomGen adventureQueueRng;
+            public ulong adventureQueueSeed;
+            //public RandomGen adventureQueueRng;
             public RandomGen bossInitRng;
             public RandomGen eliteInitRng;
-            public RandomGen adventureInitRng;
+            //public RandomGen adventureInitRng;
             public RandomGen transitionInitRng;
             // run
             public RandomGen gapInitRng;
@@ -54,13 +56,15 @@ namespace RngFix.CustomRngs
             public RandomGen qingeUpgradeQueueRng;
             public RandomGen cardUpgradeQueueRng;
 
+
             public RandomGen eliteCardRng;
             public RandomGen bossCardRng;
 
             public RandomGen exhibitWeightRng;
 
             public RandomGen fallbackInitRng;
-            public ExhibitSelfRngs exhibitSelfRngs;
+            public EntitySelfRngs<Exhibit> exhibitSelfRngs;
+            public EntitySelfRngs<Adventure> adventureSelfRngs;
 
         }
 
@@ -69,13 +73,13 @@ namespace RngFix.CustomRngs
 
         public static RandomGen GetEnemyActQueueRng(GameRunController gr) => GetOrCreate(gr).persRngs.enemyActQueueRng;
         public static RandomGen GetEliteQueueRng(GameRunController gr) => GetOrCreate(gr).persRngs.eliteQueueRng;
-        public static RandomGen GetAdventureQueueRng(GameRunController gr) => GetOrCreate(gr).persRngs.adventureQueueRng;
+        public static RandomGen GetAdventureQueueRng(GameRunController gr) => new RandomGen(GetOrCreate(gr).persRngs.adventureQueueSeed);
         public static RandomGen GetQingeUpgradeQueueRng(GameRunController gr) => GetOrCreate(gr).persRngs.qingeUpgradeQueueRng;
         public static RandomGen GetCardUpgradeQueueRng(GameRunController gr) => GetOrCreate(gr).persRngs.cardUpgradeQueueRng;
 
         public static RandomGen GetEliteCardRng(GameRunController gr) => GetOrCreate(gr).persRngs.eliteCardRng;
 
-        public NodeMasterRng nodeMaster;
+        private NodeMasterRng nodeMaster;
 
         public RandomGen transitionRng;
         public static RandomGen GetTransitionRng(GameRunController gr) => GetOrCreate(gr).transitionRng;
@@ -132,7 +136,7 @@ namespace RngFix.CustomRngs
 
         public NodeMasterRng NodeMaster { get => nodeMaster; set => nodeMaster = value; }
 
-        public ExhibitSelfRngs ExhibitSelfRngs { get => persRngs.exhibitSelfRngs; set => persRngs.exhibitSelfRngs = value; }
+        public EntitySelfRngs<Exhibit> ExhibitSelfRngs { get => persRngs.exhibitSelfRngs; set => persRngs.exhibitSelfRngs = value; }
 
         /// <summary>
         /// If a node contains several events of the same kind, StS arena style, i.e. adventure => battle => battle => adventure, NodeMaster should be advanced after each of those events to prevent rng bleedthrough between them.

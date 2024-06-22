@@ -16,6 +16,10 @@ namespace RngFix.CustomRngs
         {
             var grRngs = GrRngs.GetOrCreate(gameRun);
             grRngs.persRngs = persRngs;
+
+            grRngs.persRngs.exhibitSelfRngs.GetId = ex => ex.Id;
+            grRngs.persRngs.adventureSelfRngs.GetId = adv => adv.Id;
+
             StatsLogger.currentGrId = currentGrId;
         }
 

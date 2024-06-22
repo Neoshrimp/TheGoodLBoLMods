@@ -22,12 +22,14 @@ namespace RngFix.CustomRngs
             //log.LogDebug($"advancing stage rng. {rng.State}");
 
             grRngs.persRngs.eliteQueueRng = new RandomGen(rng.NextULong());
-            grRngs.persRngs.adventureQueueRng = new RandomGen(rng.NextULong());
+            grRngs.persRngs.adventureQueueSeed = rng.NextULong();
 
             grRngs.persRngs.eliteInitRng = new RandomGen(rng.NextULong());
             grRngs.persRngs.bossInitRng = new RandomGen(rng.NextULong());
 
-            grRngs.persRngs.adventureInitRng = new RandomGen(rng.NextULong());
+            // for testing consistency
+            rng.NextULong();
+            //grRngs.persRngs.adventureInitRng = new RandomGen(rng.NextULong());
             grRngs.persRngs.transitionInitRng = new RandomGen(rng.NextULong());
         }
     }

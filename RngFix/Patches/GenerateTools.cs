@@ -65,7 +65,7 @@ namespace RngFix.Patches
             return new CodeMatcher(instructions)
                 .MatchEndForward(new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(Stage), nameof(Stage.GetShopToolCards))))
                 .Set(OpCodes.Call, AccessTools.Method(typeof(GenerateTools), nameof(GenerateTools.GetTools)))
-                .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ExhibitSelfRngs), nameof(ExhibitSelfRngs.GetSelfRng), new Type[] { typeof(GameRunController), typeof(Exhibit) })))
+                .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ExhibitsSelfRngs), nameof(ExhibitsSelfRngs.GetSelfRng), new Type[] { typeof(GameRunController), typeof(Exhibit) })))
                 .Insert(new CodeInstruction(OpCodes.Ldloc_1))
                 .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(GrRngs), nameof(GrRngs.Gr))))
                 .InstructionEnumeration();
@@ -90,7 +90,7 @@ namespace RngFix.Patches
             return new CodeMatcher(instructions)
                 .MatchEndForward(new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(Stage), nameof(Stage.GetShopToolCards))))
                 .Set(OpCodes.Call, AccessTools.Method(typeof(GenerateTools), nameof(GenerateTools.GetTools)))
-                .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ExhibitSelfRngs), nameof(ExhibitSelfRngs.GetSelfRng), new Type[] { typeof(GameRunController), typeof(string) })))
+                .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ExhibitsSelfRngs), nameof(ExhibitsSelfRngs.GetSelfRng), new Type[] { typeof(GameRunController), typeof(string) })))
                 .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Gongjuxiang_Patch), nameof(Gongjuxiang_Patch.ExId))))
                 .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(GrRngs), nameof(GrRngs.Gr))))
                 .InstructionEnumeration();

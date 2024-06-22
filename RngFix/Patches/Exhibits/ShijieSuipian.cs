@@ -26,10 +26,10 @@ namespace RngFix.Patches.Exhibits
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             return new CodeMatcher(instructions)
-                .ReplaceRngGetter(nameof(GameRunController.GameRunEventRng), AccessTools.Method(typeof(ExhibitSelfRngs), nameof(ExhibitSelfRngs.GetSelfRng), new Type[] { typeof(GameRunController), typeof(Exhibit) }))
+                .ReplaceRngGetter(nameof(GameRunController.GameRunEventRng), AccessTools.Method(typeof(ExhibitsSelfRngs), nameof(ExhibitsSelfRngs.GetSelfRng), new Type[] { typeof(GameRunController), typeof(Exhibit) }))
                 .Insert(new CodeInstruction(OpCodes.Ldloc_1))
                 //
-                .ReplaceRngGetter(nameof(GameRunController.GameRunEventRng), AccessTools.Method(typeof(ExhibitSelfRngs), nameof(ExhibitSelfRngs.GetSelfRng), new Type[] { typeof(GameRunController), typeof(Exhibit) }))
+                .ReplaceRngGetter(nameof(GameRunController.GameRunEventRng), AccessTools.Method(typeof(ExhibitsSelfRngs), nameof(ExhibitsSelfRngs.GetSelfRng), new Type[] { typeof(GameRunController), typeof(Exhibit) }))
                 .Insert(new CodeInstruction(OpCodes.Ldloc_1))
                 .InstructionEnumeration();
         }

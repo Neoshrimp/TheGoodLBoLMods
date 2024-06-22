@@ -29,7 +29,7 @@ namespace RngFix.Patches.Exhibits
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             return new CodeMatcher(instructions)
-                .ReplaceRngGetter(nameof(GameRunController.AdventureRng), AccessTools.Method(typeof(ExhibitSelfRngs), nameof(ExhibitSelfRngs.GetSelfRng), new Type[] { typeof(GameRunController), typeof(string) }))
+                .ReplaceRngGetter(nameof(GameRunController.AdventureRng), AccessTools.Method(typeof(ExhibitsSelfRngs), nameof(ExhibitsSelfRngs.GetSelfRng), new Type[] { typeof(GameRunController), typeof(string) }))
                 .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(LightBulb_Patch), nameof(LightBulb_Patch.LightBulbId))))
                 .InstructionEnumeration();
         }

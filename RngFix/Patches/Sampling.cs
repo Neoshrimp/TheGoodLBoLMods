@@ -15,6 +15,7 @@ using System.Text;
 using System.Linq;
 using LBoL.EntityLib.Cards.Neutral.Red;
 using LBoL.Core.Adventures;
+using LBoL.Core.Stations;
 
 namespace RngFix.Patches
 {
@@ -71,6 +72,7 @@ namespace RngFix.Patches
                 logInfo: out var logInfo,
                 fallback: () => typeof(FakeAdventure)
                 );
+
 
             StatsLogger.LogEvent(__result, gr, logInfo);
 
