@@ -55,11 +55,11 @@ namespace RngFix.Patches
 
             grRngs.persRngs.adventureSelfRngs = new EntitySelfRngs<Adventure>(a => a.Id, gr.RootRng.NextULong());
             grRngs.persRngs.adventureSelfRngs.InitialiseRngs(AdventureConfig.AllConfig().OrderBy(ac => ac.No).Select(ac => ac.Id));
+            
+            grRngs.persRngs.shopRngs = ShopRngs.Init(gr.RootRng.NextULong());
 
             grRngs.unusedRoot0 = new RandomGen(gr.RootRng.NextULong());
             grRngs.unusedRoot1 = new RandomGen(gr.RootRng.NextULong());
-            grRngs.unusedRoot2 = new RandomGen(gr.RootRng.NextULong());
-
 
         }
 

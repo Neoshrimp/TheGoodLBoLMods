@@ -12,7 +12,6 @@ using System.Text;
 
 namespace RngFix.Patches.RngGetters
 {
-    // 2do clicking skip card vs skip all when rare is offered
     [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.GetRewardCards))]
     class CardReward_Patch
     {

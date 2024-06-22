@@ -92,7 +92,7 @@ namespace RngFix.CustomRngs.Sampling
             var wThrehold = 0f;
             uint wAttemts = 0;
 
-            //wThrehold = itemRollingRng.NextFloat(0, 1);
+            // idk if this does anything
             bool wFound = false;
             while (wAttemts < maxWRollAttemts)
             {

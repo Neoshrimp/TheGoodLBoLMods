@@ -1,9 +1,12 @@
 ﻿using HarmonyLib;
 using LBoL.Core;
+using LBoL.Core.Randoms;
+using LBoLEntitySideloader.Utils;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace RngFix.Patches
@@ -41,6 +44,66 @@ namespace RngFix.Patches
                 .SetInstruction(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(GetShopCards_Patch), nameof(GetShopCards_Patch.IgnoreFactorTable))))
                 .InstructionEnumeration();
         }
+    }
+
+
+    [HarmonyPatch]
+    public class ShopFactor_Patch
+    {
+
+        public static ConditionalWeakTable<CardWeightTable, string> wt_cwt = new ConditionalWeakTable<CardWeightTable, string>();
+
+        static IEnumerable<MethodBase> TargetMethods()
+        {
+            yield return AccessTools.Method(typeof(Stage), nameof(Stage.GetShopNormalCards));
+            yield return AccessTools.Method(typeof(Stage), nameof(Stage.SupplyShopCard));
+            yield return AccessTools.Method(typeof(Stage), nameof(Stage.GetShopToolCards));
+
+        }
+
+
+        public const float constRareFactor = 0.95f;
+
+        static CardWeightTable ModCardWTable(CardWeightTable cwt, string cwtName)
+        {
+            var rez = cwt;
+            if (BepinexPlugin.ignoreFactorsTableConf.Value)
+            { 
+                var rar = cwt.RarityTable;
+                rez = new CardWeightTable(new RarityWeightTable(rar.Common, rar.Uncommon, rar.Rare * constRareFactor, rar.Mythic), cwt.OwnerTable, cwt.CardTypeTable, cwt.IncludeOutsideKeyword);
+            }
+
+            wt_cwt.AddOrUpdate(rez, cwtName);
+            return rez;
+        }
+
+
+
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+        {
+            var matcher = new CodeMatcher(instructions).Start();
+            
+            while (matcher.IsValid)
+            {
+                matcher = matcher.SearchForward(ci => {
+
+                    return (ci.opcode == OpCodes.Call || ci.opcode == OpCodes.Callvirt) && ci.operand is MethodBase mb && mb.Name.StartsWith("get_Shop") && mb.Name.EndsWith("Weight");
+                }
+                );
+                if (matcher.IsValid)
+                {
+                    var cwtName = (matcher.Instruction.operand as MethodBase).Name;
+                    matcher = matcher
+                        .Advance(1)
+                        .InsertAndAdvance(new CodeInstruction(OpCodes.Ldstr, cwtName))
+                        .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ShopFactor_Patch), nameof(ShopFactor_Patch.ModCardWTable))));
+                }
+            }
+
+            return matcher.InstructionEnumeration();
+        }
+
+
     }
 
 

@@ -7,7 +7,7 @@ namespace RngFix
         // each loaded plugin needs to have a unique GUID. usually author+generalCategory+Name is good enough
         public const string GUID = "neo.lbol.fix.rngFix";
         public const string Name = "RngFix";
-        public const string version = "0.9.0";
+        public const string version = "1.0.0";
         public static readonly Harmony harmony = new Harmony(GUID);
 
     }

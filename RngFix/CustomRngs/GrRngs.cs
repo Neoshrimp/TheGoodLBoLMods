@@ -18,8 +18,7 @@ using static RngFix.BepinexPlugin;
 
 namespace RngFix.CustomRngs
 {
-    // 2do shop prices
-    // 2do shop rare factor
+    // 2do yachie
     // problems - sample size affect rng advance calls? +
     // 2do Aya not in the pool inconsistencies (same problem)
     // 2do in-battle manipulations?
@@ -60,11 +59,11 @@ namespace RngFix.CustomRngs
             public RandomGen eliteCardRng;
             public RandomGen bossCardRng;
 
-            public RandomGen exhibitWeightRng;
 
             public RandomGen fallbackInitRng;
             public EntitySelfRngs<Exhibit> exhibitSelfRngs;
             public EntitySelfRngs<Adventure> adventureSelfRngs;
+            public ShopRngs shopRngs;
 
         }
 
@@ -89,7 +88,7 @@ namespace RngFix.CustomRngs
         public static RandomGen GetMoneyRewardRng(GameRunController gr) => GetOrCreate(gr).moneyRewardRng;
 
 
-        public static RandomGen GetExhibitWeightRng(GameRunController gr) => GetOrCreate(gr).persRngs.exhibitWeightRng;
+        public static RandomGen GetShopExRng(GameRunController gr) => GetOrCreate(gr).persRngs.shopRngs.exRng;
 
 
         // to keep nodeRng advancements consistent in-case of future requirements
@@ -101,7 +100,6 @@ namespace RngFix.CustomRngs
 
         public RandomGen unusedRoot0;
         public RandomGen unusedRoot1;
-        public RandomGen unusedRoot2;
 
 
         private Lazy<SlotSampler<Exhibit>> normalExSampler = new Lazy<SlotSampler<Exhibit>>(() => new SlotSampler<Exhibit>(
