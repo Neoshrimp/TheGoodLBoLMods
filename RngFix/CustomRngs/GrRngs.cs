@@ -117,7 +117,7 @@ namespace RngFix.CustomRngs
             initAction: (t) => { var c = Library.CreateCard(t); c.GameRun = Gr(); return c; },
             successAction: null,
             failureAction: () => log.LogDebug("deeznuts"),
-            potentialPool: CardConfig.AllConfig().Where(cc => cc.IsPooled && cc.DebugLevel < Gr().CardValidDebugLevel).Select(cc => TypeFactory<Card>.TryGetType(cc.Id)).Where(t => t != null).ToList()));
+            potentialPool: CardConfig.AllConfig().Where(cc => cc.IsPooled && cc.DebugLevel <= Gr().CardValidDebugLevel).Select(cc => TypeFactory<Card>.TryGetType(cc.Id)).Where(t => t != null).ToList()));
         public SlotSampler<Card> CardSampler { get => cardSampler.Value; }
 
 

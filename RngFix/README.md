@@ -30,6 +30,8 @@ What this does **not** fix:
 ---
 *Change log*
 
+`1.0.1` Main branch debut hardlock bug fix.
+
 `1.0.0` Big update:
 * Consistent card rewards even with different mana bases.
 * Event queue which makes sense.
