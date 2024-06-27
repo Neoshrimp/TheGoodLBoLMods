@@ -1,11 +1,22 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
+using LBoL.Base;
+using LBoL.ConfigData;
+using LBoL.Core;
+using LBoL.Core.Cards;
+using LBoL.Presentation;
 using LBoLEntitySideloader;
 using LBoLEntitySideloader.Resource;
 using RngFix.CustomRngs;
+using RngFix.CustomRngs.Sampling;
+using RngFix.Patches.Cards;
 using RngFix.Patches.Debug;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 
@@ -72,6 +83,78 @@ namespace RngFix
                 harmony.UnpatchSelf();
         }
 
+        static int overrideDebugLevel = 1;
+
+        //[HarmonyPatch]
+        class GrDebugLevel_DebugPatch
+        {
+            static IEnumerable<MethodBase> TargetMethods()
+            {
+                yield return AccessTools.Constructor(typeof(GameRunController), new Type[] { typeof(GameRunStartupParameters) });
+                yield return AccessTools.Constructor(typeof(GameRunController), new Type[] { typeof(GameRunStartupParameters) });
+
+            }
+
+            static void Postfix(GameRunController __instance)
+            {
+                DisableManaBaseAffectedCardWeights_Patch.tempDebugDisable = false;
+
+                __instance.CardValidDebugLevel = overrideDebugLevel;
+            }
+        }
+
+
+        //[HarmonyPatch(typeof(GameRunController), nameof(GameRunController.Restore))]
+        class GameRunControllerRestore_Patch
+        {
+            static void Postfix(GameRunController __result)
+            {
+                __result.CardValidDebugLevel = overrideDebugLevel;
+            }
+        }
+
+
+
+        KeyboardShortcut debgugBind = new KeyboardShortcut(KeyCode.Y, new KeyCode[] { KeyCode.LeftShift });
+
+        private void Update()
+        {
+            if (debgugBind.IsDown() && GrRngs.Gr() != null)
+            {
+                var gr = GrRngs.Gr();
+                DisableManaBaseAffectedCardWeights_Patch.tempDebugDisable = false;
+                gr.CardValidDebugLevel = 1;
+
+                log.LogDebug(SamplerDebug._ewSampler.Value.ActualPaddingEntries);
+
+                gr.CardValidDebugLevel = 0;
+                SamplerDebug._ewSampler.Value.BuildPool(CardConfig.AllConfig()
+                                     .Where(cc => cc.IsPooled && cc.DebugLevel <= GrRngs.Gr().CardValidDebugLevel)
+                                     .OrderBy(cc => cc.Index)
+                                     .Select(cc => TypeFactory<Card>.TryGetType(cc.Id))
+                                     .Where(t => t != null)
+                                     );
+
+
+                //SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.EwSlot, battleRolling: false, rolls: 1000, seed: 2405181760243075183, manaBase: new ManaGroup() { White = 2, Blue = 3, Black = 0 });
+
+                //SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.Vanilla, battleRolling: false, rolls: 1000, seed: 12012204824104114439, manaBase: new ManaGroup() { White = 2, Blue = 3, Black = 0 });
+
+
+                //SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.EwSlot, battleRolling: false, rolls: 1000, seed: 4627015065581599883, manaBase: new ManaGroup() { White = 2, Blue = 2, Black = 1 });
+
+
+                /*                var sampler = SamplerDebug._ewSampler.Value;
+                                var seed = RandomGen.FromState(1062950951210960947).NextULong();
+                                sampler.extraRolls = 0;
+                                SamplerDebug.SimulateCardRoll(seed, GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, out SamplerLogInfo _, manaBase: new ManaGroup() { White = 2, Blue = 3, Black = 0 }, sampler: sampler, logToFile: true);
+                                sampler.extraRolls = 0;
+
+                                sampler.extraRolls = 0;
+                                SamplerDebug.SimulateCardRoll(seed, GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, out SamplerLogInfo _, manaBase: new ManaGroup() { White = 2, Blue = 2, Black = 1 }, sampler: sampler, logToFile: true);
+                                sampler.extraRolls = 0;*/
+            }
+        }
 
     }
 }

@@ -35,7 +35,7 @@ namespace RngFix.Patches.Debug
 
         public static string[] grInfoHead = new string[] { "GameVersion", "Jadeboxes", "rngFixOptions", "Mods" };
 
-        public static string[] rollHead = new string[] { "ItemW", "WThreshold", "MaxW", "rawMaxW", "TotalW", "wRollAttempts", "Rolls" };
+        public static string[] rollHead = new string[] { "ItemW", "WThreshold", "itemProb", "passThreshold", "probabilityFraction", "probabiltyMul", "MaxW", "rawMaxW", "TotalW", "wRollAttempts", "Rolls" };
         public static string[] commonHead = new string[] { "Station", "Event", "Stage", "Act", "X", "Y" };
 
         static MethodInfo mi_rngState = AccessTools.PropertyGetter(typeof(RandomGen), nameof(RandomGen.State));
@@ -178,6 +178,11 @@ namespace RngFix.Patches.Debug
                 return;
             logger.SetValSafe(li.itemW, "ItemW");
             logger.SetValSafe(li.wThreshold, "WThreshold");
+            logger.SetValSafe(li.itemProb, "itemProb");
+            logger.SetValSafe(li.passThreshold, "passThreshold");
+            logger.SetValSafe(li.probabilityFraction, "probabilityFraction");
+            logger.SetValSafe(li.probabiltyMul, "probabiltyMul");
+
             logger.SetValSafe(li.totalW, "TotalW");
             logger.SetValSafe(li.maxW, "MaxW");
             logger.SetValSafe(li.rawMaxW, "rawMaxW");

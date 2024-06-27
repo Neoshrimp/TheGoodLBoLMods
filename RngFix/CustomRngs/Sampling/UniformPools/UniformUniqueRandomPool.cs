@@ -8,7 +8,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace RngFix.CustomRngs.Sampling
+namespace RngFix.CustomRngs.Sampling.UniformPools
 {
     public class UniformUniqueRandomPool<T> : IRandomPool<T>, ICollection<T>
     {

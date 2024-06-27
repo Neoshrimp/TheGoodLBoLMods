@@ -55,6 +55,7 @@ namespace RngFix.CustomRngs
             public RandomGen qingeUpgradeQueueRng;
             public RandomGen cardUpgradeQueueRng;
 
+            public RandomGen extraCardRewardRng;
 
             public RandomGen eliteCardRng;
             public RandomGen bossCardRng;
@@ -99,7 +100,6 @@ namespace RngFix.CustomRngs
         public RandomGen unusedNode4;
 
         public RandomGen unusedRoot0;
-        public RandomGen unusedRoot1;
 
 
         private Lazy<SlotSampler<Exhibit>> normalExSampler = new Lazy<SlotSampler<Exhibit>>(() => new SlotSampler<Exhibit>(

@@ -58,8 +58,9 @@ namespace RngFix.Patches
             
             grRngs.persRngs.shopRngs = ShopRngs.Init(gr.RootRng.NextULong());
 
+            grRngs.persRngs.extraCardRewardRng = new RandomGen(gr.RootRng.NextULong());
+
             grRngs.unusedRoot0 = new RandomGen(gr.RootRng.NextULong());
-            grRngs.unusedRoot1 = new RandomGen(gr.RootRng.NextULong());
 
         }
 

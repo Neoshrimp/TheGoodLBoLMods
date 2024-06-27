@@ -85,7 +85,7 @@ namespace RngFix.Patches
 
     [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.RollCards), new Type[] { typeof(RandomGen ), typeof(CardWeightTable), typeof(int) , typeof(ManaGroup?), typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(Predicate<CardConfig>) })]
     [HarmonyPriority(Priority.Low)]
-    class GameRunController_Patch
+    class CardRoll_Patch
     {
         static bool Prefix(GameRunController __instance, ref Card[] __result, RandomGen rng, CardWeightTable weightTable, int count, ManaGroup? manaLimit, bool colorLimit, bool applyFactors = false, bool battleRolling = false, bool ensureCount = false, [MaybeNull] Predicate<CardConfig> filter = null)
         {

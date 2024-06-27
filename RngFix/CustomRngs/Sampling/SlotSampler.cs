@@ -8,6 +8,7 @@ using LBoL.Core.Randoms;
 using LBoL.EntityLib.Cards.Character.Sakuya;
 using LBoL.EntityLib.Cards.Neutral.White;
 using Logging;
+using RngFix.CustomRngs.Sampling.UniformPools;
 using RngFix.Patches.Debug;
 using Spine.Unity;
 using System;
@@ -20,34 +21,22 @@ using static RngFix.BepinexPlugin;
 
 namespace RngFix.CustomRngs.Sampling
 {
-    public class SlotSampler<T>
+    public class SlotSampler<T> : AbstractSlotSampler<T>
     {
-        public List<ISlotRequirement> requirements = new List<ISlotRequirement>();
-        Func<Type, T> initAction;
-        public Action<T> successAction = null;
-        public Action failureAction = null;
-
-        public Action<int, Type, float> debugAction = null;
 
         List<Type> potentialPool = new List<Type>();
 
         public uint maxWRollAttemts = (uint)1E7;
         public bool fullRoll = false;
 
-
-        public SlotSampler(List<ISlotRequirement> requirements, Func<Type, T> initAction, Action<T> successAction, Action failureAction, List<Type> potentialPool)
+        public SlotSampler(List<ISlotRequirement> requirements, Func<Type, T> initAction, Action<T> successAction, Action failureAction, List<Type> potentialPool) : base(requirements, initAction, successAction, failureAction)
         {
-            this.requirements = requirements;
-            this.initAction = initAction;
-            this.successAction = successAction;
-            this.failureAction = failureAction;
             this.potentialPool = potentialPool;
-
         }
 
 
 
-        public T Roll(RandomGen rng, Func<Type, float> getW, out SamplerLogInfo logInfo, Predicate<Type> filter = null, Func<T> fallback = null)
+        override public T Roll(RandomGen rng, Func<Type, float> getW, out SamplerLogInfo logInfo, Predicate<Type> filter = null, Func<T> fallback = null)
         {
             T rez = default;
             bool rezFound = false;
@@ -118,14 +107,14 @@ namespace RngFix.CustomRngs.Sampling
             logInfo.wThreshold = wThrehold;
 
 
-            var i = 0;
+            uint i = 0;
             while (rollingPool.Count > 0)
             {
                 i++;
                 var t = rollingPool.Sample(itemRollingRng);
                 var w = getW(t);
 
-                debugAction?.Invoke(i, t, w);
+                //debugAction?.Invoke(i, t, w);
 
 
                 if (wThrehold < w
@@ -165,22 +154,7 @@ namespace RngFix.CustomRngs.Sampling
     }
 
 
-    public class SamplerLogInfo
-    {
-        public float totalW;
-        public float maxW;
-        public float rawMaxW;
-        public int rolls;
-        public float wThreshold;
-        public float itemW;
 
-        public uint wRollAttempts;
-
-        public override string ToString()
-        {
-            return $"ItemW:{itemW};WThreshold:{wThreshold};MaxW:{maxW};rawMaxW:{rawMaxW};TotalW:{totalW};wRollAttempts:{wRollAttempts};";
-        }
-    }
 
 
 }

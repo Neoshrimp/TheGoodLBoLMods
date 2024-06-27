@@ -11,10 +11,11 @@ namespace RngFix.Patches.Cards
     [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.BaseCardWeight))]
     class DisableManaBaseAffectedCardWeights_Patch
     {
+        public static bool tempDebugDisable = true;
 
         static int CheckOption(int colourCount)
         {
-            if (BepinexPlugin.disableManaBaseAffectedCardWeights.Value)
+            if (BepinexPlugin.disableManaBaseAffectedCardWeights.Value || tempDebugDisable)
                 return 0;
             return colourCount;
         }
