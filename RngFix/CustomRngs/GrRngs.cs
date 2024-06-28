@@ -102,33 +102,47 @@ namespace RngFix.CustomRngs
         public RandomGen unusedRoot0;
 
 
-        private Lazy<SlotSampler<Exhibit>> normalExSampler = new Lazy<SlotSampler<Exhibit>>(() => new SlotSampler<Exhibit>(
+        private Lazy<AbstractSlotSampler<Exhibit>> normalExSampler = new Lazy<AbstractSlotSampler<Exhibit>>(() => 
+        new EqualWSlotSampler<Exhibit>(
             requirements: new List<ISlotRequirement>() { new ExInPool(), new ExHasManaColour() },
             initAction: (t) => { var ex = Library.CreateExhibit(t); Gr().ExhibitPool.Remove(ex.GetType()); return ex; },
             successAction: null,
             failureAction: null,
-            potentialPool: ExhibitConfig.AllConfig().Where(c => c.Rarity is Rarity.Common || c.Rarity is Rarity.Uncommon || c.Rarity is Rarity.Rare).Select(ec => TypeFactory<Exhibit>.GetType(ec.Id)).Where(t => t != null).ToList()
-            ));
-        public SlotSampler<Exhibit> NormalExSampler { get => normalExSampler.Value; }
+            potentialPool: Padding.ExPadding())
+        );
+        public AbstractSlotSampler<Exhibit> NormalExSampler { get => normalExSampler.Value; }
 
 
-        private Lazy<SlotSampler<Card>> cardSampler = new Lazy<SlotSampler<Card>>(() => new SlotSampler<Card>(
+        private Lazy<AbstractSlotSampler<Card>> cardSampler = new Lazy<AbstractSlotSampler<Card>>(() => 
+        new EqualWSlotSampler<Card>(
             requirements: new List<ISlotRequirement>() { new CardInPool() },
-            initAction: (t) => { var c = Library.CreateCard(t); c.GameRun = Gr(); return c; },
+            initAction: (t) => { var c = Library.CreateCard(t); c.GameRun = GrRngs.Gr(); return c; },
             successAction: null,
             failureAction: () => log.LogDebug("deeznuts"),
-            potentialPool: CardConfig.AllConfig().Where(cc => cc.IsPooled && cc.DebugLevel <= Gr().CardValidDebugLevel).Select(cc => TypeFactory<Card>.TryGetType(cc.Id)).Where(t => t != null).ToList()));
-        public SlotSampler<Card> CardSampler { get => cardSampler.Value; }
+            potentialPool: Padding.CardPadding())
+        );
 
 
+        /*        private Lazy<SlotSampler<Card>> cardSampler = new Lazy<SlotSampler<Card>>(() => new SlotSampler<Card>(
+                    requirements: new List<ISlotRequirement>() { new CardInPool() },
+                    initAction: (t) => { var c = Library.CreateCard(t); c.GameRun = Gr(); return c; },
+                    successAction: null,
+                    failureAction: () => log.LogDebug("deeznuts"),
+                    potentialPool: CardConfig.AllConfig().Where(cc => cc.IsPooled && cc.DebugLevel <= Gr().CardValidDebugLevel).Select(cc => TypeFactory<Card>.TryGetType(cc.Id)).Where(t => t != null).ToList()));*/
 
-        private Lazy<SlotSampler<Type>> adventureSampler = new Lazy<SlotSampler<Type>>(() => new SlotSampler<Type>(
+
+        public AbstractSlotSampler<Card> CardSampler { get => cardSampler.Value; }
+
+
+        private Lazy<AbstractSlotSampler<Type>> adventureSampler = new Lazy<AbstractSlotSampler<Type>>(() => 
+        new EqualWSlotSampler<Type>(
             requirements: new List<ISlotRequirement>() { new AdventureInPool(), new AdventureNOTinHistory() },
             initAction: (t) => { return t; },
             successAction: null,
             failureAction: null,
-            potentialPool: AdventureConfig.AllConfig().Select(cc => TypeFactory<Adventure>.TryGetType(cc.Id)).Where(t => t != null).ToList()));
-        public SlotSampler<Type> AdventureSampler { get => adventureSampler.Value; }
+            potentialPool: Padding.AdventurePadding())
+        );
+        public AbstractSlotSampler<Type> AdventureSampler { get => adventureSampler.Value; }
 
         public static RandomGen GetBossCardRng(GameRunController gr) => GetOrCreate(gr).persRngs.bossCardRng;
 

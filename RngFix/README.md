@@ -1,9 +1,8 @@
 ### Rng Fix
 
+*v1.1.0 Limitation removed*
 *v1.0.0 big changes, no time to log*
 *v0.9 Oni sampling methods*
-
-### **Limitation: for consistent seed experience installed mods should be the same even if the content from mismatching mods couldn't normally be found *(i.e, modded character's cards)*.**
 
 Vanilla seeding is a clusterfuck. Encounters are path dependent, past choices affect future rolls, battle rngs are not isolated. Needless to say using the same seed will result in very different experience.
 
@@ -29,6 +28,13 @@ What this does **not** fix:
 
 ---
 *Change log*
+
+`1.1.0` The majority out of battle rng inconsistencies were dealt with.
+- Decouple total potential pool from affecting rolls. Some absolute number constraints were introduced as the consequence (more details to follow).
+- Fix heavy bias towards higher weights.
+- (Experimental) Elite card rewards use regular cardRng queue instead of separate one.
+- Extra card rewards from Blank card and Omikuji are using separate rng. Cheers, zekses.
+
 
 `1.0.1` Main branch debut hardlock bug fix.
 

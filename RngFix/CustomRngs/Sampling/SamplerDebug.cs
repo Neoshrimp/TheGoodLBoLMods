@@ -47,12 +47,7 @@ namespace RngFix.CustomRngs.Sampling
             initAction: (t) => { var c = Library.CreateCard(t); c.GameRun = GrRngs.Gr(); return c; },
             successAction: null,
             failureAction: () => log.LogDebug("deeznuts"),
-            potentialPool: CardConfig.AllConfig()
-                                     .Where(cc => cc.IsPooled && cc.DebugLevel <= GrRngs.Gr().CardValidDebugLevel)
-                                     .OrderBy(cc => cc.Index)
-                                     .Select(cc => TypeFactory<Card>.TryGetType(cc.Id))
-                                     .Where(t => t != null), 
-            totalPaddingEntries: (int)2E4
+            potentialPool: Padding.CardPadding((int)10E3, 200, 2400, 2000)
             ));
 
         public static void RollDistribution(CardWeightTable weightTable, SamplingMethod samplingMethod = SamplingMethod.Slot, int rolls = 2000, bool battleRolling = false, ulong? seed = null, ManaGroup? manaBase = null, float? probMul = null)

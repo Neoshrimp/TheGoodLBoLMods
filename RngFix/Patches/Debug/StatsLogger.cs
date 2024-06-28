@@ -33,7 +33,7 @@ namespace RngFix.Patches.Debug
 
         public static string[] eventHead = new string[] { "Adventure", "AdvInitRng" };
 
-        public static string[] grInfoHead = new string[] { "GameVersion", "Jadeboxes", "rngFixOptions", "Mods" };
+        public static string[] grInfoHead = new string[] { "GameVersion", "CardValidDebugLevel", "Jadeboxes", "rngFixOptions", "Mods" };
 
         public static string[] rollHead = new string[] { "ItemW", "WThreshold", "itemProb", "passThreshold", "probabilityFraction", "probabiltyMul", "MaxW", "rawMaxW", "TotalW", "wRollAttempts", "Rolls" };
         public static string[] commonHead = new string[] { "Station", "Event", "Stage", "Act", "X", "Y" };
@@ -49,6 +49,7 @@ namespace RngFix.Patches.Debug
             log.LogHead();
 
             log.SetValSafe(VersionInfo.Current.Version, "GameVersion");
+            log.SetValSafe(gr.CardValidDebugLevel, "CardValidDebugLevel");
             log.SetValSafe(string.Join(";", gr.JadeBoxes.Select(jb => jb.Name)), "Jadeboxes");
             log.SetValSafe(string.Join("|", new object[] { BepinexPlugin.ignoreFactorsTableConf.Value, BepinexPlugin.doLoggingConf.Value, BepinexPlugin.disableManaBaseAffectedCardWeights.Value }), "rngFixOptions");
             log.SetValSafe(string.Join(";", Chainloader.PluginInfos.Values.Select(pi => $"{pi.Metadata.GUID}|{pi.Metadata.Version}")), "Mods");

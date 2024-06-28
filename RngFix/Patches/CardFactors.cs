@@ -53,14 +53,13 @@ namespace RngFix.Patches
 
         public static ConditionalWeakTable<CardWeightTable, string> wt_cwt = new ConditionalWeakTable<CardWeightTable, string>();
 
-        public const float constRareFactor = 0.95f;
+        public const float constRareFactor = 0.93f;
 
         static IEnumerable<MethodBase> TargetMethods()
         {
             yield return AccessTools.Method(typeof(Stage), nameof(Stage.GetShopNormalCards));
             yield return AccessTools.Method(typeof(Stage), nameof(Stage.SupplyShopCard));
             yield return AccessTools.Method(typeof(Stage), nameof(Stage.GetShopToolCards));
-
         }
 
 

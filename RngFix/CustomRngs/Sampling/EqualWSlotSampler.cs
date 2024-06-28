@@ -15,10 +15,6 @@ namespace RngFix.CustomRngs.Sampling
     {
         RepeatableUniformRandomPool<Type> constantPotentialPool;
 
-        public const ulong shufflingSeed = 2405181760243075183;
-        public readonly int totalPaddingEntries;
-        private int actualPaddingEntries;
-
         public ProbFactionRange factionRange = new ProbFactionRange(new float[] { 1.6f, 2, 4, 5, 6, 7, 10, 20, 100 });
 
         public uint maxItemRolls = (uint)4E5;
@@ -28,46 +24,19 @@ namespace RngFix.CustomRngs.Sampling
 
         public uint extraRolls = 0;
 
-        public int ActualPaddingEntries { get => actualPaddingEntries; set => actualPaddingEntries = value; }
 
-        public EqualWSlotSampler(List<ISlotRequirement> requirements, Func<Type, T> initAction, Action<T> successAction, Action failureAction, IEnumerable<Type> potentialPool, int totalPaddingEntries) : base(requirements, initAction, successAction, failureAction)
+        public EqualWSlotSampler(List<ISlotRequirement> requirements, Func<Type, T> initAction, Action<T> successAction, Action failureAction, IEnumerable<Type> potentialPool) : base(requirements, initAction, successAction, failureAction)
         {
             this.constantPotentialPool = new RepeatableUniformRandomPool<Type>();
 
-            this.totalPaddingEntries = totalPaddingEntries;
 
             BuildPool(potentialPool);
             
         }
 
         public void BuildPool(IEnumerable<Type> potentialPool)
-        {
-            log.LogDebug(string.Join(";", potentialPool.Select(t => t.Name)));
-
+        { 
             this.constantPotentialPool.AddRange(potentialPool);
-            var count = constantPotentialPool.Count;
-
-            this.actualPaddingEntries = totalPaddingEntries - potentialPool.Count() - count;
-
-            if (totalPaddingEntries < constantPotentialPool.Count)
-            {
-                log.LogWarning($"Sampler{nameof(T)} padding entry count {totalPaddingEntries} exceeded by actual item count {count}");
-                this.actualPaddingEntries = 0;
-            }
-
-            for (int i = 0; i < actualPaddingEntries; i++)
-                constantPotentialPool.Add(typeof(PaddingType));
-
-/*            count = constantPotentialPool.Count;
-            var rng = new RandomGen(shufflingSeed);
-            while (count-- > 0)
-            {
-                int targetIndex = rng.NextInt(0, count);
-                Type t = constantPotentialPool.Get(count);
-                Type t2 = constantPotentialPool.Get(targetIndex);
-                constantPotentialPool.Set(targetIndex, t);
-                constantPotentialPool.Set(count, t2);
-            }*/
         }
 
         override public T Roll(RandomGen rng, Func<Type, float> getW, out SamplerLogInfo logInfo, Predicate<Type> filter = null, Func<T> fallback = null)

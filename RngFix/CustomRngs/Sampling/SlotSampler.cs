@@ -21,6 +21,7 @@ using static RngFix.BepinexPlugin;
 
 namespace RngFix.CustomRngs.Sampling
 {
+    [Obsolete("Heavily biased distribution")]
     public class SlotSampler<T> : AbstractSlotSampler<T>
     {
 
@@ -29,6 +30,7 @@ namespace RngFix.CustomRngs.Sampling
         public uint maxWRollAttemts = (uint)1E7;
         public bool fullRoll = false;
 
+        
         public SlotSampler(List<ISlotRequirement> requirements, Func<Type, T> initAction, Action<T> successAction, Action failureAction, List<Type> potentialPool) : base(requirements, initAction, successAction, failureAction)
         {
             this.potentialPool = potentialPool;

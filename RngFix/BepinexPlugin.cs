@@ -83,35 +83,6 @@ namespace RngFix
                 harmony.UnpatchSelf();
         }
 
-        static int overrideDebugLevel = 1;
-
-        //[HarmonyPatch]
-        class GrDebugLevel_DebugPatch
-        {
-            static IEnumerable<MethodBase> TargetMethods()
-            {
-                yield return AccessTools.Constructor(typeof(GameRunController), new Type[] { typeof(GameRunStartupParameters) });
-                yield return AccessTools.Constructor(typeof(GameRunController), new Type[] { typeof(GameRunStartupParameters) });
-
-            }
-
-            static void Postfix(GameRunController __instance)
-            {
-                DisableManaBaseAffectedCardWeights_Patch.tempDebugDisable = false;
-
-                __instance.CardValidDebugLevel = overrideDebugLevel;
-            }
-        }
-
-
-        //[HarmonyPatch(typeof(GameRunController), nameof(GameRunController.Restore))]
-        class GameRunControllerRestore_Patch
-        {
-            static void Postfix(GameRunController __result)
-            {
-                __result.CardValidDebugLevel = overrideDebugLevel;
-            }
-        }
 
 
 
@@ -119,24 +90,23 @@ namespace RngFix
 
         private void Update()
         {
-            if (debgugBind.IsDown() && GrRngs.Gr() != null)
+            if (false && debgugBind.IsDown() && GrRngs.Gr() != null)
             {
                 var gr = GrRngs.Gr();
                 DisableManaBaseAffectedCardWeights_Patch.tempDebugDisable = false;
                 gr.CardValidDebugLevel = 1;
 
-                log.LogDebug(SamplerDebug._ewSampler.Value.ActualPaddingEntries);
+                //log.LogDebug(string.Join("\n", Padding.CardPadding((int)15E3, 200, 1600, 1000)));
+                SamplerDebug._ewSampler.Value.BuildPool(Padding.CardPadding((int)10E3, 200, 2400, 2000));
+
+                SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.EwSlot, battleRolling: false, rolls: 1000, seed: 2405181760243075183, manaBase: new ManaGroup() { White = 2, Blue = 3, Black = 0 });
+
 
                 gr.CardValidDebugLevel = 0;
-                SamplerDebug._ewSampler.Value.BuildPool(CardConfig.AllConfig()
-                                     .Where(cc => cc.IsPooled && cc.DebugLevel <= GrRngs.Gr().CardValidDebugLevel)
-                                     .OrderBy(cc => cc.Index)
-                                     .Select(cc => TypeFactory<Card>.TryGetType(cc.Id))
-                                     .Where(t => t != null)
-                                     );
 
+                SamplerDebug._ewSampler.Value.BuildPool(Padding.CardPadding((int)10E3, 200, 2400, 2000));
 
-                //SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.EwSlot, battleRolling: false, rolls: 1000, seed: 2405181760243075183, manaBase: new ManaGroup() { White = 2, Blue = 3, Black = 0 });
+                SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.EwSlot, battleRolling: false, rolls: 1000, seed: 2405181760243075183, manaBase: new ManaGroup() { White = 2, Blue = 3, Black = 0 });
 
                 //SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.Vanilla, battleRolling: false, rolls: 1000, seed: 12012204824104114439, manaBase: new ManaGroup() { White = 2, Blue = 3, Black = 0 });
 
