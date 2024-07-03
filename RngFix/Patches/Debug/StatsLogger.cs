@@ -35,7 +35,7 @@ namespace RngFix.Patches.Debug
 
         public static string[] grInfoHead = new string[] { "GameVersion", "CardValidDebugLevel", "Jadeboxes", "rngFixOptions", "Mods" };
 
-        public static string[] rollHead = new string[] { "ItemW", "WThreshold", "itemProb", "passThreshold", "probabilityFraction", "probabiltyMul", "MaxW", "rawMaxW", "TotalW", "wRollAttempts", "Rolls" };
+        public static string[] rollHead = new string[] { "ItemW", "WThreshold", "itemProb", "passThreshold", "probabilityFraction", "probabiltyMul", "MaxW", "rawMaxW", "TotalW", "wRollAttempts", "Rolls", "fractionWarning" };
         public static string[] commonHead = new string[] { "Station", "Event", "Stage", "Act", "X", "Y" };
 
         static MethodInfo mi_rngState = AccessTools.PropertyGetter(typeof(RandomGen), nameof(RandomGen.State));
@@ -61,7 +61,7 @@ namespace RngFix.Patches.Debug
         {
             if (!BepinexPlugin.doLoggingConf.Value)
                 return;
-
+            
             var log = GetGeneralLog(gr);
             log.SetValSafe(gr.BaseMana, "ManaBase");
             log.SetValSafe(gr.Player.Name, "Char");
@@ -139,11 +139,10 @@ namespace RngFix.Patches.Debug
         }
 
 
-        public static void LogCard(Card card, GameRunController gr, SamplerLogInfo li)
+        public static void LogCard(CsvLogger log, Card card, GameRunController gr, SamplerLogInfo li)
         {
             if (!BepinexPlugin.doLoggingConf.Value)
                 return;
-            var log = GetCardLog(gr);
             var grRngs = GrRngs.GetOrCreate(gr);
 
             log.SetValSafe(card?.Name, "Card");
@@ -189,6 +188,8 @@ namespace RngFix.Patches.Debug
             logger.SetValSafe(li.rawMaxW, "rawMaxW");
             logger.SetValSafe(li.wRollAttempts, "wRollAttempts");
             logger.SetValSafe(li.rolls, "Rolls");
+            logger.SetValSafe(li.fractionWarning, "fractionWarning");
+
         }
 
         public static void LogCommonAndFlush(CsvLogger logger, GameRunController gr, bool flush = true)
@@ -252,6 +253,9 @@ namespace RngFix.Patches.Debug
         }
 
         public static CsvLogger GetCardLog(GameRunController gr, bool isEnabled = true) => GetLog(gr, "cards", isEnabled: isEnabled);
+
+        public static CsvLogger GetCardGenLog(GameRunController gr, bool isEnabled = true) => GetLog(gr, "cardGen", isEnabled: isEnabled);
+
         public static CsvLogger GetGeneralLog(GameRunController gr, bool isEnabled = true) => GetLog(gr, "general", isEnabled: isEnabled);
         public static CsvLogger GetPickedCardLog(GameRunController gr, bool isEnabled = true) => GetLog(gr, "pickedCards", isEnabled: isEnabled);
         public static CsvLogger GetExLog(GameRunController gr, bool isEnabled = true) => GetLog(gr, prefix:"ex", isEnabled: isEnabled);
@@ -274,6 +278,10 @@ namespace RngFix.Patches.Debug
             GetCardLog(gr, doLog).SetHeader(cardsHeader.Concat(rollHead).Concat(commonHead));
             GetCardLog(gr).SetCollumnToSanitize("Card");
             GetCardLog(gr).LogHead();
+
+            GetCardGenLog(gr, doLog).SetHeader(cardsHeader.Concat(rollHead).Concat(commonHead));
+            GetCardGenLog(gr).SetCollumnToSanitize("Card");
+            GetCardGenLog(gr).LogHead();
 
             GetGeneralLog(gr, doLog).SetHeader(generalHead.Concat(commonHead));
             GetGeneralLog(gr).SetCollumnToSanitize("Exhibits", false);

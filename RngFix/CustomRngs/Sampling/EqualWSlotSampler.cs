@@ -17,7 +17,7 @@ namespace RngFix.CustomRngs.Sampling
 
         public ProbFactionRange factionRange = new ProbFactionRange(new float[] { 1.6f, 2, 4, 5, 6, 7, 10, 20, 100 });
 
-        public uint maxItemRolls = (uint)4E5;
+        public uint maxItemRolls = (uint)1E6;
 
         // 0 - possibleMaxW, 1 - possibleTotalW, unused
         public float probabiltyMul = 1-0.618033988749f;
@@ -87,6 +87,7 @@ namespace RngFix.CustomRngs.Sampling
             var rangeRez = factionRange.GetFraction(possibleMaxW);
             float probabilityFraction = rangeRez.Item1;
 
+            logInfo.fractionWarning = rangeRez.Item2;
             if (rangeRez.Item2 != "")
                 BepinexPlugin.log.LogWarning(rangeRez.Item2);
 

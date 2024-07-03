@@ -29,6 +29,8 @@ What this does **not** fix:
 ---
 *Change log*
 
+`1.1.1` Fix softlock when restarting on reward screen. Fix no samples being found when majority of weights are very low (<0.01). Separate card logs for rewards and discovery.
+
 `1.1.0` The majority out of battle rng inconsistencies were dealt with.
 - Decouple total potential pool from affecting rolls. Some absolute number constraints were introduced as the consequence (more details to follow).
 - Fix heavy bias towards higher weights.

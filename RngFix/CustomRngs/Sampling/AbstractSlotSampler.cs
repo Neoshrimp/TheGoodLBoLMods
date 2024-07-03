@@ -27,7 +27,6 @@ namespace RngFix.CustomRngs.Sampling
             this.initAction = initAction;
             this.successAction = successAction;
             this.failureAction = failureAction;
-
         }
 
         public abstract T Roll(RandomGen rng, Func<Type, float> getW, out SamplerLogInfo logInfo, Predicate<Type> filter = null, Func<T> fallback = null);
@@ -49,10 +48,11 @@ namespace RngFix.CustomRngs.Sampling
         public float passThreshold;
         public float probabilityFraction;
         public float probabiltyMul;
+        public string fractionWarning;
 
         public override string ToString()
         {
-            return $"ItemW:{itemW};WThreshold:{wThreshold};MaxW:{maxW};itemProb:{itemProb};passThreshold:{passThreshold};probabilityFraction:{probabilityFraction};probabiltyMul:{probabiltyMul};rawMaxW:{rawMaxW};TotalW:{totalW};wRollAttempts:{wRollAttempts};";
+            return $"ItemW:{itemW};WThreshold:{wThreshold};MaxW:{maxW};itemProb:{itemProb};passThreshold:{passThreshold};probabilityFraction:{probabilityFraction};probabiltyMul:{probabiltyMul};rawMaxW:{rawMaxW};TotalW:{totalW};wRollAttempts:{wRollAttempts};fractionWarning:{fractionWarning}";
         }
     }
 }

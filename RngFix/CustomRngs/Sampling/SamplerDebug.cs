@@ -47,10 +47,10 @@ namespace RngFix.CustomRngs.Sampling
             initAction: (t) => { var c = Library.CreateCard(t); c.GameRun = GrRngs.Gr(); return c; },
             successAction: null,
             failureAction: () => log.LogDebug("deeznuts"),
-            potentialPool: Padding.CardPadding((int)10E3, 200, 2400, 2000)
+            potentialPool: Padding.CardPadding()
             ));
 
-        public static void RollDistribution(CardWeightTable weightTable, SamplingMethod samplingMethod = SamplingMethod.Slot, int rolls = 2000, bool battleRolling = false, ulong? seed = null, ManaGroup? manaBase = null, float? probMul = null)
+        public static void RollDistribution(CardWeightTable weightTable, SamplingMethod samplingMethod = SamplingMethod.Slot, int rolls = 2000, bool battleRolling = false, ulong? seed = null, ManaGroup? manaBase = null, Predicate<Type> filter = null)
         {
             var gr = GrRngs.Gr();
             if (gr == null)
@@ -89,6 +89,7 @@ namespace RngFix.CustomRngs.Sampling
                                 sampler: grRgns.CardSampler,
                                 battleRolling: battleRolling,
                                 manaBase: manaBase,
+                                filter: filter,
                                 doLogDebug: false);
                             break;
                         case SamplingMethod.Vanilla:
@@ -106,9 +107,6 @@ namespace RngFix.CustomRngs.Sampling
                                 )[0];
                             break;
                         case SamplingMethod.EwSlot:
-                            float prevMul = _ewSampler.Value.probabiltyMul;
-                            if (probMul != null)
-                                _ewSampler.Value.probabiltyMul = probMul.Value;
                             card = SimulateCardRoll(
                                 state: rng.NextULong(),
                                 weightTable: weightTable,
@@ -116,8 +114,8 @@ namespace RngFix.CustomRngs.Sampling
                                 sampler: _ewSampler.Value,
                                 battleRolling: battleRolling,
                                 manaBase: manaBase,
+                                filter: filter,
                                 doLogDebug: false);
-                            _ewSampler.Value.probabiltyMul = prevMul;
                             break;
                         default:
                             break;
@@ -146,7 +144,7 @@ namespace RngFix.CustomRngs.Sampling
 
         }
 
-        public static Card SimulateCardRoll(ulong state, CardWeightTable weightTable, out SamplerLogInfo logInfo, AbstractSlotSampler<Card> sampler = null, bool battleRolling = false, ManaGroup? manaBase = null,  bool doLogDebug = true, bool logToFile = false)
+        public static Card SimulateCardRoll(ulong state, CardWeightTable weightTable, out SamplerLogInfo logInfo, AbstractSlotSampler<Card> sampler = null, bool battleRolling = false, ManaGroup? manaBase = null, Predicate<Type> filter = null, bool doLogDebug = false, bool logToFile = false)
         {
             var gr = GrRngs.Gr();
             logInfo = null;
@@ -215,7 +213,7 @@ namespace RngFix.CustomRngs.Sampling
             };
 
 
-            var card = sampler.Roll(rng, getW, out logInfo);
+            var card = sampler.Roll(rng, getW, out logInfo, filter);
 
             if(doLogDebug)
                 log.LogDebug("Winning roll: " + logInfo);

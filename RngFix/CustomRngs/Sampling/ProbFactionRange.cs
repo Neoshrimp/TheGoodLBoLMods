@@ -11,10 +11,14 @@ namespace RngFix.CustomRngs.Sampling
 
         float[] ranges;
 
+        List<Func<float, float>> fractionReductors = new List<Func<float, float>>() { w => w / 10f, w => w / 100f};
+
         public ProbFactionRange(IEnumerable<float> ranges)
         {
             this.ranges = ranges.ToArray<float>();
         }
+
+        public List<Func<float, float>> WeightReductors { get => fractionReductors; set => fractionReductors = value; }
 
         public (float, string) GetFraction(float maxW, bool logWarning = true)
         {
@@ -25,11 +29,29 @@ namespace RngFix.CustomRngs.Sampling
                 {
                     var warning = "";
                     if (i > 0)
-                        warning = "Not using the preferred probability fraction range";
+                        warning = "Not using the preferred probability fraction range;";
+
+                    float reducedR = r;
+                    foreach (var fr in fractionReductors)
+                    {
+                        float red = fr(r);
+                        if (red >= maxW && red < r)
+                        {
+                            reducedR = Math.Min(red, reducedR);
+                        }
+                    }
+                    if(reducedR < r)
+                    {
+                        warning += $"Using fraction reduction r={reducedR};";
+                        r = reducedR;
+                    }
+
                     return (r, warning);
                 }
             }
             return (maxW, "None of the probability ranges fitted");
         }
+
+
     }
 }

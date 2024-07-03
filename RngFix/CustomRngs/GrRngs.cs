@@ -113,7 +113,7 @@ namespace RngFix.CustomRngs
         public AbstractSlotSampler<Exhibit> NormalExSampler { get => normalExSampler.Value; }
 
 
-        private Lazy<AbstractSlotSampler<Card>> cardSampler = new Lazy<AbstractSlotSampler<Card>>(() => 
+        private Lazy<EqualWSlotSampler<Card>> cardSampler = new Lazy<EqualWSlotSampler<Card>>(() => 
         new EqualWSlotSampler<Card>(
             requirements: new List<ISlotRequirement>() { new CardInPool() },
             initAction: (t) => { var c = Library.CreateCard(t); c.GameRun = GrRngs.Gr(); return c; },
@@ -131,7 +131,7 @@ namespace RngFix.CustomRngs
                     potentialPool: CardConfig.AllConfig().Where(cc => cc.IsPooled && cc.DebugLevel <= Gr().CardValidDebugLevel).Select(cc => TypeFactory<Card>.TryGetType(cc.Id)).Where(t => t != null).ToList()));*/
 
 
-        public AbstractSlotSampler<Card> CardSampler { get => cardSampler.Value; }
+        public EqualWSlotSampler<Card> CardSampler { get => cardSampler.Value; }
 
 
         private Lazy<AbstractSlotSampler<Type>> adventureSampler = new Lazy<AbstractSlotSampler<Type>>(() => 

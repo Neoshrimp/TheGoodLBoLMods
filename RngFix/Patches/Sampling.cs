@@ -107,13 +107,13 @@ namespace RngFix.Patches
                 return wt * bw;
             };
 
+            var logger = gr.Battle == null ? StatsLogger.GetCardLog(gr) : StatsLogger.GetCardGenLog(gr);
 
             for (var i = 0; i < count; i++)
             {
 
                 var prevState = rng.State;
                 var card = grngs.CardSampler.Roll(rng, getW, logInfo: out var logInfo, filter: t => rolledCards.All(c => c.GetType() != t));
-
 
 
                 if (card == null)
@@ -125,13 +125,14 @@ namespace RngFix.Patches
                     }
                     else
                     {
-                        StatsLogger.LogCard(card, gr, logInfo);
+                        StatsLogger.LogCard(logger, card, gr, logInfo);
                         break;
                     }
 
-                rolledCards.Add(card);
+                if(card != null)
+                    rolledCards.Add(card);
 
-                StatsLogger.LogCard(card, gr, logInfo);
+                StatsLogger.LogCard(logger, card, gr, logInfo);
 
             }
 

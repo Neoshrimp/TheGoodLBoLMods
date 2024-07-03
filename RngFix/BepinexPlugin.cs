@@ -5,6 +5,8 @@ using LBoL.Base;
 using LBoL.ConfigData;
 using LBoL.Core;
 using LBoL.Core.Cards;
+using LBoL.EntityLib.Cards.Neutral.Blue;
+using LBoL.EntityLib.Cards.Neutral.White;
 using LBoL.Presentation;
 using LBoLEntitySideloader;
 using LBoLEntitySideloader.Resource;
@@ -18,6 +20,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 
 namespace RngFix
@@ -84,6 +87,17 @@ namespace RngFix
         }
 
 
+        //[HarmonyPatch(typeof(GameRunController), nameof(GameRunController.Restore))]
+        class GrRestore_Patch
+        {
+            static void Postfix(GameRunController __result)
+            {
+                log.LogDebug("restoredeez");
+                __result.CardValidDebugLevel = 0;
+            }
+        }
+
+
 
 
         KeyboardShortcut debgugBind = new KeyboardShortcut(KeyCode.Y, new KeyCode[] { KeyCode.LeftShift });
@@ -93,20 +107,39 @@ namespace RngFix
             if (false && debgugBind.IsDown() && GrRngs.Gr() != null)
             {
                 var gr = GrRngs.Gr();
+                var grrngs = GrRngs.GetOrCreate(gr);
+                var stage = gr.CurrentStage;
                 DisableManaBaseAffectedCardWeights_Patch.tempDebugDisable = false;
                 gr.CardValidDebugLevel = 1;
-
-                //log.LogDebug(string.Join("\n", Padding.CardPadding((int)15E3, 200, 1600, 1000)));
-                SamplerDebug._ewSampler.Value.BuildPool(Padding.CardPadding((int)10E3, 200, 2400, 2000));
-
-                SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.EwSlot, battleRolling: false, rolls: 1000, seed: 2405181760243075183, manaBase: new ManaGroup() { White = 2, Blue = 3, Black = 0 });
-
-
                 gr.CardValidDebugLevel = 0;
+                grrngs.CardSampler.BuildPool(Padding.CardPadding());
 
-                SamplerDebug._ewSampler.Value.BuildPool(Padding.CardPadding((int)10E3, 200, 2400, 2000));
+/*                var cChar = SamplerDebug.SimulateCardRoll(9264767910880677932, stage.BossCardCharaWeight, out SamplerLogInfo _, manaBase: new ManaGroup() { Green = 3, Blue = 2, Colorless = 1 }, sampler: grrngs.CardSampler, logToFile: true);
+                var cFriend = SamplerDebug.SimulateCardRoll(9264767910880677932, stage.BossCardFriendWeight, out SamplerLogInfo _, manaBase: new ManaGroup() { Green = 3, Blue = 2, Colorless = 1 }, sampler: grrngs.CardSampler, logToFile: true);
+                var cNeutral = SamplerDebug.SimulateCardRoll(9264767910880677932, stage.BossCardNeutralWeight, out SamplerLogInfo _, manaBase: new ManaGroup() { Green = 3, Blue = 2, Colorless = 1 }, sampler: grrngs.CardSampler, logToFile: true);
 
-                SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.EwSlot, battleRolling: false, rolls: 1000, seed: 2405181760243075183, manaBase: new ManaGroup() { White = 2, Blue = 3, Black = 0 });
+                log.LogDebug(cChar);
+                log.LogDebug(cFriend);
+                log.LogDebug(cNeutral);*/
+
+
+                gr._cardRareWeightFactor = 0.9f;
+                gr._cardRewardDecreaseRepeatRare = true;
+                var cards = gr.GetRewardCards(stage.BossCardCharaWeight, stage.BossCardFriendWeight, stage.BossCardNeutralWeight, stage.BossCardWeight,3, true);
+                log.LogDebug(string.Join<Card>(", ", cards));
+
+
+
+
+
+                SamplerDebug.RollDistribution(stage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.EwSlot, battleRolling: false, rolls: 100, seed: null, manaBase: new ManaGroup() { White = 2, Blue = 3, Black = 0 }, filter: t => t.Name == nameof(YonglinCard) || t.Name == nameof(HuiyeMarblePhantasm));
+
+
+
+
+
+
+                /*                SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.EwSlot, battleRolling: false, rolls: 1000, seed: 2405181760243075183, manaBase: new ManaGroup() { White = 2, Blue = 3, Black = 0 });*/
 
                 //SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.Vanilla, battleRolling: false, rolls: 1000, seed: 12012204824104114439, manaBase: new ManaGroup() { White = 2, Blue = 3, Black = 0 });
 
@@ -127,4 +160,6 @@ namespace RngFix
         }
 
     }
+
+
 }

@@ -90,12 +90,9 @@ namespace RngFix.Patches
             var gr = __instance.CurrentGameRun;
             var grRngs = GrRngs.GetOrCreate(gr);
 
-            var args = new CardsEventArgs();
-            var allDupesInBattlefield = gr.Battle.EnumerateAllCards().Where(c => args.Cards.Any(ac => ac.Id == c.Id));
 
             if (grRngs.NodeMaster == null)
             {
-
                 grRngs.NodeMaster = new NodeMasterRng
                 {
                     rng = RandomGen.FromState(grRngs.persRngs.prevNodeMasterState)
