@@ -5,16 +5,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace RngFix.CustomRngs.Sampling.UniformPools
 {
-    public class UniformUniqueRandomPool<T> : IRandomPool<T>, ICollection<T>
+    public class UniformUniqueRandomPool<T> : IRandomPool<T>, ICollection<T> where T : class
     {
 
         private List<T> elems = new List<T>();
         private Dictionary<T, int> e2index = new Dictionary<T, int>();
+
 
         public UniformUniqueRandomPool() { }
 
@@ -29,6 +31,12 @@ namespace RngFix.CustomRngs.Sampling.UniformPools
 
         public void Add(T item)
         {
+            if (item == null)
+            {
+                elems.Add(null);
+                return;
+            }
+
             if (!e2index.ContainsKey(item))
             {
                 elems.Add(item);
@@ -65,20 +73,43 @@ namespace RngFix.CustomRngs.Sampling.UniformPools
 
         public bool Remove(T item)
         {
+            if (item == null)
+                return false;
             if (e2index.TryGetValue(item, out int index))
             {
                 int lastIndex = elems.Count - 1;
                 T lastItem = elems[lastIndex];
 
+
                 elems[index] = lastItem;
                 elems.RemoveAt(lastIndex);
 
-                e2index[lastItem] = index;
-
+                if (lastItem != null)
+                    e2index[lastItem] = index;
                 e2index.Remove(item);
                 return true;
             }
             return false;
+        }
+
+        public bool RemoveAt(int index)
+        {
+            var item = Get(index);
+            if (item != null)
+                return Remove(item);
+
+
+            int lastIndex = elems.Count - 1;
+            T lastItem = elems[lastIndex];
+
+            elems[index] = lastItem;
+            elems.RemoveAt(lastIndex);
+
+            if(lastItem != null)
+                e2index[lastItem] = index;
+
+
+            return true;
         }
 
         public T Sample(RandomGen rng)
@@ -88,7 +119,7 @@ namespace RngFix.CustomRngs.Sampling.UniformPools
 
             var i = rng.NextInt(0, Count - 1);
             var e = Get(i);
-            Remove(e);
+            RemoveAt(i);
 
             return e;
 

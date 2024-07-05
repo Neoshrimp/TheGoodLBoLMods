@@ -22,18 +22,22 @@ using static RngFix.BepinexPlugin;
 namespace RngFix.CustomRngs.Sampling
 {
     [Obsolete("Heavily biased distribution")]
-    public class SlotSampler<T> : AbstractSlotSampler<T>
+    public class ObsoleteSlotSampler<T> : AbstractSlotSampler<T, Type> where T : class
     {
 
-        List<Type> potentialPool = new List<Type>();
+        List<Type> potentialPool;
 
         public uint maxWRollAttemts = (uint)1E7;
         public bool fullRoll = false;
 
         
-        public SlotSampler(List<ISlotRequirement> requirements, Func<Type, T> initAction, Action<T> successAction, Action failureAction, List<Type> potentialPool) : base(requirements, initAction, successAction, failureAction)
+        public ObsoleteSlotSampler(List<ISlotRequirement<Type>> requirements, Func<Type, T> initAction, Action<T> successAction, Action failureAction, IEnumerable<Type> potentialPool) : base(requirements, initAction, successAction, failureAction, potentialPool)
         {
-            this.potentialPool = potentialPool;
+        }
+
+        public override void BuildPool(IEnumerable<Type> potentialPool)
+        {
+            this.potentialPool = new List<Type>(potentialPool);
         }
 
 
@@ -153,6 +157,8 @@ namespace RngFix.CustomRngs.Sampling
 
             return rez;
         }
+
+
     }
 
 

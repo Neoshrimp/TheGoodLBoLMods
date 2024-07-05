@@ -5,6 +5,7 @@ using LBoL.Core;
 using LBoL.Core.Cards;
 using LBoL.Core.Randoms;
 using Logging;
+using RngFix.CustomRngs.Sampling.Pads;
 using RngFix.Patches.Debug;
 using System;
 using System.Collections.Generic;
@@ -42,12 +43,12 @@ namespace RngFix.CustomRngs.Sampling
 
         public static string[] cardHead = new string[] { "Card", "Rarity", "Colors", "Rng" };
 
-        public static Lazy<EqualWSlotSampler<Card>> _ewSampler = new Lazy<EqualWSlotSampler<Card>>(() => new EqualWSlotSampler<Card>(
-            requirements: new List<ISlotRequirement>() { new CardInPool() },
+        public static Lazy<WeightedSlotSampler<Card>> _ewSampler = new Lazy<WeightedSlotSampler<Card>>(() => new WeightedSlotSampler<Card>(
+            requirements: new List<ISlotRequirement<Type>>() { new CardInPool() },
             initAction: (t) => { var c = Library.CreateCard(t); c.GameRun = GrRngs.Gr(); return c; },
             successAction: null,
             failureAction: () => log.LogDebug("deeznuts"),
-            potentialPool: Padding.CardPadding()
+            potentialPool: Padding.RewardCards
             ));
 
         public static void RollDistribution(CardWeightTable weightTable, SamplingMethod samplingMethod = SamplingMethod.Slot, int rolls = 2000, bool battleRolling = false, ulong? seed = null, ManaGroup? manaBase = null, Predicate<Type> filter = null)
@@ -144,7 +145,7 @@ namespace RngFix.CustomRngs.Sampling
 
         }
 
-        public static Card SimulateCardRoll(ulong state, CardWeightTable weightTable, out SamplerLogInfo logInfo, AbstractSlotSampler<Card> sampler = null, bool battleRolling = false, ManaGroup? manaBase = null, Predicate<Type> filter = null, bool doLogDebug = false, bool logToFile = false)
+        public static Card SimulateCardRoll(ulong state, CardWeightTable weightTable, out SamplerLogInfo logInfo, AbstractSlotSampler<Card, Type> sampler = null, bool battleRolling = false, ManaGroup? manaBase = null, Predicate<Type> filter = null, bool doLogDebug = false, bool logToFile = false)
         {
             var gr = GrRngs.Gr();
             logInfo = null;

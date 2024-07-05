@@ -3,6 +3,7 @@ using LBoL.Base;
 using LBoL.ConfigData;
 using LBoL.Core;
 using LBoL.Core.Cards;
+using LBoL.Core.Dialogs;
 using LBoL.Core.Randoms;
 using LBoL.EntityLib.Adventures;
 using LBoL.Presentation;
@@ -22,6 +23,9 @@ using static RngFix.BepinexPlugin;
 
 namespace RngFix.Patches.Debug
 {
+
+
+
 
     //[HarmonyPatch]
     class RngGetDebug_Patch

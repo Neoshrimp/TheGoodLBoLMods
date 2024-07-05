@@ -36,6 +36,23 @@ namespace RngFix.Patches
                 || node.StationType is StationType.Supply
                 || node.StationType is StationType.Trade;
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="K"></typeparam>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="dic"></param>
+        /// <param name="key"></param>
+        /// <param name="valInit"></param>
+        /// <param name="value"></param>
+        /// <returns>True if value was present</returns>
+        public static bool GetOrCreateVal<K, V>(this Dictionary<K, V> dic, K key, Func<V> valInit, out V value) 
+        {
+            if (dic.TryGetValue(key, out value))
+                return true;
+            value = valInit();
+            dic[key] = value;
+            return false;
+        }
     }
 }

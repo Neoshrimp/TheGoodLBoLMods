@@ -7,6 +7,7 @@ using LBoL.Core.Cards;
 using LBoL.Core.Stations;
 using LBoL.Presentation;
 using RngFix.CustomRngs.Sampling;
+using RngFix.CustomRngs.Sampling.Pads;
 using RngFix.Patches;
 using System;
 using System.Collections.Generic;
@@ -102,24 +103,24 @@ namespace RngFix.CustomRngs
         public RandomGen unusedRoot0;
 
 
-        private Lazy<AbstractSlotSampler<Exhibit>> normalExSampler = new Lazy<AbstractSlotSampler<Exhibit>>(() => 
-        new EqualWSlotSampler<Exhibit>(
-            requirements: new List<ISlotRequirement>() { new ExInPool(), new ExHasManaColour() },
+        private Lazy<AbstractSlotSampler<Exhibit, Type>> normalExSampler = new Lazy<AbstractSlotSampler<Exhibit, Type>>(() => 
+        new WeightedSlotSampler<Exhibit>(
+            requirements: new List<ISlotRequirement<Type>>() { new ExInPool(), new ExHasManaColour() },
             initAction: (t) => { var ex = Library.CreateExhibit(t); Gr().ExhibitPool.Remove(ex.GetType()); return ex; },
             successAction: null,
             failureAction: null,
             potentialPool: Padding.ExPadding())
         );
-        public AbstractSlotSampler<Exhibit> NormalExSampler { get => normalExSampler.Value; }
+        public AbstractSlotSampler<Exhibit, Type> NormalExSampler { get => normalExSampler.Value; }
 
 
-        private Lazy<EqualWSlotSampler<Card>> cardSampler = new Lazy<EqualWSlotSampler<Card>>(() => 
-        new EqualWSlotSampler<Card>(
-            requirements: new List<ISlotRequirement>() { new CardInPool() },
+        private Lazy<WeightedSlotSampler<Card>> cardSampler = new Lazy<WeightedSlotSampler<Card>>(() => 
+        new WeightedSlotSampler<Card>(
+            requirements: new List<ISlotRequirement<Type>>() { new CardInPool() },
             initAction: (t) => { var c = Library.CreateCard(t); c.GameRun = GrRngs.Gr(); return c; },
             successAction: null,
             failureAction: () => log.LogDebug("deeznuts"),
-            potentialPool: Padding.CardPadding())
+            potentialPool: Padding.RewardCards)
         );
 
 
@@ -131,18 +132,18 @@ namespace RngFix.CustomRngs
                     potentialPool: CardConfig.AllConfig().Where(cc => cc.IsPooled && cc.DebugLevel <= Gr().CardValidDebugLevel).Select(cc => TypeFactory<Card>.TryGetType(cc.Id)).Where(t => t != null).ToList()));*/
 
 
-        public EqualWSlotSampler<Card> CardSampler { get => cardSampler.Value; }
+        public WeightedSlotSampler<Card> CardSampler { get => cardSampler.Value; }
 
 
-        private Lazy<AbstractSlotSampler<Type>> adventureSampler = new Lazy<AbstractSlotSampler<Type>>(() => 
-        new EqualWSlotSampler<Type>(
-            requirements: new List<ISlotRequirement>() { new AdventureInPool(), new AdventureNOTinHistory() },
+        private Lazy<AbstractSlotSampler<Type, Type>> adventureSampler = new Lazy<AbstractSlotSampler<Type, Type>>(() => 
+        new WeightedSlotSampler<Type>(
+            requirements: new List<ISlotRequirement<Type>>() { new AdventureInPool(), new AdventureNOTinHistory() },
             initAction: (t) => { return t; },
             successAction: null,
             failureAction: null,
             potentialPool: Padding.AdventurePadding())
         );
-        public AbstractSlotSampler<Type> AdventureSampler { get => adventureSampler.Value; }
+        public AbstractSlotSampler<Type, Type> AdventureSampler { get => adventureSampler.Value; }
 
         public static RandomGen GetBossCardRng(GameRunController gr) => GetOrCreate(gr).persRngs.bossCardRng;
 

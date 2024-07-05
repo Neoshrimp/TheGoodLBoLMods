@@ -5,13 +5,20 @@ using LBoL.Base;
 using LBoL.ConfigData;
 using LBoL.Core;
 using LBoL.Core.Cards;
+using LBoL.EntityLib.Cards.Character.Cirno;
+using LBoL.EntityLib.Cards.Character.Sakuya;
 using LBoL.EntityLib.Cards.Neutral.Blue;
+using LBoL.EntityLib.Cards.Neutral.NoColor;
+using LBoL.EntityLib.Cards.Neutral.Red;
 using LBoL.EntityLib.Cards.Neutral.White;
 using LBoL.Presentation;
+using LBoL.Presentation.UI.Panels;
 using LBoLEntitySideloader;
 using LBoLEntitySideloader.Resource;
 using RngFix.CustomRngs;
 using RngFix.CustomRngs.Sampling;
+using RngFix.CustomRngs.Sampling.Pads;
+using RngFix.CustomRngs.Sampling.UniformPools;
 using RngFix.Patches.Cards;
 using RngFix.Patches.Debug;
 using System;
@@ -100,46 +107,80 @@ namespace RngFix
 
 
 
+
+
+
         KeyboardShortcut debgugBind = new KeyboardShortcut(KeyCode.Y, new KeyCode[] { KeyCode.LeftShift });
 
         private void Update()
         {
-            if (false && debgugBind.IsDown() && GrRngs.Gr() != null)
+            if (debgugBind.IsDown() && GrRngs.Gr() != null)
             {
                 var gr = GrRngs.Gr();
                 var grrngs = GrRngs.GetOrCreate(gr);
                 var stage = gr.CurrentStage;
-                DisableManaBaseAffectedCardWeights_Patch.tempDebugDisable = false;
-                gr.CardValidDebugLevel = 1;
-                gr.CardValidDebugLevel = 0;
+                //DisableManaBaseAffectedCardWeights_Patch.tempDebugDisable = false;
+
+
+
+                var seed = RandomGen.ParseSeed("deeznuts");
+                log.LogDebug(string.Join(";", BattleRngs.Shuffle(new RandomGen(seed), new List<Card>() {
+                                                    Library.CreateCard<Shoot>(),
+                                                    Library.CreateCard<Shoot>(),
+                                                    Library.CreateCard<SuikaBigball>(),
+                                                    Library.CreateCard<IceBarrier>(),
+                                                    Library.CreateCard<FrostGarden>(),
+                                                    Library.CreateCard<MeilingBlock>(),
+                                                    Library.CreateCard<PerfectServant>(),
+                                                }).Select(c => $"{c.Name}")))
+
+
+/*                gr.CardValidDebugLevel = 0;
                 grrngs.CardSampler.BuildPool(Padding.CardPadding());
+                SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.Slot, battleRolling: false, rolls: 1000, seed: 2405181760243075183);
 
-/*                var cChar = SamplerDebug.SimulateCardRoll(9264767910880677932, stage.BossCardCharaWeight, out SamplerLogInfo _, manaBase: new ManaGroup() { Green = 3, Blue = 2, Colorless = 1 }, sampler: grrngs.CardSampler, logToFile: true);
-                var cFriend = SamplerDebug.SimulateCardRoll(9264767910880677932, stage.BossCardFriendWeight, out SamplerLogInfo _, manaBase: new ManaGroup() { Green = 3, Blue = 2, Colorless = 1 }, sampler: grrngs.CardSampler, logToFile: true);
-                var cNeutral = SamplerDebug.SimulateCardRoll(9264767910880677932, stage.BossCardNeutralWeight, out SamplerLogInfo _, manaBase: new ManaGroup() { Green = 3, Blue = 2, Colorless = 1 }, sampler: grrngs.CardSampler, logToFile: true);
-
-                log.LogDebug(cChar);
-                log.LogDebug(cFriend);
-                log.LogDebug(cNeutral);*/
+                gr.CardValidDebugLevel = 1;
+                grrngs.CardSampler.BuildPool(Padding.CardPadding());
+                SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.Slot, battleRolling: false, rolls: 1000, seed: 2405181760243075183)*/
+;
 
 
-                gr._cardRareWeightFactor = 0.9f;
-                gr._cardRewardDecreaseRepeatRare = true;
-                var cards = gr.GetRewardCards(stage.BossCardCharaWeight, stage.BossCardFriendWeight, stage.BossCardNeutralWeight, stage.BossCardWeight,3, true);
-                log.LogDebug(string.Join<Card>(", ", cards));
+                /*                var cChar = SamplerDebug.SimulateCardRoll(9264767910880677932, stage.BossCardCharaWeight, out SamplerLogInfo _, manaBase: new ManaGroup() { Green = 3, Blue = 2, Colorless = 1 }, sampler: grrngs.CardSampler, logToFile: true);
+                                var cFriend = SamplerDebug.SimulateCardRoll(9264767910880677932, stage.BossCardFriendWeight, out SamplerLogInfo _, manaBase: new ManaGroup() { Green = 3, Blue = 2, Colorless = 1 }, sampler: grrngs.CardSampler, logToFile: true);
+                                var cNeutral = SamplerDebug.SimulateCardRoll(9264767910880677932, stage.BossCardNeutralWeight, out SamplerLogInfo _, manaBase: new ManaGroup() { Green = 3, Blue = 2, Colorless = 1 }, sampler: grrngs.CardSampler, logToFile: true);
+
+                                log.LogDebug(cChar);
+                                log.LogDebug(cFriend);
+                                log.LogDebug(cNeutral);*/
 
 
-
-
-
-                SamplerDebug.RollDistribution(stage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.EwSlot, battleRolling: false, rolls: 100, seed: null, manaBase: new ManaGroup() { White = 2, Blue = 3, Black = 0 }, filter: t => t.Name == nameof(YonglinCard) || t.Name == nameof(HuiyeMarblePhantasm));
-
-
-
+                /*                gr._cardRareWeightFactor = 0.9f;
+                                gr._cardRewardDecreaseRepeatRare = true;
+                                var cards = gr.GetRewardCards(stage.BossCardCharaWeight, stage.BossCardFriendWeight, stage.BossCardNeutralWeight, stage.BossCardWeight,3, true);
+                                log.LogDebug(string.Join<Card>(", ", cards));*/
 
 
 
-                /*                SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.EwSlot, battleRolling: false, rolls: 1000, seed: 2405181760243075183, manaBase: new ManaGroup() { White = 2, Blue = 3, Black = 0 });*/
+
+
+                //SamplerDebug.RollDistribution(stage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.EwSlot, battleRolling: false, rolls: 100, seed: null, manaBase: new ManaGroup() { White = 2, Blue = 3, Black = 0 }, filter: t => t.Name == nameof(YonglinCard) || t.Name == nameof(HuiyeMarblePhantasm));
+
+                /*                var rangeSet = new RangeCollection();
+                var range1 = new ManRange(1, 10);
+                rangeSet.Add(range1);
+                rangeSet.Add(4, 15);
+
+                rangeSet.Add(1, 3);
+
+                rangeSet.Add(16, 19);
+                //rangeSet.Remove(new ManRange(20, 25));
+                log.LogDebug(rangeSet);
+                log.LogDebug(rangeSet.Count);*/
+
+
+
+
+
 
                 //SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.Vanilla, battleRolling: false, rolls: 1000, seed: 12012204824104114439, manaBase: new ManaGroup() { White = 2, Blue = 3, Black = 0 });
 

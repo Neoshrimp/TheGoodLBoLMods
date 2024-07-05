@@ -6,12 +6,9 @@ using LBoL.EntityLib.Exhibits.Common;
 using RngFix.CustomRngs;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Emit;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 namespace RngFix.Patches.RngGetters
 {

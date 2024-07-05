@@ -11,7 +11,7 @@ namespace RngFix.Patches.Cards
     [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.BaseCardWeight))]
     class DisableManaBaseAffectedCardWeights_Patch
     {
-        public static bool tempDebugDisable = true;
+        public static bool tempDebugDisable = false;
 
         static int CheckOption(int colourCount)
         {

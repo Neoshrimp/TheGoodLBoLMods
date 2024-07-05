@@ -1,8 +1,10 @@
 ﻿using HarmonyLib;
 using LBoL.Base;
 using LBoL.EntityLib.Exhibits.Common;
+using RngFix.CustomRngs.Sampling.Pads;
 using RngFix.CustomRngs.Sampling.UniformPools;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +13,7 @@ using static RngFix.BepinexPlugin;
 
 namespace RngFix.CustomRngs.Sampling
 {
-    public class EqualWSlotSampler<T> : AbstractSlotSampler<T>
+    public class WeightedSlotSampler<T> : AbstractSlotSampler<T, Type> where T : class
     {
         RepeatableUniformRandomPool<Type> constantPotentialPool;
 
@@ -25,17 +27,13 @@ namespace RngFix.CustomRngs.Sampling
         public uint extraRolls = 0;
 
 
-        public EqualWSlotSampler(List<ISlotRequirement> requirements, Func<Type, T> initAction, Action<T> successAction, Action failureAction, IEnumerable<Type> potentialPool) : base(requirements, initAction, successAction, failureAction)
+        public WeightedSlotSampler(List<ISlotRequirement<Type>> requirements, Func<Type, T> initAction, Action<T> successAction, Action failureAction, IEnumerable<Type> potentialPool) : base(requirements, initAction, successAction, failureAction, potentialPool)
         {
-            this.constantPotentialPool = new RepeatableUniformRandomPool<Type>();
-
-
-            BuildPool(potentialPool);
-            
         }
 
-        public void BuildPool(IEnumerable<Type> potentialPool)
-        { 
+        public override void BuildPool(IEnumerable<Type> potentialPool)
+        {
+            this.constantPotentialPool = new RepeatableUniformRandomPool<Type>();
             this.constantPotentialPool.AddRange(potentialPool);
         }
 
@@ -58,7 +56,7 @@ namespace RngFix.CustomRngs.Sampling
 
             requirements.Do(r => r.PrepReq());
 
-            Func<Type, float> getWwrap = t => t == typeof(PaddingType) ? 0f : getW(t);
+            Func<Type, float> getWwrap = t => t == null ? 0f : getW(t);
 
             foreach (var re in constantPotentialPool)
             {
@@ -101,8 +99,9 @@ namespace RngFix.CustomRngs.Sampling
                 var itemProb = w / probabilityFraction;
                 var passThreshold = wRollingRng.NextFloat(0, 1);
 
+                // 2do
                 if (debugAction != null)
-                { 
+                {
                     var rollLI = new SamplerLogInfo()
                     {
                         totalW = possibleMaxW,

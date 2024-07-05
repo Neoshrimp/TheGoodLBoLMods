@@ -4,6 +4,7 @@ using LBoL.Core;
 using LBoL.Core.Adventures;
 using LBoL.Core.Cards;
 using LBoL.EntityLib.EnemyUnits.Character;
+using LBoL.EntityLib.Exhibits.Shining;
 using LBoLEntitySideloader.Entities;
 using System;
 using System.Collections;
@@ -14,15 +15,30 @@ using System.Text;
 using UnityEngine.Rendering;
 using static RngFix.BepinexPlugin;
 
-namespace RngFix.CustomRngs.Sampling
+namespace RngFix.CustomRngs.Sampling.Pads
 {
-    public class Padding
+    public static class Padding
     {
+        private static IEnumerable<Type> paddedCards = null;
+
+
         private const string lostBin = "LostBin";
         private const string modNeutral = "ModNeutral";
 
-        public static IEnumerable<Type> EndPadding(int targetSize, IEnumerable<Type> collection)
+        public static IEnumerable<Type> RewardCards 
         {
+            get
+            {
+                if (paddedCards == null)
+                    paddedCards = CardPadding(CardConfig.AllConfig().Where(cc => cc.IsPooled && cc.DebugLevel <= GrRngs.Gr().CardValidDebugLevel));
+                return paddedCards;
+            }
+        }
+
+
+        public static IEnumerable<T> EndPadding<T>(int targetSize, IEnumerable<T> collection) where T : class
+        {
+
             int padding = targetSize - collection.Count();
 
             if (padding < 0)
@@ -31,12 +47,13 @@ namespace RngFix.CustomRngs.Sampling
                 padding = 0;
             }
 
-            return collection.Concat(Enumerable.Repeat(typeof(PaddingType), padding));
+            return collection.Concat(Enumerable.Repeat<T>(null, padding));
         }
+        public static IEnumerable<T> PadEnd<T>(this IEnumerable<T> collection, int targetSize) where T : class => EndPadding<T>(targetSize, collection);
 
         public static List<Type> SlotByIndex(int max, IEnumerable<KeyValuePair<int, Type>> index2Type)
         {
-            var slots = new List<Type>(Enumerable.Repeat(typeof(PaddingType), max));
+            var slots = new List<Type>(Enumerable.Repeat<Type>(null, max));
             foreach ((var k, var v) in index2Type)
             {
                 if (k >= slots.Count || k < 0)
@@ -84,9 +101,9 @@ namespace RngFix.CustomRngs.Sampling
         }
 
 
-        public static IEnumerable<Type> CardPadding(int total = (int)10E3, int charSize = 200, int charBuffer = 2400, int moddedBuffer = 2000)
+        public static IEnumerable<Type> CardPadding(IEnumerable<CardConfig> validCards, int total = (int)10E3, int charSize = 200, int charBuffer = 2400, int moddedBuffer = 2000)
         {
-            var validCards = CardConfig.AllConfig().Where(cc => cc.IsPooled && cc.DebugLevel <= GrRngs.Gr().CardValidDebugLevel).OrderBy(cc => cc.Index);
+            validCards = validCards.OrderBy(cc => cc.Index);
 
             var vanilla = SlotByIndex(5000, validCards.Where(cc => cc.Index < 5000)
                 .Select(cc => new KeyValuePair<int, Type>(cc.Index, TypeFactory<Card>.TryGetType(cc.Id)))
