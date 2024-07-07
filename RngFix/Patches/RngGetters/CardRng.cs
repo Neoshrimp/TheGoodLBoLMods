@@ -70,6 +70,7 @@ namespace RngFix.Patches.RngGetters
 
             matcher = matcher.ReplaceRngGetter(nameof(GameRunController.CardRng), AccessTools.Method(typeof(CardReward_Patch), nameof(CardReward_Patch.ExtraCardRewardRng)));
 
+            // 2do advance regardless of rarity
             matcher = matcher.ReplaceRngGetter(nameof(GameRunController.CardRng), AccessTools.Method(typeof(GrRngs), nameof(GrRngs.GetCardUpgradeQueueRng)));
 
 

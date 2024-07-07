@@ -43,7 +43,7 @@ namespace RngFix.CustomRngs.Sampling.Pads
 
             if (padding < 0)
             {
-                log.LogWarning($"Target padding {targetSize} exceeded by {collection.Count()}");
+                log.LogWarning($"Target padding {targetSize} exceeded by total {collection.Count()}");
                 padding = 0;
             }
 

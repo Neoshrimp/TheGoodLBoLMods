@@ -100,7 +100,7 @@ namespace RngFix.CustomRngs.Sampling
                 var passThreshold = wRollingRng.NextFloat(0, 1);
 
                 // 2do
-                if (debugAction != null)
+/*                if (debugAction != null)
                 {
                     var rollLI = new SamplerLogInfo()
                     {
@@ -120,7 +120,7 @@ namespace RngFix.CustomRngs.Sampling
                     };
 
                     debugAction.Invoke(rollLI, t);
-                }
+                }*/
 
                 if (passThreshold < itemProb
                     && requirements.All(r => r.IsSatisfied(t))

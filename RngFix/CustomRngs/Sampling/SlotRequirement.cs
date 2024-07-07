@@ -52,17 +52,39 @@ namespace RngFix.CustomRngs.Sampling
         }
     }
 
+
+    public class InPool<T> : ISlotRequirement<T>
+    {
+        public HashSet<T> poolSet = new HashSet<T>();
+
+        public InPool(IEnumerable<T> poolSet)
+        {
+            this.poolSet = new HashSet<T>(poolSet);
+        }
+
+        public bool IsSatisfied(T type) => poolSet.Contains(type);
+
+        public void PrepReq()
+        {
+        }
+    }
+
     public class InCountedPool<T> : ISlotRequirement<T>
     {
         public Dictionary<T, int> countedPool = new Dictionary<T, int>();
+
+        int count;
 
         public InCountedPool(IEnumerable<T> types)
         {
             types.Do(t => { 
                 this.countedPool.TryAdd(t, 0);
                 this.countedPool[t]++;
+                count++;
             });
         }
+
+        public int Count { get => count; }
 
         public bool IsSatisfied(T type)
         {
@@ -75,8 +97,11 @@ namespace RngFix.CustomRngs.Sampling
 
         public void ReduceCount(T type)
         {
-            if(countedPool.ContainsKey(type))
+            if (countedPool.ContainsKey(type))
+            {
                 countedPool[type]--;
+                count--;
+            }
         }
     }
 

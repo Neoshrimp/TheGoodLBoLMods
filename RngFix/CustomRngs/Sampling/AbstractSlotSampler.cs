@@ -6,7 +6,7 @@ using System.Text;
 
 namespace RngFix.CustomRngs.Sampling
 {
-    public abstract class AbstractSlotSampler<T, PT> where T : class
+    public abstract class AbstractSlotSampler<T, PT>
     {
 
         public List<ISlotRequirement<PT>> requirements = new List<ISlotRequirement<PT>>();

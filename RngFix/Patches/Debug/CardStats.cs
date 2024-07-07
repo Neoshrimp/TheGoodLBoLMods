@@ -24,7 +24,10 @@ namespace RngFix.Patches.Debug
             
             CHandlerManager.RegisterGameEventHandler((gr) => gr.DeckCardsAdded, args =>
             {
-                StatsLogger.LogPickedCard(args.Cards.First(), args.Cards.Length, StatsLogger.Gr());
+                args.Cards.GroupBy(c => c?.Id ?? "null").Do(cg => {
+                    StatsLogger.LogPickedCard(cg.FirstOrDefault(), cg.Count(), StatsLogger.Gr());
+                }
+                );
             });
         }
     }

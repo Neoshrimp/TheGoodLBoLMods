@@ -22,7 +22,7 @@ using static RngFix.BepinexPlugin;
 
 namespace RngFix.CustomRngs.Sampling
 {
-    public class UniformSlotSampler<T, PT> : AbstractSlotSampler<T, PT> where T : class where PT : class
+    public class UniformSlotSampler<T, PT> : AbstractSlotSampler<T, PT>
     {
 
         List<PT> potentialPool;

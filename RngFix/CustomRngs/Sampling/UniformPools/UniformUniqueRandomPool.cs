@@ -11,7 +11,7 @@ using System.Text;
 
 namespace RngFix.CustomRngs.Sampling.UniformPools
 {
-    public class UniformUniqueRandomPool<T> : IRandomPool<T>, ICollection<T> where T : class
+    public class UniformUniqueRandomPool<T> : IRandomPool<T>, ICollection<T>
     {
 
         private List<T> elems = new List<T>();
@@ -33,7 +33,7 @@ namespace RngFix.CustomRngs.Sampling.UniformPools
         {
             if (item == null)
             {
-                elems.Add(null);
+                elems.Add(default);
                 return;
             }
 

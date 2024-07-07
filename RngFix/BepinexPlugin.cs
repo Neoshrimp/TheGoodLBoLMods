@@ -6,6 +6,7 @@ using LBoL.ConfigData;
 using LBoL.Core;
 using LBoL.Core.Cards;
 using LBoL.EntityLib.Cards.Character.Cirno;
+using LBoL.EntityLib.Cards.Character.Reimu;
 using LBoL.EntityLib.Cards.Character.Sakuya;
 using LBoL.EntityLib.Cards.Neutral.Blue;
 using LBoL.EntityLib.Cards.Neutral.NoColor;
@@ -23,6 +24,7 @@ using RngFix.Patches.Cards;
 using RngFix.Patches.Debug;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -62,7 +64,7 @@ namespace RngFix
 
         private void Awake()
         {
-            
+
             log = Logger;
 
             // very important. Without this the entry point MonoBehaviour gets destroyed
@@ -114,7 +116,7 @@ namespace RngFix
 
         private void Update()
         {
-            if (debgugBind.IsDown() && GrRngs.Gr() != null)
+            if (false && debgugBind.IsDown() && GrRngs.Gr() != null)
             {
                 var gr = GrRngs.Gr();
                 var grrngs = GrRngs.GetOrCreate(gr);
@@ -124,25 +126,61 @@ namespace RngFix
 
 
                 var seed = RandomGen.ParseSeed("deeznuts");
-                log.LogDebug(string.Join(";", BattleRngs.Shuffle(new RandomGen(seed), new List<Card>() {
-                                                    Library.CreateCard<Shoot>(),
-                                                    Library.CreateCard<Shoot>(),
-                                                    Library.CreateCard<SuikaBigball>(),
-                                                    Library.CreateCard<IceBarrier>(),
-                                                    Library.CreateCard<FrostGarden>(),
-                                                    Library.CreateCard<MeilingBlock>(),
-                                                    Library.CreateCard<PerfectServant>(),
-                                                }).Select(c => $"{c.Name}")))
+                log.LogDebug(string.Join(";", BattleRngs.Shuffle(new RandomGen(seed),
+                    new List<Card>() {
+                        Library.CreateCard<Shoot>(),
+                        Library.CreateCard<Shoot>(),
+
+                        Library.CreateCard<SuikaBigball>(),
+                        Library.CreateCard<IceBarrier>(),
+                        Library.CreateCard<FrostGarden>(),
+                        //Library.CreateCard<Shoot>(),
+
+                        Library.CreateCard<MeilingBlock>(),
+                        Library.CreateCard<PerfectServant>(),
+                        Library.CreateCard<TwoBalls>(),
+                        //Library.CreateCard<TwoBalls>(),
+                }).Select(c => $"{c.Name}")));
 
 
-/*                gr.CardValidDebugLevel = 0;
-                grrngs.CardSampler.BuildPool(Padding.CardPadding());
-                SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.Slot, battleRolling: false, rolls: 1000, seed: 2405181760243075183);
+                log.LogDebug(string.Join(";", BattleRngs.Shuffle(new RandomGen(seed),
+                    new List<Card>() {
+                        Library.CreateCard<Shoot>(),
+                        Library.CreateCard<Shoot>(),
 
-                gr.CardValidDebugLevel = 1;
-                grrngs.CardSampler.BuildPool(Padding.CardPadding());
-                SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.Slot, battleRolling: false, rolls: 1000, seed: 2405181760243075183)*/
-;
+                        Library.CreateCard<SuikaBigball>(),
+                        Library.CreateCard<IceBarrier>(),
+                        Library.CreateCard<FrostGarden>(),
+                        //Library.CreateCard<Shoot>(),
+
+                        Library.CreateCard<MeilingBlock>(),
+                        //Library.CreateCard<MeilingBlock>(),
+
+                        Library.CreateCard<PerfectServant>(),
+                        //Library.CreateCard<PerfectServant>(),
+
+                        Library.CreateCard<TwoBalls>(),
+                        Library.CreateCard<TwoBalls>(),
+                }).Select(c => $"{c.Name}")));
+
+                var bigDick = new List<Card>(Enumerable.Repeat<Card>(Library.CreateCard<Shoot>(), 9999));
+                var bigRng = new RandomGen(RandomGen.GetRandomSeed());
+                var sw = new Stopwatch();
+                sw.Start();
+
+                BattleRngs.Shuffle(new RandomGen(), bigDick);
+
+                sw.Stop();
+                log.LogDebug(sw.Elapsed);
+
+                /*                gr.CardValidDebugLevel = 0;
+                                grrngs.CardSampler.BuildPool(Padding.CardPadding());
+                                SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.Slot, battleRolling: false, rolls: 1000, seed: 2405181760243075183);
+
+                                gr.CardValidDebugLevel = 1;
+                                grrngs.CardSampler.BuildPool(Padding.CardPadding());
+                                SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.Slot, battleRolling: false, rolls: 1000, seed: 2405181760243075183)*/
+                
 
 
                 /*                var cChar = SamplerDebug.SimulateCardRoll(9264767910880677932, stage.BossCardCharaWeight, out SamplerLogInfo _, manaBase: new ManaGroup() { Green = 3, Blue = 2, Colorless = 1 }, sampler: grrngs.CardSampler, logToFile: true);

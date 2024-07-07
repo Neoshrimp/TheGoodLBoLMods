@@ -29,6 +29,8 @@ What this does **not** fix:
 ---
 *Change log*
 
+`1.1.2` Logging softlock fix.
+
 `1.1.1` Fix softlock when restarting on reward screen. Fix no samples being found when majority of weights are very low (<0.01). Separate card logs for rewards and discovery.
 
 `1.1.0` The majority out of battle rng inconsistencies were dealt with.

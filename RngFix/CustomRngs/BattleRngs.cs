@@ -9,7 +9,9 @@ using LBoL.Core.Stations;
 using LBoL.Presentation;
 using RngFix.CustomRngs.Sampling;
 using RngFix.CustomRngs.Sampling.Pads;
+using RngFix.CustomRngs.Sampling.UniformPools;
 using RngFix.Patches;
+using Spine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +26,9 @@ namespace RngFix.CustomRngs
         public static BattleController Battle() => GameMaster.Instance?.CurrentGameRun?.Battle;
 
         private static IEnumerable<Type> paddedCards = null;
+        private static RepeatableUniformRandomPool<Type> infiteDeck = null;
+
+
 
         public static IEnumerable<Type> PaddedCards
         {
@@ -35,43 +40,112 @@ namespace RngFix.CustomRngs
             }
         }
 
+        public static RepeatableUniformRandomPool<Type> InfiteDeck 
+        {
+            get
+            {
+                if (infiteDeck == null)
+                { 
+                    infiteDeck = new RepeatableUniformRandomPool<Type>();
+                    infiteDeck.AddRange(PaddedCards);
+                }
+                return infiteDeck;
+            }
+        }
+
         public static List<Card> Shuffle(RandomGen rng, List<Card> toShuffle)
         {
             var slotRng = new RandomGen(rng.NextULong());
             var indexRng = new RandomGen(slotRng.NextULong());
 
-            // 1st pass slot types to indexes
-            var typeSampler = new UniformSlotSampler<Type, Type>(
-                    requirements: new List<ISlotRequirement<Type>>() { new InCountedPool<Type>(toShuffle.Select(c => c.GetType())) },
-                    initAction: t => t,
-                    successAction: null,
-                    failureAction: () => log.LogDebug("shuffle deez"),
-                    potentialPool: PaddedCards
-                );
 
             // type to indexes
             var typeSlots = new Dictionary<Type, List<int>>();
             var typeBins = new Dictionary<Type, List<Card>>();
-            var countedPoolReq = (InCountedPool<Type>)typeSampler.requirements.First(r => r is InCountedPool<Type>);
 
-            log.LogDebug(string.Join(";", countedPoolReq.countedPool.Select(kv => $"{kv.Key.Name}:{kv.Value}")));
-
-            for (int i = 0; i < toShuffle.Count; i++)
+            foreach (var card in toShuffle)
             {
-                var card = toShuffle[i];
+                var cType = card.GetType();
+                typeBins.GetOrCreateVal(cType, () => new List<Card>(), out var cards);
+                cards.Add(card);
+            }
+
+            //var poolReq = (InPool<int>)typeSampler.requirements.First(r => r is InPool<int>);
+
+            var availableSlot = new HashSet<int>(Enumerable.Range(0, toShuffle.Count));
+            var slotShuffler = new UniformUniqueRandomPool<int>();
+            slotShuffler.AddRange(Enumerable.Range(0, Math.Max(9999, toShuffle.Count)));
+
+
+
+            //log.LogDebug(string.Join(";", poolReq.countedPool.Select(kv => $"{kv.Key.Name}:{kv.Value}")));
+
+
+
+            var potentialCards = new InCountedPool<Type>(toShuffle.Select(c => c.GetType()));
+
+            int rolls = 0;
+            int index = 0;
+            while (potentialCards.Count > 0)
+            {
+                var cType = InfiteDeck.Sample(slotRng);
+                if (cType != null && potentialCards.IsSatisfied(cType))
+                {
+                    typeSlots.GetOrCreateVal(cType, () => new List<int>(), out var ctIndexes);
+                    ctIndexes.Add(index);
+
+                    potentialCards.ReduceCount(cType);
+                    index++;
+                }
+
+                rolls++;
+            }
+            log.LogDebug($"infinite rolls: {rolls}");
+
+
+            //var orderedCards = toShuffle.OrderBy(c => c.Config.Index).Select((c, i) => new KeyValuePair<int, Card>(i, c));
+            //var index2Card = new Dictionary<int, Card>(orderedCards);
+            //var slots2ActualOrder = new Dictionary<int, int>();
+
+/*            int o = 0;
+            while (availableSlot.Count > 0)
+            {
+                var slot = slotShuffler.Sample(slotRng);
+                if (availableSlot.Contains(slot))
+                {
+                    var card = index2Card[slot];
+                    var cType = card.GetType();
+                    typeBins.GetOrCreateVal(cType, () => new List<Card>(), out var cards);
+                    cards.Add(card);
+
+                    slots2ActualOrder.Add(slot, o);
+
+                    typeSlots.GetOrCreateVal(cType, () => new List<int>(), out var ctIndexes);
+                    ctIndexes.Add(slot);
+                    availableSlot.Remove(slot);
+                    o++;
+                }
+            }*/
+            //log.LogDebug("index2card: " + string.Join(";", index2Card.Select(kv => $"{kv.Key}:{kv.Value.Name}")));
+//            log.LogDebug("typeSlots: " + string.Join(";", typeSlots.Select(kv => $"{kv.Key.Name}:{string.Join(",", kv.Value)}")));
+            //log.LogDebug("typeBins: " + string.Join(";", typeBins.Select(kv => $"{kv.Key.Name}:{string.Join(",", kv.Value.Select(c => c.Name))}")));
+
+            //log.LogDebug("slots2ActualOrder: " +  string.Join(";", slots2ActualOrder.Keys));
+
+/*            foreach(var card in orderedCards)
+            {
                 var cType = card.GetType();
                 typeBins.GetOrCreateVal(cType, () => new List<Card>(), out var cards);
                 cards.Add(card);
 
-                var rolledType = typeSampler.Roll(slotRng, null, out var samplerLogInfo);
-                log.LogDebug(rolledType?.Name);
-                log.LogDebug(samplerLogInfo.rolls);
+                var rolledSlot = typeSampler.Roll(slotRng, null, out var samplerLogInfo);
+                log.LogDebug(rolledSlot);
 
 
-                typeSlots.GetOrCreateVal(rolledType, () => new List<int>(), out var ctIndexes);
-                ctIndexes.Add(i);
-                countedPoolReq.ReduceCount(rolledType);
-            }
+                typeSlots.GetOrCreateVal(cType, () => new List<int>(), out var ctIndexes);
+                ctIndexes.Add(rolledSlot);
+                poolReq.poolSet.Remove(rolledSlot);
+            }*/
 
             var rez = Enumerable.Repeat<Card>(null, toShuffle.Count).ToList();
 
