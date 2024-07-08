@@ -29,6 +29,9 @@ namespace RngFix.CustomRngs.Sampling.UniformPools
 
         public bool IsReadOnly => false;
 
+        public IReadOnlyList<T> Elems { get => elems; }
+
+
         public void Add(T item)
         {
             if (item == null)

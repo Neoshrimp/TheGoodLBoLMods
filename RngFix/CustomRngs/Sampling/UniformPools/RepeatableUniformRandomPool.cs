@@ -20,6 +20,8 @@ namespace RngFix.CustomRngs.Sampling.UniformPools
 
         public bool IsReadOnly => false;
 
+        public IReadOnlyList<T> Items { get => items; }
+
         public void Add(T item)
         {
             items.Add(item);
@@ -37,6 +39,18 @@ namespace RngFix.CustomRngs.Sampling.UniformPools
         public void Set(int index, T item)
         {
             items[index] = item;
+        }
+
+        public T this[int index]
+        {
+            get
+            {
+                return Get(index);
+            }
+            set
+            {
+                Set(index, value);
+            }
         }
 
         public void Clear()

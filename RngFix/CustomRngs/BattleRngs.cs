@@ -6,6 +6,7 @@ using LBoL.Core.Adventures;
 using LBoL.Core.Battle;
 using LBoL.Core.Cards;
 using LBoL.Core.Stations;
+using LBoL.EntityLib.Cards.Neutral.White;
 using LBoL.Presentation;
 using RngFix.CustomRngs.Sampling;
 using RngFix.CustomRngs.Sampling.Pads;
@@ -17,10 +18,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using UnityEngine;
+using UnityEngine.Events;
 using static RngFix.BepinexPlugin;
 
 namespace RngFix.CustomRngs
 {
+    // shuffling
+    // card discovery
+    // enemy move rng (killing an enemy vs not killing an enemy might result in different amount of rng advances)
+    // random enemy targeting
+    // random card targeting
+    // conditional advancement of rng (old kokoro effect)
     public class BattleRngs
     {
         public static BattleController Battle() => GameMaster.Instance?.CurrentGameRun?.Battle;
@@ -53,24 +62,23 @@ namespace RngFix.CustomRngs
             }
         }
 
-        public static List<Card> Shuffle(RandomGen rng, List<Card> toShuffle)
+        public static List<Card> Shuffle(RandomGen rng, IList<Card> toShuffle)
         {
             var slotRng = new RandomGen(rng.NextULong());
-            var indexRng = new RandomGen(slotRng.NextULong());
+            var indexRootRng = new RandomGen(slotRng.NextULong());
 
 
-            // type to indexes
             var typeSlots = new Dictionary<Type, List<int>>();
-            var typeBins = new Dictionary<Type, List<Card>>();
+            var cardBins = new Dictionary<Type, List<Card>>();
 
             foreach (var card in toShuffle)
             {
                 var cType = card.GetType();
-                typeBins.GetOrCreateVal(cType, () => new List<Card>(), out var cards);
+                cardBins.GetOrCreateVal(cType, () => new List<Card>(), out var cards);
                 cards.Add(card);
             }
 
-            //var poolReq = (InPool<int>)typeSampler.requirements.First(r => r is InPool<int>);
+
 
             var availableSlot = new HashSet<int>(Enumerable.Range(0, toShuffle.Count));
             var slotShuffler = new UniformUniqueRandomPool<int>();
@@ -78,12 +86,17 @@ namespace RngFix.CustomRngs
 
 
 
-            //log.LogDebug(string.Join(";", poolReq.countedPool.Select(kv => $"{kv.Key.Name}:{kv.Value}")));
-
-
-
             var potentialCards = new InCountedPool<Type>(toShuffle.Select(c => c.GetType()));
 
+
+            //log.LogDebug(string.Join(";", BattleRngs.InfiteDeck.Items.Where(t => t != null && !potentialCards.CountedPool.ContainsKey(t)).Select(t => t?.Name ?? "null")));
+
+            var dickSet = new HashSet<Type>(InfiteDeck);
+
+            log.LogDebug(string.Join(";", potentialCards.CountedPool.Keys.Where(t => !dickSet.Contains(t)).Select(t => t?.Name ?? "null")));
+
+
+            // 1st pass: shuffle by card type preserving card relative order
             int rolls = 0;
             int index = 0;
             while (potentialCards.Count > 0)
@@ -103,75 +116,137 @@ namespace RngFix.CustomRngs
             log.LogDebug($"infinite rolls: {rolls}");
 
 
-            //var orderedCards = toShuffle.OrderBy(c => c.Config.Index).Select((c, i) => new KeyValuePair<int, Card>(i, c));
-            //var index2Card = new Dictionary<int, Card>(orderedCards);
-            //var slots2ActualOrder = new Dictionary<int, int>();
-
-/*            int o = 0;
-            while (availableSlot.Count > 0)
-            {
-                var slot = slotShuffler.Sample(slotRng);
-                if (availableSlot.Contains(slot))
-                {
-                    var card = index2Card[slot];
-                    var cType = card.GetType();
-                    typeBins.GetOrCreateVal(cType, () => new List<Card>(), out var cards);
-                    cards.Add(card);
-
-                    slots2ActualOrder.Add(slot, o);
-
-                    typeSlots.GetOrCreateVal(cType, () => new List<int>(), out var ctIndexes);
-                    ctIndexes.Add(slot);
-                    availableSlot.Remove(slot);
-                    o++;
-                }
-            }*/
-            //log.LogDebug("index2card: " + string.Join(";", index2Card.Select(kv => $"{kv.Key}:{kv.Value.Name}")));
-//            log.LogDebug("typeSlots: " + string.Join(";", typeSlots.Select(kv => $"{kv.Key.Name}:{string.Join(",", kv.Value)}")));
-            //log.LogDebug("typeBins: " + string.Join(";", typeBins.Select(kv => $"{kv.Key.Name}:{string.Join(",", kv.Value.Select(c => c.Name))}")));
-
-            //log.LogDebug("slots2ActualOrder: " +  string.Join(";", slots2ActualOrder.Keys));
-
-/*            foreach(var card in orderedCards)
-            {
-                var cType = card.GetType();
-                typeBins.GetOrCreateVal(cType, () => new List<Card>(), out var cards);
-                cards.Add(card);
-
-                var rolledSlot = typeSampler.Roll(slotRng, null, out var samplerLogInfo);
-                log.LogDebug(rolledSlot);
-
-
-                typeSlots.GetOrCreateVal(cType, () => new List<int>(), out var ctIndexes);
-                ctIndexes.Add(rolledSlot);
-                poolReq.poolSet.Remove(rolledSlot);
-            }*/
-
             var rez = Enumerable.Repeat<Card>(null, toShuffle.Count).ToList();
 
+            int totalGRolls = 0;
             // 2nd pass assign concrete cards to type slots
-            foreach ((var type, var indexes) in typeSlots)
+            foreach (var type in typeSlots.Keys)
             {
-                var indexSampler = new UniformSlotSampler<Card, Card>(
-                        requirements: new List<ISlotRequirement<Card>>() { new InCountedPool<Card>(typeBins[type]) },
-                        initAction: c => c,
-                        successAction: null,
-                        failureAction: () => log.LogDebug("index deez"),
-                        potentialPool: typeBins[type].OrderBy(c => c.InstanceId).PadEnd(1000)
-                    );
-                var countedPoolReq2 = (InCountedPool<Card>)indexSampler.requirements.First(r => r is InCountedPool<Card>);
+                var indexRng = new RandomGen(indexRootRng.NextULong());
+                var groupRng = new RandomGen(indexRng.NextULong());
 
-                foreach (int i in indexes)
+                var indexes = typeSlots[type];
+
+                if (indexes.Count == 1)
                 {
-                    var rolledCard = indexSampler.Roll(indexRng, null, out var samplerLogInfo);
-                    rez[i] = rolledCard;
-                    countedPoolReq2.ReduceCount(rolledCard);
+                    rez[indexes[0]] = cardBins[type].First();
+                    continue;
                 }
+
+
+                //var encodedGroups = new List<IEnumerable<Card>>(Enumerable.Repeat<IEnumerable<Card>>(null, totalGroups));
+                //var groupCount = new List<int>();
+                var groupsSample = new RepeatableUniformRandomPool<UniformUniqueRandomPool<Card>>();
+                groupsSample.AddRange(Enumerable.Repeat<UniformUniqueRandomPool<Card>>(null, totalGroups));
+                int singleGroupIndex = -1;
+
+                foreach (var g in EncodeCardsByProperties(cardBins[type]))
+                {
+                    var count = g.Count();
+                    if (count > 0)
+                    {
+                        var cards = g.AsEnumerable();
+                        if (count > 1)
+                            cards = cards.OrderBy(c => c.InstanceId).PadEnd(20);
+                        groupsSample[g.Key] = new UniformUniqueRandomPool<Card>(cards);
+                    }
+                    if (singleGroupIndex == -1)
+                        singleGroupIndex = g.Key;
+                    else
+                        singleGroupIndex = -2;
+                }
+
+
+                
+                int ii = 0;
+                int gRolls = 0;
+                while (ii < indexes.Count)
+                {
+                    UniformUniqueRandomPool<Card> groupPool;
+                    if (singleGroupIndex >= 0)
+                        groupPool = groupsSample[singleGroupIndex];
+                    else
+                        groupPool = groupsSample.Sample(indexRng);
+                    if (groupPool != null && groupPool.Count > 0)
+                    {
+                        Card card = null;
+                        while (card == null && groupPool.Count > 0)
+                            card = groupPool.Sample(groupRng);
+
+                        rez[indexes[ii]] = card;
+                        ii++;
+                    }
+                    gRolls++;
+                }
+
+                totalGRolls += gRolls;
             }
+
+            log.LogDebug("grolls: " + totalGRolls);
 
             return rez;
 
         }
+
+        public const int upgradeGroups = 2;
+        public static readonly int costGroups = 10;
+        public static readonly int keywordGroups = 8 + 1;
+        public static readonly int totalGroups = upgradeGroups * costGroups * keywordGroups;
+        public static readonly int totalTrackedKeywords = (int)Math.Log(keywordGroups - 1, 2);
+        //public static readonly int
+
+        public static IEnumerable<IGrouping<int, Card>> EncodeCardsByProperties(IEnumerable<Card> collection)
+        {
+
+            var representedKeywords =  Enumerable.Repeat(Keyword.None, totalTrackedKeywords).ToArray();
+
+            var groupsByProperties = collection
+                .GroupBy(card =>
+                {
+                    int add = (card.IsUpgraded ? 1 : 0) * ((totalGroups / upgradeGroups) - 1);
+
+                    add = add + (card.Cost.Amount < costGroups ? card.Cost.Amount : costGroups) * ((totalGroups / upgradeGroups / costGroups) - 1);
+
+
+                    var maskedKeywords = (card.Keywords ^ (card.IsUpgraded ? card.Config.UpgradedKeywords : card.Config.Keywords));
+
+                    var kGroupCode = 0;
+                    var kBits = Enumerable.Repeat(0, totalTrackedKeywords).ToArray();
+                    if (maskedKeywords > 0)
+                    {
+                        foreach (var o in Enum.GetValues(typeof(Keyword)))
+                        {
+                            var k = (Keyword)o;
+                            if (maskedKeywords.HasFlag(k))
+                            {
+                                for (int i = representedKeywords.Count() - 1; i >= 0; i--)
+                                {
+                                    if (representedKeywords[i] == k || representedKeywords[i] == Keyword.None)
+                                    {
+                                        maskedKeywords ^= k;
+                                        representedKeywords[i] = k;
+                                        kBits[i] = 1;
+                                        break;
+                                    }
+                                }
+                            }
+
+                        }
+                        if (maskedKeywords == 0)
+                            kGroupCode = Helpers.BitArrayToInt(kBits);
+                        else
+                            kGroupCode = keywordGroups;
+                    }
+
+
+                    add = add + (kGroupCode);// * ((totalG / upgradeGn / costGn / keywordGn));
+
+                    return add;
+                });
+
+            return groupsByProperties;
+        }
+
 
     }
 }

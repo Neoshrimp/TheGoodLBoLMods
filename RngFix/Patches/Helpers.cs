@@ -54,5 +54,30 @@ namespace RngFix.Patches
             dic[key] = value;
             return false;
         }
+
+        public static int BitArrayToInt(int[] bitArray)
+        {
+            int result = 0;
+            for (int i = 0; i < bitArray.Length; i++)
+            {
+                if (bitArray[i] == 1)
+                {
+                    result |= (1 << i);
+                }
+            }
+            return result;
+        }
+
+        // Brian Kernighan
+        public static int CountSetBits(ulong n)
+        {
+            int count = 0;
+            while (n > 0)
+            {
+                n &= (n - 1);
+                count++;
+            }
+            return count;
+        }
     }
 }

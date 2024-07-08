@@ -20,6 +20,7 @@ using RngFix.CustomRngs;
 using RngFix.CustomRngs.Sampling;
 using RngFix.CustomRngs.Sampling.Pads;
 using RngFix.CustomRngs.Sampling.UniformPools;
+using RngFix.Patches;
 using RngFix.Patches.Cards;
 using RngFix.Patches.Debug;
 using System;
@@ -116,62 +117,180 @@ namespace RngFix
 
         private void Update()
         {
-            if (false && debgugBind.IsDown() && GrRngs.Gr() != null)
+            if (debgugBind.IsDown() && GrRngs.Gr() != null)
             {
                 var gr = GrRngs.Gr();
-                var grrngs = GrRngs.GetOrCreate(gr);
-                var stage = gr.CurrentStage;
+/*                var grrngs = GrRngs.GetOrCreate(gr);
+                var stage = gr.CurrentStage;*/
                 //DisableManaBaseAffectedCardWeights_Patch.tempDebugDisable = false;
-
-
-
                 var seed = RandomGen.ParseSeed("deeznuts");
-                log.LogDebug(string.Join(";", BattleRngs.Shuffle(new RandomGen(seed),
-                    new List<Card>() {
-                        Library.CreateCard<Shoot>(),
-                        Library.CreateCard<Shoot>(),
 
-                        Library.CreateCard<SuikaBigball>(),
-                        Library.CreateCard<IceBarrier>(),
-                        Library.CreateCard<FrostGarden>(),
-                        //Library.CreateCard<Shoot>(),
-
-                        Library.CreateCard<MeilingBlock>(),
-                        Library.CreateCard<PerfectServant>(),
-                        Library.CreateCard<TwoBalls>(),
-                        //Library.CreateCard<TwoBalls>(),
-                }).Select(c => $"{c.Name}")));
+                var potentialCards = new HashSet<Type>(CardConfig.AllConfig().Select(cc => TypeFactory<Card>.TryGetType(cc.Id)));
+                log.LogDebug(string.Join(";", BattleRngs.InfiteDeck.Items.Where(t => !potentialCards.Contains(t)).Select(t => t?.Name ?? null)));
 
 
-                log.LogDebug(string.Join(";", BattleRngs.Shuffle(new RandomGen(seed),
-                    new List<Card>() {
-                        Library.CreateCard<Shoot>(),
-                        Library.CreateCard<Shoot>(),
+                potentialCards.Where(t => t != null).Do(t => { var c = Library.CreateCard(t); c.GameRun = gr; gr.AddDeckCard(c, false); });
 
-                        Library.CreateCard<SuikaBigball>(),
-                        Library.CreateCard<IceBarrier>(),
-                        Library.CreateCard<FrostGarden>(),
-                        //Library.CreateCard<Shoot>(),
+                /*                var exPool = new ExhaustibleUniformPool<Card>(new List<Card>() {
+                                        Library.CreateCard<Shoot>(),
+                                        Library.CreateCard<Shoot>(),
+                                        Library.CreateCard<Shoot>(),
 
-                        Library.CreateCard<MeilingBlock>(),
-                        //Library.CreateCard<MeilingBlock>(),
 
-                        Library.CreateCard<PerfectServant>(),
-                        //Library.CreateCard<PerfectServant>(),
+                                        Library.CreateCard<TwoBalls>(),
+                                        Library.CreateCard<TwoBalls>(),
 
-                        Library.CreateCard<TwoBalls>(),
-                        Library.CreateCard<TwoBalls>(),
-                }).Select(c => $"{c.Name}")));
 
-                var bigDick = new List<Card>(Enumerable.Repeat<Card>(Library.CreateCard<Shoot>(), 9999));
-                var bigRng = new RandomGen(RandomGen.GetRandomSeed());
-                var sw = new Stopwatch();
-                sw.Start();
+                                        Library.CreateCard<SuikaBigball>(),
 
-                BattleRngs.Shuffle(new RandomGen(), bigDick);
 
-                sw.Stop();
-                log.LogDebug(sw.Elapsed);
+                                }, 20);
+
+
+                                var deezRng = new RandomGen(seed);
+                                var rezL = new List<Card>();
+                                while (exPool.GroupCount > 0 || exPool.HasNulls())
+                                {
+                                    rezL.Add(exPool.Sample(deezRng));
+                                }
+                                log.LogDebug(string.Join(";", rezL.Select(c => c == null ? "null" : c.Name)));*/
+
+                /*                log.LogDebug(string.Join(";", BattleRngs.Shuffle(new RandomGen(seed),
+                                    new List<Card>() {
+                                        Library.CreateCard<Shoot>(),
+                                        Library.CreateCard<Shoot>(),
+
+                                        Library.CreateCard<SuikaBigball>(),
+                                        Library.CreateCard<IceBarrier>(),
+                                        Library.CreateCard<FrostGarden>(),
+                                        //Library.CreateCard<Shoot>(),
+
+                                        Library.CreateCard<MeilingBlock>(),
+                                        Library.CreateCard<PerfectServant>(),
+                                        Library.CreateCard<TwoBalls>(),
+                                        //Library.CreateCard<TwoBalls>(),
+                                }).Select(c => $"{c.Name}")));
+
+
+                                log.LogDebug(string.Join(";", BattleRngs.Shuffle(new RandomGen(seed),
+                                    new List<Card>() {
+                                        Library.CreateCard<Shoot>(),
+                                        Library.CreateCard<Shoot>(),
+
+                                        Library.CreateCard<SuikaBigball>(),
+                                        Library.CreateCard<IceBarrier>(),
+                                        Library.CreateCard<FrostGarden>(),
+                                        //Library.CreateCard<Shoot>(),
+
+                                        Library.CreateCard<MeilingBlock>(),
+                                        //Library.CreateCard<MeilingBlock>(),
+
+                                        Library.CreateCard<PerfectServant>(),
+                                        //Library.CreateCard<PerfectServant>(),
+
+                                        Library.CreateCard<TwoBalls>(),
+                                        Library.CreateCard<TwoBalls>(),
+                                }).Select(c => $"{c.Name}")));*/
+
+                var l = new List<Card>();
+
+                var upProb = AccessTools.PropertySetter(typeof(Card), nameof(Card.IsUpgraded));
+
+                for (int i = 0; i< 20; i++)
+                {
+                    var card = Library.CreateCard<LunaDial>();
+                    card.InstanceId = i;
+
+                    if (i > 4)
+                        upProb.Invoke(card, new object[] { true });
+                    if (i > 8)
+                        card.AuraCost = new ManaGroup() { Any = 1 };
+
+                    if (i > 10)
+                        card.AuraCost = new ManaGroup() { Any = 1, Red = 1 };
+
+                    if (i > 12)
+                        card.Keywords |= Keyword.AutoExile;
+                    if (i > 14)
+                        card.Keywords |= Keyword.Echo;
+                    if (i > 16)
+                        upProb.Invoke(card, new object[] { false });
+                    if (i > 18)
+                        card.AuraCost = new ManaGroup() { };
+
+                    l.Add(card);
+                }
+
+                var maxGroup = Library.CreateCard<LunaDial>();
+                maxGroup.IsUpgraded = true;
+                maxGroup.AuraCost = new ManaGroup() { Any = 10 };
+                maxGroup.Keywords |= Keyword.Copy | Keyword.Scry | Keyword.AutoExile | Keyword.Synergy;
+                l.Add(maxGroup);
+
+                var notMax = Library.CreateCard<LunaDial>();
+                notMax.IsUpgraded = true;
+                notMax.AuraCost = new ManaGroup() { Any = 0 };
+                notMax.Keywords |= Keyword.Copy | Keyword.Scry | Keyword.AutoExile | Keyword.Synergy;
+                l.Add(notMax);
+
+                var minGroup = Library.CreateCard<LunaDial>();
+                minGroup.IsUpgraded = false;
+                minGroup.FreeCost = true;
+
+                l.Add(minGroup);
+
+                //log.LogDebug(string.Join(";", l.Select(c => string.Join(",",  new object[] { c.IsUpgraded, c.Cost, c.Keywords }))));
+
+
+
+                var groupsByProperties = new List<IGrouping<int, Card>>(BattleRngs.EncodeCardsByProperties(l));
+
+               /*     .GroupBy(c => string.Join("", new object[]
+                    {
+                        c.IsUpgraded,
+                        c.Cost.Amount,
+                        "|",
+                        //(ulong)c.Keywords
+                        (c.Keywords ^ (c.IsUpgraded ? c.Config.UpgradedKeywords : c.Config.Keywords))
+                        //(ulong)c.Keywords
+                    }))*/
+                    /*                    .Select(g => g.AsEnumerable())
+                                        .Aggregate((g1, g2) => g1.Concat(g2))*/
+                    ;
+
+                log.LogDebug(string.Join(";", groupsByProperties.Select(g => g.Key).OrderBy(k => k)));
+                log.LogDebug("count: " + groupsByProperties.Count());
+
+
+                //int cardGroup = 3;
+
+                int upgradeGn = 2;
+                int costGn = 10;
+                int keywordGn = 8 + 1;
+                int totalG = upgradeGn * costGn * keywordGn;
+                var groupList = new List<string>(Enumerable.Repeat<string>(null, totalG));
+
+
+                foreach (var g in groupsByProperties)
+                {
+                    var card = g.First();
+                    var maskedKeywords = (card.Keywords ^ (card.IsUpgraded ? card.Config.UpgradedKeywords : card.Config.Keywords));
+                    groupList[g.Key] = $"{card.IsUpgraded}{card.Cost.Amount}|{maskedKeywords}";
+
+                    //add = add + ()
+                }
+                log.LogDebug(string.Join(";", groupList.Select((k, i) => (k, i)).Where(tu => tu.k != null).Select(tu => $"{tu.i}:{tu.k}")));
+                log.LogDebug("count: " + groupList.Where(k => k != null).Count());
+
+                /*                var bigDick = new List<Card>(Enumerable.Repeat<Card>(Library.CreateCard<Shoot>(), 9999));
+                                var bigRng = new RandomGen(RandomGen.GetRandomSeed());
+                                var sw = new Stopwatch();
+                                sw.Start();
+
+                                BattleRngs.Shuffle(new RandomGen(), bigDick);
+
+                                sw.Stop();
+                                log.LogDebug(sw.Elapsed);*/
 
                 /*                gr.CardValidDebugLevel = 0;
                                 grrngs.CardSampler.BuildPool(Padding.CardPadding());
@@ -180,7 +299,7 @@ namespace RngFix
                                 gr.CardValidDebugLevel = 1;
                                 grrngs.CardSampler.BuildPool(Padding.CardPadding());
                                 SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.Slot, battleRolling: false, rolls: 1000, seed: 2405181760243075183)*/
-                
+
 
 
                 /*                var cChar = SamplerDebug.SimulateCardRoll(9264767910880677932, stage.BossCardCharaWeight, out SamplerLogInfo _, manaBase: new ManaGroup() { Green = 3, Blue = 2, Colorless = 1 }, sampler: grrngs.CardSampler, logToFile: true);

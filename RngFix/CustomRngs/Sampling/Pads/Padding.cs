@@ -160,7 +160,7 @@ namespace RngFix.CustomRngs.Sampling.Pads
             if (bins.TryGetValue(modNeutral, out var moddedNeutrals))
                 rez = rez.Concat(EndPadding(moddedBuffer, moddedNeutrals));
 
-            if (bins.TryGetValue(modNeutral, out var lost))
+            if (bins.TryGetValue(lostBin, out var lost))
                 rez = rez.Concat(lost);
 
             rez = EndPadding(total, rez);
