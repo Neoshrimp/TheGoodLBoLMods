@@ -11,6 +11,7 @@ using LBoL.EntityLib.Cards.Character.Sakuya;
 using LBoL.EntityLib.Cards.Neutral.Blue;
 using LBoL.EntityLib.Cards.Neutral.NoColor;
 using LBoL.EntityLib.Cards.Neutral.Red;
+using LBoL.EntityLib.Cards.Neutral.TwoColor;
 using LBoL.EntityLib.Cards.Neutral.White;
 using LBoL.Presentation;
 using LBoL.Presentation.UI.Panels;
@@ -125,11 +126,14 @@ namespace RngFix
                 //DisableManaBaseAffectedCardWeights_Patch.tempDebugDisable = false;
                 var seed = RandomGen.ParseSeed("deeznuts");
 
+                //Padding.OutputPadding(BattleRngs.PaddedCards);
+
                 var potentialCards = new HashSet<Type>(CardConfig.AllConfig().Select(cc => TypeFactory<Card>.TryGetType(cc.Id)));
                 log.LogDebug(string.Join(";", BattleRngs.InfiteDeck.Items.Where(t => !potentialCards.Contains(t)).Select(t => t?.Name ?? null)));
 
-
                 potentialCards.Where(t => t != null).Do(t => { var c = Library.CreateCard(t); c.GameRun = gr; gr.AddDeckCard(c, false); });
+
+
 
                 /*                var exPool = new ExhaustibleUniformPool<Card>(new List<Card>() {
                                         Library.CreateCard<Shoot>(),

@@ -6,6 +6,7 @@ using LBoL.Core.Adventures;
 using LBoL.Core.Battle;
 using LBoL.Core.Cards;
 using LBoL.Core.Stations;
+using LBoL.EntityLib.Cards.Neutral.TwoColor;
 using LBoL.EntityLib.Cards.Neutral.White;
 using LBoL.Presentation;
 using RngFix.CustomRngs.Sampling;
@@ -67,6 +68,9 @@ namespace RngFix.CustomRngs
             var slotRng = new RandomGen(rng.NextULong());
             var indexRootRng = new RandomGen(slotRng.NextULong());
 
+            if (toShuffle.Count <= 1)
+                return toShuffle.ToList();
+
 
             var typeSlots = new Dictionary<Type, List<int>>();
             var cardBins = new Dictionary<Type, List<Card>>();
@@ -80,20 +84,11 @@ namespace RngFix.CustomRngs
 
 
 
-            var availableSlot = new HashSet<int>(Enumerable.Range(0, toShuffle.Count));
-            var slotShuffler = new UniformUniqueRandomPool<int>();
-            slotShuffler.AddRange(Enumerable.Range(0, Math.Max(9999, toShuffle.Count)));
-
-
 
             var potentialCards = new InCountedPool<Type>(toShuffle.Select(c => c.GetType()));
 
 
-            //log.LogDebug(string.Join(";", BattleRngs.InfiteDeck.Items.Where(t => t != null && !potentialCards.CountedPool.ContainsKey(t)).Select(t => t?.Name ?? "null")));
 
-            var dickSet = new HashSet<Type>(InfiteDeck);
-
-            log.LogDebug(string.Join(";", potentialCards.CountedPool.Keys.Where(t => !dickSet.Contains(t)).Select(t => t?.Name ?? "null")));
 
 
             // 1st pass: shuffle by card type preserving card relative order
@@ -166,23 +161,26 @@ namespace RngFix.CustomRngs
                     if (singleGroupIndex >= 0)
                         groupPool = groupsSample[singleGroupIndex];
                     else
+                    { 
                         groupPool = groupsSample.Sample(indexRng);
-                    if (groupPool != null && groupPool.Count > 0)
+                        gRolls++;
+                    }
+                    if (groupPool != null && groupPool.NonNullCount > 0)
                     {
                         Card card = null;
-                        while (card == null && groupPool.Count > 0)
+                        while (card == null)
                             card = groupPool.Sample(groupRng);
 
                         rez[indexes[ii]] = card;
                         ii++;
                     }
-                    gRolls++;
                 }
 
                 totalGRolls += gRolls;
             }
 
             log.LogDebug("grolls: " + totalGRolls);
+
 
             return rez;
 

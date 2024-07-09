@@ -9,6 +9,7 @@ using LBoL.EntityLib.Adventures.FirstPlace;
 using LBoL.EntityLib.Exhibits.Shining;
 using LBoL.Presentation;
 using RngFix.CustomRngs;
+using RngFix.CustomRngs.Sampling.Pads;
 using RngFix.Patches.Debug;
 using System;
 using System.Collections.Generic;
@@ -61,7 +62,7 @@ namespace RngFix.Patches
             grRngs.persRngs.extraCardRewardRng = new RandomGen(gr.RootRng.NextULong());
 
             grRngs.unusedRoot0 = new RandomGen(gr.RootRng.NextULong());
-
+            
         }
 
         // custom rngs are initialized right after root rng is created, ensuring any additional rootRng calls in future updates won't influence custom rngs seeding.
