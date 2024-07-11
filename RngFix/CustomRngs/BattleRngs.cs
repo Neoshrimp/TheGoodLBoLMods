@@ -16,6 +16,7 @@ using RngFix.Patches;
 using Spine;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -38,6 +39,27 @@ namespace RngFix.CustomRngs
         private static IEnumerable<Type> paddedCards = null;
         private static RepeatableUniformRandomPool<Type> infiteDeck = null;
 
+
+        private static WeightedSlotSampler<Type> shuffler = null;
+        public static WeightedSlotSampler<Type> Shuffler 
+        { 
+            get 
+            {
+                if (shuffler == null)
+                    shuffler = new WeightedSlotSampler<Type>(
+                            requirements: new List<ISlotRequirement<Type>>(),
+                            initAction: t => t,
+                            successAction: null,
+                            failureAction: () => log.LogDebug("RollingDeez"),
+                            potentialPool: PaddedCards
+                        )
+                        {
+                            factionRange = new ProbFactionRange(new float[] { 5f, 7f, 10f })
+                        };
+
+                return shuffler;
+            } 
+        }
 
 
         public static IEnumerable<Type> PaddedCards
@@ -63,6 +85,7 @@ namespace RngFix.CustomRngs
             }
         }
 
+
         public static List<Card> Shuffle(RandomGen rng, IList<Card> toShuffle)
         {
             var slotRng = new RandomGen(rng.NextULong());
@@ -83,20 +106,80 @@ namespace RngFix.CustomRngs
             }
 
 
+            var totalElapsed = new TimeSpan(0);
+            var st = new Stopwatch();
+            st.Start();
+
+            var typeCounts = new Dictionary<Type, int>();
+            int totalCount = toShuffle.Count;
+            //int maxCount = 0;
+            int maxDupes = 20;
+            var overLimitCc = new List<Card>(100);
+
+            foreach (var c in toShuffle)
+            {
+                var cType = c.GetType();
+                typeCounts.TryAdd(cType, 0);
+                var count = ++typeCounts[cType];
+                //maxCount = Math.Max(maxCount, count);
+                if (count > maxDupes)
+                {
+                    overLimitCc.Add(c);
+                }
+            }
+
+            var overLimitTypes = overLimitCc.OrderBy(c => c.Config.Index).Select(c => c.GetType()).Cast<Type>().PadEnd(100);
 
 
-            var potentialCards = new InCountedPool<Type>(toShuffle.Select(c => c.GetType()));
+            var potentialCards = new InCountedPool<Type>(typeCounts, totalCount);
+            log.LogDebug($"potential pool {st.Elapsed}");
+            totalElapsed += st.Elapsed;
+            st.Restart();
 
 
+            var infiniteShufflingDeck = new List<Type>();
+            foreach (var t in PaddedCards)
+            {
+                if (t != null && potentialCards.IsSatisfied(t))
+                    infiniteShufflingDeck.AddRange(Enumerable.Repeat(t, Math.Min(potentialCards.CountedPool[t], maxDupes)).PadEnd(maxDupes));
+                else infiniteShufflingDeck.AddRange(new Type[maxDupes]);
+            }
+            infiniteShufflingDeck.AddRange(overLimitTypes);
 
 
+            //infiniteShufflingDeck.Shuffle(slotRng);
+
+            log.LogDebug($"infinite shuffling {st.Elapsed}");
+            totalElapsed += st.Elapsed;
+            st.Restart();
 
             // 1st pass: shuffle by card type preserving card relative order
             int rolls = 0;
             int index = 0;
+            int infiniteCount = infiniteShufflingDeck.Count;
+            infiniteShufflingDeck.Shuffle(slotRng);
             while (potentialCards.Count > 0)
             {
-                var cType = InfiteDeck.Sample(slotRng);
+                //var cType = InfiteDeck.Sample(slotRng);
+                /*                Type cType = null;
+                                SamplerLogInfo logInfo = null;
+                                if (potentialCards.Count == 1)
+                                    cType = potentialCards.CountedPool.Keys.First();
+                                else
+                                    cType = infiniteShufflingDeck[isd];*/
+
+
+
+/*                int shuffleIndex = slotRng.NextInt(0, infiniteCount);
+
+                Type toSwap = infiniteShufflingDeck[infiniteCount];
+                Type cType = infiniteShufflingDeck[shuffleIndex];
+                infiniteShufflingDeck[infiniteCount] = cType;
+                infiniteShufflingDeck[shuffleIndex] = toSwap;
+                infiniteCount--;*/
+                Type cType = infiniteShufflingDeck[rolls];
+
+
                 if (cType != null && potentialCards.IsSatisfied(cType))
                 {
                     typeSlots.GetOrCreateVal(cType, () => new List<int>(), out var ctIndexes);
@@ -105,29 +188,42 @@ namespace RngFix.CustomRngs
                     potentialCards.ReduceCount(cType);
                     index++;
                 }
-
-                rolls++;
+                rolls += 1;
             }
             log.LogDebug($"infinite rolls: {rolls}");
 
+            log.LogDebug($"types to slots {st.Elapsed}");
+            totalElapsed += st.Elapsed;
+            st.Restart();
 
-            var rez = Enumerable.Repeat<Card>(null, toShuffle.Count).ToList();
+
+
+            log.LogDebug($"overlimit shuffle {st.Elapsed}");
+            totalElapsed += st.Elapsed;
+            st.Restart();
+
+            var rez = new Card[toShuffle.Count];//Enumerable.Repeat<Card>(null, toShuffle.Count).ToList();
+
+
 
             int totalGRolls = 0;
             // 2nd pass assign concrete cards to type slots
             foreach (var type in typeSlots.Keys)
             {
-                var indexRng = new RandomGen(indexRootRng.NextULong());
-                var groupRng = new RandomGen(indexRng.NextULong());
 
                 var indexes = typeSlots[type];
 
                 if (indexes.Count == 1)
                 {
                     rez[indexes[0]] = cardBins[type].First();
+                    indexRootRng.NextULong();
                     continue;
                 }
+                var indexRng = new RandomGen(indexRootRng.NextULong());
+                var groupRng = new RandomGen(indexRng.NextULong());
 
+
+                
 
                 //var encodedGroups = new List<IEnumerable<Card>>(Enumerable.Repeat<IEnumerable<Card>>(null, totalGroups));
                 //var groupCount = new List<int>();
@@ -180,9 +276,20 @@ namespace RngFix.CustomRngs
             }
 
             log.LogDebug("grolls: " + totalGRolls);
+            log.LogDebug($"instances to slots {st.Elapsed}");
+            totalElapsed += st.Elapsed;
+            st.Restart();
 
 
-            return rez;
+            var listRez = rez.ToList();
+            log.LogDebug($"toList {st.Elapsed}");
+            totalElapsed += st.Elapsed;
+            st.Restart();
+            log.LogDebug($"---{totalElapsed}----");
+
+            //log.LogDebug(string.Join(";", rez.Select((c, i)=> $"{i}:{c.Name}")));
+
+            return listRez;
 
         }
 

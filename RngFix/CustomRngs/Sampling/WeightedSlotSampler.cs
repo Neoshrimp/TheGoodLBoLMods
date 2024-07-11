@@ -37,7 +37,7 @@ namespace RngFix.CustomRngs.Sampling
             this.constantPotentialPool.AddRange(potentialPool);
         }
 
-        override public T Roll(RandomGen rng, Func<Type, float> getW, out SamplerLogInfo logInfo, Predicate<Type> filter = null, Func<T> fallback = null)
+        override public T Roll(RandomGen rng, Func<Type, float> getW, out SamplerLogInfo logInfo, Predicate<Type> filter = null, Func<T> fallback = null, float presetMaxW = 0f)
         {
             T rez = default;
             bool rezFound = false;
@@ -47,10 +47,10 @@ namespace RngFix.CustomRngs.Sampling
             var wRollingRng = new RandomGen(itemRollingRng.NextULong());
 
             float rawTotalW = 0f;
-            float rawMaxW = 0f;
+            float rawMaxW = presetMaxW;
 
             float possibleTotalW = 0f;
-            float possibleMaxW = 0f;
+            float possibleMaxW = presetMaxW;
 
             logInfo = new SamplerLogInfo();
 
@@ -58,22 +58,22 @@ namespace RngFix.CustomRngs.Sampling
 
             Func<Type, float> getWwrap = t => t == null ? 0f : getW(t);
 
-            foreach (var re in constantPotentialPool)
-            {
-                var t = re.Elem;
-                var w = getWwrap(t);
-                if (w > 0
-                    && requirements.All(r => r.IsSatisfied(t))
-                    && (filter == null || filter(t)))
+            if(possibleMaxW > 0)
+                foreach (var re in constantPotentialPool)
                 {
+                    var t = re.Elem;
+                    var w = getWwrap(t);
+                    if (w > 0
+                        && requirements.All(r => r.IsSatisfied(t))
+                        && (filter == null || filter(t)))
+                    {
 
-                    possibleTotalW += w;
-                    possibleMaxW = Math.Max(possibleMaxW, w);
+                        possibleTotalW += w;
+                        possibleMaxW = Math.Max(possibleMaxW, w);
+                    }
+                    rawTotalW += w;
+                    rawMaxW = Math.Max(rawMaxW, w);
                 }
-                rawTotalW += w;
-                rawMaxW = Math.Max(rawMaxW, w);
-
-            }
 
 
             logInfo.rawMaxW = rawMaxW;

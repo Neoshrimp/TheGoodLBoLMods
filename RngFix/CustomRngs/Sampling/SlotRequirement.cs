@@ -134,6 +134,8 @@ namespace RngFix.CustomRngs.Sampling
             {
                 countedPool[type]--;
                 count--;
+                if (countedPool[type] == 0)
+                    countedPool.Remove(type);
                 return true;
             }
             return false;

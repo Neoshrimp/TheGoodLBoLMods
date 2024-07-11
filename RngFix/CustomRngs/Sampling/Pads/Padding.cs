@@ -86,7 +86,7 @@ namespace RngFix.CustomRngs.Sampling.Pads
                 padding = 0;
             }
 
-            return collection.Concat(Enumerable.Repeat<T>(null, padding));
+            return collection.Concat(new T[padding]);
         }
         public static IEnumerable<T> PadEnd<T>(this IEnumerable<T> collection, int targetSize) where T : class => EndPadding<T>(targetSize, collection);
 

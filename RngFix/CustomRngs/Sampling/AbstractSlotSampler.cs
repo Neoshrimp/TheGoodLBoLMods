@@ -10,7 +10,7 @@ namespace RngFix.CustomRngs.Sampling
     {
 
         public List<ISlotRequirement<PT>> requirements = new List<ISlotRequirement<PT>>();
-        protected Func<PT, T> initAction;
+        public Func<PT, T> initAction;
         public Action<T> successAction = null;
         public Action failureAction = null;
 
@@ -31,7 +31,7 @@ namespace RngFix.CustomRngs.Sampling
             BuildPool(potentialPool);
         }
 
-        public abstract T Roll(RandomGen rng, Func<PT, float> getW, out SamplerLogInfo logInfo, Predicate<PT> filter = null, Func<T> fallback = null);
+        public abstract T Roll(RandomGen rng, Func<PT, float> getW, out SamplerLogInfo logInfo, Predicate<PT> filter = null, Func<T> fallback = null, float presetMaxW = 0f);
 
 
         public abstract void BuildPool(IEnumerable<PT> potentialPool);
