@@ -42,7 +42,7 @@ namespace RngFix.CustomRngs.Sampling
 
 
 
-        override public T Roll(RandomGen rng, Func<Type, float> getW, out SamplerLogInfo logInfo, Predicate<Type> filter = null, Func<T> fallback = null, float presetMaxW = 0f)
+        override public T Roll(RandomGen rng, Func<Type, float> getW, out SamplerLogInfo logInfo, Predicate<Type> filter = null, Func<T> fallback = null)
         {
             T rez = default;
             bool rezFound = false;

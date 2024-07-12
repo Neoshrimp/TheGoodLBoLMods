@@ -26,7 +26,7 @@ using static RngFix.BepinexPlugin;
 
 namespace RngFix.CustomRngs
 {
-    // shuffling
+    // shuffling +
     // card discovery
     // enemy move rng (killing an enemy vs not killing an enemy might result in different amount of rng advances)
     // random enemy targeting
@@ -106,13 +106,9 @@ namespace RngFix.CustomRngs
             }
 
 
-            var totalElapsed = new TimeSpan(0);
-            var st = new Stopwatch();
-            st.Start();
 
             var typeCounts = new Dictionary<Type, int>();
             int totalCount = toShuffle.Count;
-            //int maxCount = 0;
             int maxDupes = 20;
             var overLimitCc = new List<Card>(100);
 
@@ -121,7 +117,6 @@ namespace RngFix.CustomRngs
                 var cType = c.GetType();
                 typeCounts.TryAdd(cType, 0);
                 var count = ++typeCounts[cType];
-                //maxCount = Math.Max(maxCount, count);
                 if (count > maxDupes)
                 {
                     overLimitCc.Add(c);
@@ -129,12 +124,7 @@ namespace RngFix.CustomRngs
             }
 
             var overLimitTypes = overLimitCc.OrderBy(c => c.Config.Index).Select(c => c.GetType()).Cast<Type>().PadEnd(100);
-
-
             var potentialCards = new InCountedPool<Type>(typeCounts, totalCount);
-            log.LogDebug($"potential pool {st.Elapsed}");
-            totalElapsed += st.Elapsed;
-            st.Restart();
 
 
             var infiniteShufflingDeck = new List<Type>();
@@ -147,36 +137,17 @@ namespace RngFix.CustomRngs
             infiniteShufflingDeck.AddRange(overLimitTypes);
 
 
-            //infiniteShufflingDeck.Shuffle(slotRng);
 
-            log.LogDebug($"infinite shuffling {st.Elapsed}");
-            totalElapsed += st.Elapsed;
-            st.Restart();
 
             // 1st pass: shuffle by card type preserving card relative order
             int rolls = 0;
             int index = 0;
             int infiniteCount = infiniteShufflingDeck.Count;
+
             infiniteShufflingDeck.Shuffle(slotRng);
             while (potentialCards.Count > 0)
             {
-                //var cType = InfiteDeck.Sample(slotRng);
-                /*                Type cType = null;
-                                SamplerLogInfo logInfo = null;
-                                if (potentialCards.Count == 1)
-                                    cType = potentialCards.CountedPool.Keys.First();
-                                else
-                                    cType = infiniteShufflingDeck[isd];*/
 
-
-
-/*                int shuffleIndex = slotRng.NextInt(0, infiniteCount);
-
-                Type toSwap = infiniteShufflingDeck[infiniteCount];
-                Type cType = infiniteShufflingDeck[shuffleIndex];
-                infiniteShufflingDeck[infiniteCount] = cType;
-                infiniteShufflingDeck[shuffleIndex] = toSwap;
-                infiniteCount--;*/
                 Type cType = infiniteShufflingDeck[rolls];
 
 
@@ -190,21 +161,9 @@ namespace RngFix.CustomRngs
                 }
                 rolls += 1;
             }
-            log.LogDebug($"infinite rolls: {rolls}");
-
-            log.LogDebug($"types to slots {st.Elapsed}");
-            totalElapsed += st.Elapsed;
-            st.Restart();
 
 
-
-            log.LogDebug($"overlimit shuffle {st.Elapsed}");
-            totalElapsed += st.Elapsed;
-            st.Restart();
-
-            var rez = new Card[toShuffle.Count];//Enumerable.Repeat<Card>(null, toShuffle.Count).ToList();
-
-
+            var rez = new Card[toShuffle.Count];
 
             int totalGRolls = 0;
             // 2nd pass assign concrete cards to type slots
@@ -225,8 +184,6 @@ namespace RngFix.CustomRngs
 
                 
 
-                //var encodedGroups = new List<IEnumerable<Card>>(Enumerable.Repeat<IEnumerable<Card>>(null, totalGroups));
-                //var groupCount = new List<int>();
                 var groupsSample = new RepeatableUniformRandomPool<UniformUniqueRandomPool<Card>>();
                 groupsSample.AddRange(Enumerable.Repeat<UniformUniqueRandomPool<Card>>(null, totalGroups));
                 int singleGroupIndex = -1;
@@ -275,21 +232,11 @@ namespace RngFix.CustomRngs
                 totalGRolls += gRolls;
             }
 
-            log.LogDebug("grolls: " + totalGRolls);
-            log.LogDebug($"instances to slots {st.Elapsed}");
-            totalElapsed += st.Elapsed;
-            st.Restart();
 
-
-            var listRez = rez.ToList();
-            log.LogDebug($"toList {st.Elapsed}");
-            totalElapsed += st.Elapsed;
-            st.Restart();
-            log.LogDebug($"---{totalElapsed}----");
 
             //log.LogDebug(string.Join(";", rez.Select((c, i)=> $"{i}:{c.Name}")));
 
-            return listRez;
+            return rez.ToList();
 
         }
 

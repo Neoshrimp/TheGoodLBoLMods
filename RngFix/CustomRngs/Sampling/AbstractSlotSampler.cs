@@ -31,7 +31,7 @@ namespace RngFix.CustomRngs.Sampling
             BuildPool(potentialPool);
         }
 
-        public abstract T Roll(RandomGen rng, Func<PT, float> getW, out SamplerLogInfo logInfo, Predicate<PT> filter = null, Func<T> fallback = null, float presetMaxW = 0f);
+        public abstract T Roll(RandomGen rng, Func<PT, float> getW, out SamplerLogInfo logInfo, Predicate<PT> filter = null, Func<T> fallback = null);
 
 
         public abstract void BuildPool(IEnumerable<PT> potentialPool);
