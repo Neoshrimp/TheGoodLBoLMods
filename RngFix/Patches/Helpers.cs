@@ -3,16 +3,19 @@ using LBoL.Base;
 using LBoL.Base.Extensions;
 using LBoL.ConfigData;
 using LBoL.Core;
+using LBoL.Core.Adventures;
 using LBoL.Core.Cards;
 using LBoL.Core.Randoms;
 using LBoL.Core.Stations;
 using RngFix.CustomRngs;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
+using static RngFix.BepinexPlugin;
 
 namespace RngFix.Patches
 {
@@ -78,6 +81,66 @@ namespace RngFix.Patches
                 count++;
             }
             return count;
+        }
+
+
+        // FNV-1a 64-bit constants
+        private const ulong FNVOffsetBasis = 0xcbf29ce484222325;
+        private const ulong FNVPrime = 0x100000001b3;
+
+        public static ulong ToUniqueULong(this string str)
+        {
+            if (str.Length > 64)
+                throw new ArgumentException("String length should not exceed 64 characters.");
+
+            ulong hash = FNVOffsetBasis;
+
+            foreach (char c in str)
+            {
+                hash ^= (byte)c;
+                unchecked { hash *= FNVPrime; }
+                
+            }
+
+            return hash;
+        }
+
+        public static bool IsGameEntity(Type type) => type.IsSubclassOf(typeof(GameEntity)) || type.IsSubclassOf(typeof(Adventure)) || type == typeof(GameEntity) || type == typeof(Adventure);
+
+        /// <summary>
+        /// Doesn't return if method is declared as a static in unrelated class
+        /// </summary>
+        /// <param name="stackDepth"></param>
+        /// <returns></returns>
+        public static Type FindCallingEntity(int stackDepth = 3)
+        {
+            var f2m = new StackFrame(stackDepth).GetMethod();
+            var caller = f2m.DeclaringType;
+
+/*            var st = new StackTrace();
+            log.LogDebug($"---------------");
+            int i = 0;
+            foreach (var f in st.GetFrames())
+            {
+                log.LogDebug($"{i}:{f.GetMethod().DeclaringType.FullName}::{f.GetMethod().Name}");
+                i++;
+            }
+            log.LogDebug($"---------------");*/
+
+
+            //log.LogDebug($"before: {caller.Name}::{f2m.Name}|{caller.BaseType.Name}");
+            while (caller != null
+                && caller.IsNested
+                && !IsGameEntity(caller)
+                )
+                caller = caller.DeclaringType;
+
+/*            if (caller != null)
+                log.LogDebug($"{caller.Name}|{caller.BaseType.Name}");
+            else
+                log.LogDebug("null");*/
+
+            return caller;
         }
     }
 }
