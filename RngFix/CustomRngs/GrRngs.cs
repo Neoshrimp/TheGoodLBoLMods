@@ -87,6 +87,8 @@ namespace RngFix.CustomRngs
         public RandomGen battleLootRng;
         public RandomGen bossCardRewardRng; // unused
         public RandomGen moneyRewardRng;
+        public RandomGen overdraftRng;
+
         public static RandomGen GetMoneyRewardRng(GameRunController gr) => GetOrCreate(gr).moneyRewardRng;
 
 
@@ -98,7 +100,6 @@ namespace RngFix.CustomRngs
         public RandomGen unusedNode1;
         public RandomGen unusedNode2;
         public RandomGen unusedNode3;
-        public RandomGen unusedNode4;
 
         public RandomGen unusedRoot0;
 

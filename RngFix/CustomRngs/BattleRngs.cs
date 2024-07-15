@@ -35,9 +35,21 @@ namespace RngFix.CustomRngs
     public class BattleRngs
     {
         public static BattleController Battle() => GameMaster.Instance?.CurrentGameRun?.Battle;
+        public static BattleRngs GetOrCreate(BattleController battle)
+        {
+            return table.GetOrCreateValue(battle);
+        }
+
+        static ConditionalWeakTable<BattleController, BattleRngs> table = new ConditionalWeakTable<BattleController, BattleRngs>();
+
+        public OnDemandRngs battleRngs = new OnDemandRngs();
+
+
+
 
         private static IEnumerable<Type> paddedCards = null;
         private static RepeatableUniformRandomPool<Type> infiteDeck = null;
+        
 
 
         private static WeightedSlotSampler<Type> shuffler = null;

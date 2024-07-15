@@ -77,12 +77,12 @@ namespace RngFix.CustomRngs
             grRngs.bossCardRewardRng = new RandomGen(rng.NextULong()); // unused
             grRngs.moneyRewardRng = new RandomGen(rng.NextULong());
 
+            grRngs.overdraftRng = new RandomGen(rng.NextULong());
 
             grRngs.unusedNode0 = new RandomGen(rng.NextULong());
             grRngs.unusedNode1 = new RandomGen(rng.NextULong());
             grRngs.unusedNode2 = new RandomGen(rng.NextULong());
             grRngs.unusedNode3 = new RandomGen(rng.NextULong());
-            grRngs.unusedNode4 = new RandomGen(rng.NextULong());
 
             //log.LogDebug($"node master state AFTER: {rng.State}");
 
