@@ -13,7 +13,7 @@ namespace RngFix.CustomRngs
 {
     public class OnDemandRngs
     {
-        public static string GetId(string str) => str.Substring(Math.Max(0, str.Length - 64), str.Length);
+        public static string GetId(string str) => str.Substring(Math.Max(0, str.Length - 64), Math.Min(str.Length, 64));
 
         private Dictionary<string, RandomGen> rngs = new Dictionary<string, RandomGen>();
         public IReadOnlyDictionary<string, RandomGen> Rngs { get => rngs; }
@@ -21,8 +21,10 @@ namespace RngFix.CustomRngs
         public RandomGen GetOrCreateRootRng(string str, ulong initialState)
         {
             var id = GetId(str);
+            log.LogDebug(id);
 
-                rngs.GetOrCreateVal(
+
+            rngs.GetOrCreateVal(
                 id,
                 () => {
                     ulong seed = 0;
@@ -82,14 +84,14 @@ namespace RngFix.CustomRngs
 
             var st = new StackTrace();
 
-            log.LogDebug($"---------------");
+/*            log.LogDebug($"---------------");
             int i = 0;
             foreach (var f in st.GetFrames())
             {
                 log.LogDebug($"{i}:{f.GetMethod().DeclaringType.FullName}::{f.GetMethod().Name}");
                 i++;
             }
-            log.LogDebug($"---------------");
+            log.LogDebug($"---------------");*/
 
             int s = stackDepth;
             while (s <= maxStackDepth)

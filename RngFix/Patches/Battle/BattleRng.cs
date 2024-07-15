@@ -18,6 +18,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using static RngFix.BepinexPlugin;
 
 
@@ -43,7 +44,7 @@ namespace RngFix.Patches.Battle
             var caller = OnDemandRngs.FindCallingEntity();
 
 
-            __result = brngs.battleRngs.GetSubRng(caller.FullName, grrngs.NodeMaster.rng.State);
+            __result = brngs.entityRngs.GetSubRng(caller.FullName, grrngs.NodeMaster.rng.State);
 
             
         }
@@ -58,7 +59,6 @@ namespace RngFix.Patches.Battle
 
 
     [HarmonyPatch]
-    //[HarmonyDebug]
     class LockRandomTurnManaAction_Patch
     {
 
@@ -66,8 +66,6 @@ namespace RngFix.Patches.Battle
         static IEnumerable<MethodBase> TargetMethods()
         {
             yield return ExtraAccess.InnerMoveNext(typeof(LockRandomTurnManaAction), nameof(LockRandomTurnManaAction.ResolvePhaseEnumerator));
-            //yield return AccessTools.Method(typeof(AddCardsToDrawZoneAction), nameof(AddCardsToDrawZoneAction.MainPhase));
-            //yield return ExtraAccess.InnerMoveNext(typeof(MoveCardToDrawZoneAction), nameof(MoveCardToDrawZoneAction.GetPhases));
 
         }
 
@@ -90,8 +88,6 @@ namespace RngFix.Patches.Battle
         {
 
             var grrngs = GrRngs.GetOrCreate(gr);
-            var battle = gr.Battle;
-            //var overdraftSubRng = new RandomGen(grrngs.overdraftRng.NextULong());
 
             return grrngs.overdraftRng;
         }
@@ -137,28 +133,84 @@ namespace RngFix.Patches.Battle
                 .SearchForward(ci => ci.opcode == OpCodes.Call && ci.operand.ToString().Contains("SampleManyOrAll"))
                 .SetInstruction(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(LockRandomTurnManaAction_Patch), nameof(LockRandomTurnManaAction_Patch.SampleOverdraft))))
                 .InstructionEnumeration();
+        }
+
+    }
 
 
-            var matcher = new CodeMatcher(instructions);
-            while (true)
+
+    [HarmonyPatch(typeof(BattleController), nameof(BattleController.AddCardToDrawZone))]
+    class AddCardToDrawZone_Patch
+    {
+
+        public static ConditionalWeakTable<Card, string> cwt_actionUsers = new ConditionalWeakTable<Card, string>();
+
+        static RandomGen GetEntityRng(GameRunController gr, Card card)
+        {
+            var battle = gr.Battle;
+            var grrngs = GrRngs.GetOrCreate(gr);
+            var brngs = BattleRngs.GetOrCreate(battle);
+
+            if (!cwt_actionUsers.TryGetValue(card, out var actionSourceId))
+                actionSourceId = card.GetType().FullName;
+
+            return brngs.entityRngs.GetSubRng(actionSourceId, grrngs.NodeMaster.rng.State);
+        }
+
+        static int ConsistentDeckPos(RandomGen subRng, int _zero, int deckCount)
+        {
+            int max = Math.Max(2000, deckCount);
+            var allPos = new List<int>();
+            for (int i = 0; i < max; i++)
             {
-                try
-                {
-                    matcher = matcher.ReplaceRngGetter(nameof(GameRunController.BattleRng), AccessTools.Method(typeof(LockRandomTurnManaAction_Patch), nameof(LockRandomTurnManaAction_Patch.GetEntityRng)));
-                    matcher = matcher
-                        .InsertAndAdvance(new CodeInstruction(OpCodes.Ldloc_1));
-                }
-                catch (InvalidOperationException)
-                {
-                    break;
-                }
+                allPos.Add(i);
             }
-            return matcher.InstructionEnumeration();
+            allPos.Shuffle(subRng);
+            var rez = allPos.First(p => p <= deckCount);
+            return rez;
+
+        }
+
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            return new CodeMatcher(instructions)
+                .ReplaceRngGetter(nameof(GameRunController.BattleRng), AccessTools.Method(typeof(AddCardToDrawZone_Patch), nameof(AddCardToDrawZone_Patch.GetEntityRng)))
+                .Insert(new CodeInstruction(OpCodes.Ldarg_1))
+                .MatchStartForward(new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(RandomGen), nameof(RandomGen.NextInt))))
+                .SetInstruction(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(AddCardToDrawZone_Patch), nameof(AddCardToDrawZone_Patch.ConsistentDeckPos))))
+
+                .InstructionEnumeration();
+        }
+    }
+
+
+    [HarmonyPatch(typeof(AddCardsToDrawZoneAction), nameof(AddCardsToDrawZoneAction.MainPhase))]
+    class Attach_AddCardsToDrawZoneAction_Source_Patch
+    {
+        static void AttachSource(Card card, BattleAction action)
+        {
+            AddCardToDrawZone_Patch.cwt_actionUsers.AddOrUpdate(card, action.Source.GetType().FullName);
+        }
+
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            return new CodeMatcher(instructions)
+                .MatchEndForward(OpCodes.Ldloc_2)
+                .Advance(1)
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Dup))
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Ldarg_0))
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Attach_AddCardsToDrawZoneAction_Source_Patch), nameof(Attach_AddCardsToDrawZoneAction_Source_Patch.AttachSource))
+                ))
+                .InstructionEnumeration();
         }
 
 
     }
 
+
+
+
+    //yield return ExtraAccess.InnerMoveNext(typeof(MoveCardToDrawZoneAction), nameof(MoveCardToDrawZoneAction.GetPhases));
 
 
 
