@@ -139,11 +139,18 @@ namespace RngFix.Patches.Battle
 
 
 
-    [HarmonyPatch(typeof(BattleController), nameof(BattleController.AddCardToDrawZone))]
+    [HarmonyPatch]
     class AddCardToDrawZone_Patch
     {
 
-        public static ConditionalWeakTable<Card, string> cwt_actionUsers = new ConditionalWeakTable<Card, string>();
+
+        static IEnumerable<MethodBase> TargetMethods()
+        {
+            yield return AccessTools.Method(typeof(BattleController), nameof(BattleController.AddCardToDrawZone));
+            yield return AccessTools.Method(typeof(BattleController), nameof(BattleController.MoveCardToDrawZone));
+
+        }
+
 
         static RandomGen GetEntityRng(GameRunController gr, Card card)
         {
@@ -151,7 +158,7 @@ namespace RngFix.Patches.Battle
             var grrngs = GrRngs.GetOrCreate(gr);
             var brngs = BattleRngs.GetOrCreate(battle);
 
-            if (!cwt_actionUsers.TryGetValue(card, out var actionSourceId))
+            if (!Attach_InsertActionSource_Patch.cwt_actionUsers.TryGetValue(card, out var actionSourceId))
                 actionSourceId = card.GetType().FullName;
 
             return brngs.entityRngs.GetSubRng(actionSourceId, grrngs.NodeMaster.rng.State);
@@ -184,12 +191,21 @@ namespace RngFix.Patches.Battle
     }
 
 
-    [HarmonyPatch(typeof(AddCardsToDrawZoneAction), nameof(AddCardsToDrawZoneAction.MainPhase))]
-    class Attach_AddCardsToDrawZoneAction_Source_Patch
+    [HarmonyPatch]
+    class Attach_InsertActionSource_Patch
     {
+        public static ConditionalWeakTable<Card, string> cwt_actionUsers = new ConditionalWeakTable<Card, string>();
+
+
+        static IEnumerable<MethodBase> TargetMethods()
+        {
+            yield return AccessTools.Method(typeof(AddCardsToDrawZoneAction), nameof(AddCardsToDrawZoneAction.MainPhase));
+        }
+
+
         static void AttachSource(Card card, BattleAction action)
         {
-            AddCardToDrawZone_Patch.cwt_actionUsers.AddOrUpdate(card, action.Source.GetType().FullName);
+            cwt_actionUsers.AddOrUpdate(card, action.Source.GetType().FullName);
         }
 
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
@@ -199,8 +215,45 @@ namespace RngFix.Patches.Battle
                 .Advance(1)
                 .InsertAndAdvance(new CodeInstruction(OpCodes.Dup))
                 .InsertAndAdvance(new CodeInstruction(OpCodes.Ldarg_0))
-                .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Attach_AddCardsToDrawZoneAction_Source_Patch), nameof(Attach_AddCardsToDrawZoneAction_Source_Patch.AttachSource))
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Attach_InsertActionSource_Patch), nameof(Attach_InsertActionSource_Patch.AttachSource))
                 ))
+                .InstructionEnumeration();
+        }
+
+
+    }
+
+    [HarmonyPatch]
+    class Attach_MoveActionSource_Patch
+    {
+
+
+        static IEnumerable<MethodBase> TargetMethods()
+        {
+            yield return typeof(MoveCardToDrawZoneAction).GetNestedTypes(AccessTools.all).First(t => t.Name.Contains("c__DisplayClass5_0")).GetMethods(AccessTools.all).First(m => m.Name.Contains("GetPhases"));
+        }
+
+
+        static void AttachSource(Card card, BattleAction action)
+        {
+            Attach_InsertActionSource_Patch.cwt_actionUsers.AddOrUpdate(card, action.Source.GetType().FullName);
+        }
+
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            var matcher = new CodeMatcher(instructions)
+                .MatchEndForward(OpCodes.Ldfld);
+            var instance = matcher.Instruction;
+
+                
+            return matcher
+                .MatchEndForward(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(CardMovingToDrawZoneEventArgs), nameof(CardMovingToDrawZoneEventArgs.Card))))
+                .Advance(1)
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Dup))
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Ldarg_0))
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Attach_MoveActionSource_Patch), nameof(Attach_MoveActionSource_Patch.AttachSource))
+                ))
+                .Insert(instance)
                 .InstructionEnumeration();
         }
 
@@ -210,7 +263,6 @@ namespace RngFix.Patches.Battle
 
 
 
-    //yield return ExtraAccess.InnerMoveNext(typeof(MoveCardToDrawZoneAction), nameof(MoveCardToDrawZoneAction.GetPhases));
 
 
 
