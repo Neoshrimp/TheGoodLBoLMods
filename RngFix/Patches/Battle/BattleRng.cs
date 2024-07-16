@@ -117,9 +117,7 @@ namespace RngFix.Patches.Battle
             var gr = GrRngs.Gr();
             var battle = gr.Battle;
 
-
             var remainingList = remainingManaBase.ToList();
-
             var rez = new List<ManaColor>();
 
             for (int o = 0; o < count; o++)
@@ -127,13 +125,14 @@ namespace RngFix.Patches.Battle
                 if (remainingList.Count == 0)
                     break;
                 var samplingRng = new RandomGen(seedCarrier.State);
-                var overdraftOrder = Padding.PadManaColours(remainingList, groupSize: 12);
+                var overdraftOrder = Padding.PadManaColours(remainingList, inverse: true, groupSize: 12);
 
                 overdraftOrder.Shuffle(samplingRng);
                 var colour = overdraftOrder.First(c => c != null);
                 rez.Add(colour.Value);
                 remainingList.Remove(colour.Value);
 
+                //log.LogDebug(string.Join(";", overdraftOrder.Where(c => c != null)));
             }
 
             return rez.ToArray();

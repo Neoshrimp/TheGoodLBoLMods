@@ -119,7 +119,7 @@ namespace RngFix.CustomRngs.Sampling.Pads
         }
 
 
-        public static List<ManaColor?> PadManaColours(IEnumerable<ManaColor> toPad, int groupSize = 20, int leftOverSize = 20)
+        public static List<ManaColor?> PadManaColours(IEnumerable<ManaColor> toPad, bool inverse = false, int groupSize = 20, int leftOverSize = 20)
         {
             var colourCount = Enum.GetValues(typeof(ManaColor)).Length;
 
@@ -135,13 +135,18 @@ namespace RngFix.CustomRngs.Sampling.Pads
                     continue;
                 }
 
-                var i = cIndexes[c] + (int)c * groupSize;
+                var i = !inverse ? cIndexes[c] + (int)c * groupSize : -(cIndexes[c]+1) + ((int)c + 1) * groupSize;
                 rez[i] = c;
                 cIndexes[c]++;
             }
 
-
-            rez.AddRange(leftOvers.OrderBy(c => (int)c).PadEnd(leftOverSize));
+            if (!inverse)
+                rez.AddRange(leftOvers.OrderBy(c => (int)c).PadEnd(leftOverSize));
+            else
+            { 
+                rez.AddRange(Enumerable.Repeat<ManaColor?>(null, Math.Max(0, leftOverSize - leftOvers.Count)));
+                rez.AddRange(leftOvers);
+            }
 
             return rez;
         }

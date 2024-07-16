@@ -119,7 +119,7 @@ namespace RngFix
 
         private void Update()
         {
-            if (false && debgugBind.IsDown() && GrRngs.Gr() != null)
+            if (/*false && */debgugBind.IsDown() && GrRngs.Gr() != null)
             {
                 var gr = GrRngs.Gr();
 /*                var grrngs = GrRngs.GetOrCreate(gr);
@@ -127,16 +127,27 @@ namespace RngFix
                 //DisableManaBaseAffectedCardWeights_Patch.tempDebugDisable = false;
                 var seed = RandomGen.ParseSeed("deeznuts");
 
-/*                log.LogDebug(string.Join(";", Padding.PadManaColours(new ManaGroup() {
-                    Any = 2, Black = 3, Blue = 5, Colorless = 6, Green = 27, Hybrid = 5, Red = 10, White = 22, HybridColor = 1
-                }.EnumerateComponents()).Select(c => c?.ToString() ?? "null")));*/
+                log.LogDebug(string.Join(";", Padding.PadManaColours(new ManaGroup()
+                {
+                    Any = 2,
+                    Black = 3,
+                    Blue = 5,
+                    Colorless = 6,
+                    Green = 27,
+                    Hybrid = 5,
+                    Red = 10,
+                    White = 22,
+                    HybridColor = 1
+                }.EnumerateComponents(),
+                    true
+                ).Select(c => c?.ToString() ?? "null")));
 
                 //Padding.OutputPadding(BattleRngs.PaddedCards);
 
-/*                var potentialCards = new HashSet<Type>(CardConfig.AllConfig().Select(cc => TypeFactory<Card>.TryGetType(cc.Id)));
-                log.LogDebug(string.Join(";", BattleRngs.InfiteDeck.Items.Where(t => !potentialCards.Contains(t)).Select(t => t?.Name ?? null)));
+                /*                var potentialCards = new HashSet<Type>(CardConfig.AllConfig().Select(cc => TypeFactory<Card>.TryGetType(cc.Id)));
+                                log.LogDebug(string.Join(";", BattleRngs.InfiteDeck.Items.Where(t => !potentialCards.Contains(t)).Select(t => t?.Name ?? null)));
 
-                potentialCards.Where(t => t != null).Do(t => { var c = Library.CreateCard(t); c.GameRun = gr; gr.AddDeckCard(c, false); });*/
+                                potentialCards.Where(t => t != null).Do(t => { var c = Library.CreateCard(t); c.GameRun = gr; gr.AddDeckCard(c, false); });*/
 
 
 
