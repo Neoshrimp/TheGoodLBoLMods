@@ -76,7 +76,7 @@ namespace RngFix.CustomRngs
         /// </summary>
         /// <param name="stackDepth"></param>
         /// <returns></returns>
-        public static Type FindCallingEntity(int stackDepth = 3, int maxStackDepth = 6)
+        public static Type FindCallingEntity(int stackDepth = 3, int maxStackDepth = 8)
         {
             Type caller = null;
             Type firstCaller = null;
@@ -100,7 +100,6 @@ namespace RngFix.CustomRngs
                 if (stackFrame == null)
                     break;
                 var c = stackFrame.GetMethod().DeclaringType;
-
                 while (c != null
                     && c.IsNested
                     && !IsGameEntity(c)
@@ -117,6 +116,7 @@ namespace RngFix.CustomRngs
                 }
                 s++;
             }
+
 
             // if concrete gameEntity type was not found prefers the first frame walk result
             if (!gameEntityFound)

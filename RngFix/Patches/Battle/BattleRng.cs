@@ -9,6 +9,7 @@ using LBoL.Core.Cards;
 using LBoL.Core.Stations;
 using LBoL.Core.Units;
 using LBoL.EntityLib.Exhibits.Common;
+using LBoL.Presentation.UI.Widgets;
 using LBoLEntitySideloader.CustomHandlers;
 using LBoLEntitySideloader.ReflectionHelpers;
 using RngFix.CustomRngs;
@@ -16,14 +17,19 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using static RngFix.BepinexPlugin;
 
 
 namespace RngFix.Patches.Battle
 {
+
+    //2do
+    //technically hand targeting could much more sophisticated, by taking into what in the hand and selecting rng state accordingly but w/e
 
 
     [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.BattleRng), MethodType.Getter)]
@@ -38,15 +44,21 @@ namespace RngFix.Patches.Battle
             if (battle == null)
                 return;
 
+            string callerName = null;
+
+            if (EntityToCallchain.TryConsume(RandomAliveEnemy_RngId_Patch.GetAttachId(), out var entity))
+            {
+                callerName  = entity.GetType().FullName;
+            }
+
+
+            if(callerName == null)
+                callerName = OnDemandRngs.FindCallingEntity().FullName;
+
             var brngs = BattleRngs.GetOrCreate(battle);
             var grrngs = GrRngs.GetOrCreate(__instance);
+            __result = brngs.entityRngs.GetOrCreateRootRng(callerName, grrngs.NodeMaster.rng.State);
 
-            var caller = OnDemandRngs.FindCallingEntity();
-
-
-            __result = brngs.entityRngs.GetSubRng(caller.FullName, grrngs.NodeMaster.rng.State);
-
-            
         }
 
 
@@ -161,11 +173,14 @@ namespace RngFix.Patches.Battle
             if (!Attach_InsertActionSource_Patch.cwt_actionUsers.TryGetValue(card, out var actionSourceId))
                 actionSourceId = card.GetType().FullName;
 
-            return brngs.entityRngs.GetSubRng(actionSourceId, grrngs.NodeMaster.rng.State);
+            return brngs.entityRngs.GetOrCreateRootRng(actionSourceId, grrngs.NodeMaster.rng.State);
         }
 
-        static int ConsistentDeckPos(RandomGen subRng, int _zero, int deckCount)
+        static int ConsistentDeckPos(RandomGen rng, int _zero, int deckCount)
         {
+            if (deckCount == 0)
+                return 0;
+            var subRng = new RandomGen(rng.NextULong());
             int max = Math.Max(2000, deckCount);
             var allPos = new List<int>();
             for (int i = 0; i < max; i++)
@@ -260,6 +275,145 @@ namespace RngFix.Patches.Battle
 
     }
 
+
+
+    [HarmonyPatch(typeof(BattleController), nameof(BattleController.RandomAliveEnemy), MethodType.Getter)]
+    class RandomAliveEnemy_Patch
+    {
+
+        static EnemyUnit SampleByRootIndex(IEnumerable<EnemyUnit> alives, RandomGen rng)
+        {
+
+            var aliveDic = alives.ToDictionary(e => e.RootIndex, e => e);
+
+            // do not advance the rng
+            if (aliveDic.Count == 1)
+                return alives.First();
+
+            var subRng = new RandomGen(rng.NextULong());
+
+            int max = Math.Max(20, aliveDic.Count);
+            var allPos = new List<int>();
+            for (int i = 0; i < max; i++)
+                allPos.Add(i);
+            allPos.Shuffle(subRng);
+            var rez = aliveDic[allPos.First(i => aliveDic.ContainsKey(i))];
+            return rez;
+        }
+
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            return new CodeMatcher(instructions)
+                .SearchForward(ci => ci.opcode == OpCodes.Call && ci.operand.ToString().Contains("SampleOrDefault"))
+                .SetInstruction(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RandomAliveEnemy_Patch), nameof(RandomAliveEnemy_Patch.SampleByRootIndex))))
+                .InstructionEnumeration();
+        }
+    }
+
+
+
+    [HarmonyPatch(typeof(Card), nameof(Card.AttackAction), new Type[] { typeof(UnitSelector), typeof(DamageInfo), typeof(GunPair) })]
+    class RandomAliveEnemy_RngId_Patch
+    {
+
+        public static string GetAttachId() => "AttackAction";
+
+        static void AttachCard(Card card)
+        {
+            EntityToCallchain.Attach(GetAttachId(), card);
+        }
+
+
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            return new CodeMatcher(instructions)
+                .MatchEndForward(new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(UnitSelector), nameof(UnitSelector.GetEnemy))))
+                .Advance(1)
+                .MatchEndForward(new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(UnitSelector), nameof(UnitSelector.GetEnemy))))
+
+                .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RandomAliveEnemy_RngId_Patch), nameof(RandomAliveEnemy_RngId_Patch.AttachCard))))
+                .Insert(new CodeInstruction(OpCodes.Ldarg_0))
+
+
+                .InstructionEnumeration();
+        }
+
+    }
+
+
+    [HarmonyPatch]
+    //[HarmonyDebug]
+    class RandomHandAction_Patch
+    {
+
+
+        static IEnumerable<MethodBase> TargetMethods()
+        {
+            yield return AccessTools.Method(typeof(Card), nameof(Card.UpgradeRandomHandAction));
+            yield return AccessTools.Method(typeof(Card), nameof(Card.DiscardRandomHandAction));
+
+        }
+
+
+        static Card[] SampleCards(IEnumerable<Card> hand, int amount, RandomGen rng, int cutoff)
+        {
+            if (cutoff > 0 && amount >= hand.Count())
+            {
+                rng.NextULong();
+                return hand.ToArray();
+            }
+            var subRng = rng;
+            var randomizedHand = BattleRngs.Shuffle(subRng, hand.ToList());
+            return randomizedHand.GetRange(0, amount).ToArray();
+
+        }
+
+        static bool Prefix(Card __instance, int amount, ref BattleAction __result, MethodBase __originalMethod)
+        {
+            var hand = __instance.Battle.HandZone;
+            if (__originalMethod.Name.StartsWith("Upgrade"))
+            {
+                var canUpgrade = hand.Where(c => c.CanUpgradeAndPositive).ToList();
+                if (amount >= canUpgrade.Count)
+                { 
+                    __result = new UpgradeCardsAction(canUpgrade);
+                    return false;
+                }
+                return true;
+            }
+            if (__originalMethod.Name.StartsWith("Discard"))
+                if (amount >= hand.Count)
+                {
+                    // technically discard order matters
+                    __result = new DiscardManyAction(SampleCards(hand, amount, new RandomGen(__instance.BattleRng.State), 0));
+                    return false;
+                }
+
+            return true;
+        }
+
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+
+            var matcher = new CodeMatcher(instructions);
+            while (true)
+            {
+                try
+                {
+                    matcher = matcher.SearchForward(ci => ci.opcode == OpCodes.Call && ci.operand.ToString().Contains("SampleManyOrAll"))
+                        .ThrowIfInvalid("")
+                        .SetInstruction(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RandomHandAction_Patch), nameof(RandomHandAction_Patch.SampleCards))))
+                        .Insert(new CodeInstruction(OpCodes.Ldc_I4_1))
+                        .Advance(1);
+                }
+                catch (InvalidOperationException)
+                {
+                    break;
+                }
+            }
+            return matcher.InstructionEnumeration();
+        }
+    }
 
 
 
