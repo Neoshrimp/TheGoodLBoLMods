@@ -75,7 +75,7 @@ namespace RngFix.CustomRngs.Sampling.Pads
         }
 
 
-        public static IEnumerable<T> EndPadding<T>(int targetSize, IEnumerable<T> collection) where T : class
+        public static IEnumerable<T> EndPadding<T>(int targetSize, IEnumerable<T> collection)
         {
 
             int padding = targetSize - collection.Count();
@@ -88,7 +88,7 @@ namespace RngFix.CustomRngs.Sampling.Pads
 
             return collection.Concat(new T[padding]);
         }
-        public static IEnumerable<T> PadEnd<T>(this IEnumerable<T> collection, int targetSize) where T : class => EndPadding<T>(targetSize, collection);
+        public static IEnumerable<T> PadEnd<T>(this IEnumerable<T> collection, int targetSize) => EndPadding(targetSize, collection);
 
         public static List<Type> SlotByIndex(int max, IEnumerable<KeyValuePair<int, Type>> index2Type, out Dictionary<int, List<Type>> indexDupes)
         {
@@ -117,6 +117,35 @@ namespace RngFix.CustomRngs.Sampling.Pads
             //log.LogDebug(string.Join(";", indexDupes.Select(kv => $"{kv.Key}:{kv.Value.Count},{kv.Value.First().Name}")));
             return slots;
         }
+
+
+        public static List<ManaColor?> PadManaColours(IEnumerable<ManaColor> toPad, int groupSize = 20, int leftOverSize = 20)
+        {
+            var colourCount = Enum.GetValues(typeof(ManaColor)).Length;
+
+            var rez = new List<ManaColor?>(Enumerable.Repeat<ManaColor?>(null, colourCount * groupSize));
+            var cIndexes = new Dictionary<ManaColor, int>();
+            var leftOvers = new List<ManaColor?>();
+            foreach (var c in toPad)
+            {
+                cIndexes.TryAdd(c, 0);
+                if (cIndexes[c] >= groupSize)
+                {
+                    leftOvers.Add(c);
+                    continue;
+                }
+
+                var i = cIndexes[c] + (int)c * groupSize;
+                rez[i] = c;
+                cIndexes[c]++;
+            }
+
+
+            rez.AddRange(leftOvers.OrderBy(c => (int)c).PadEnd(leftOverSize));
+
+            return rez;
+        }
+
 
         public static IEnumerable<Type> ExPadding(int total = 2000, int reserveForDupes = 50)
         {

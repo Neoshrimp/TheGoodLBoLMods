@@ -127,12 +127,16 @@ namespace RngFix
                 //DisableManaBaseAffectedCardWeights_Patch.tempDebugDisable = false;
                 var seed = RandomGen.ParseSeed("deeznuts");
 
+/*                log.LogDebug(string.Join(";", Padding.PadManaColours(new ManaGroup() {
+                    Any = 2, Black = 3, Blue = 5, Colorless = 6, Green = 27, Hybrid = 5, Red = 10, White = 22, HybridColor = 1
+                }.EnumerateComponents()).Select(c => c?.ToString() ?? "null")));*/
+
                 //Padding.OutputPadding(BattleRngs.PaddedCards);
 
-                var potentialCards = new HashSet<Type>(CardConfig.AllConfig().Select(cc => TypeFactory<Card>.TryGetType(cc.Id)));
+/*                var potentialCards = new HashSet<Type>(CardConfig.AllConfig().Select(cc => TypeFactory<Card>.TryGetType(cc.Id)));
                 log.LogDebug(string.Join(";", BattleRngs.InfiteDeck.Items.Where(t => !potentialCards.Contains(t)).Select(t => t?.Name ?? null)));
 
-                potentialCards.Where(t => t != null).Do(t => { var c = Library.CreateCard(t); c.GameRun = gr; gr.AddDeckCard(c, false); });
+                potentialCards.Where(t => t != null).Do(t => { var c = Library.CreateCard(t); c.GameRun = gr; gr.AddDeckCard(c, false); });*/
 
 
 
@@ -242,7 +246,7 @@ namespace RngFix
                 minGroup.IsUpgraded = false;
                 minGroup.FreeCost = true;
 
-                l.Add(minGroup);
+                //l.Add(minGroup);
 
                 //log.LogDebug(string.Join(";", l.Select(c => string.Join(",",  new object[] { c.IsUpgraded, c.Cost, c.Keywords }))));
 
@@ -263,9 +267,9 @@ namespace RngFix
                                         .Aggregate((g1, g2) => g1.Concat(g2))*/
                     ;
 
-                log.LogDebug(string.Join(";", groupsByProperties.Select(g => g.Key).OrderBy(k => k)));
+/*                log.LogDebug(string.Join(";", groupsByProperties.Select(g => g.Key).OrderBy(k => k)));
                 log.LogDebug("count: " + groupsByProperties.Count());
-
+*/
 
                 //int cardGroup = 3;
 
