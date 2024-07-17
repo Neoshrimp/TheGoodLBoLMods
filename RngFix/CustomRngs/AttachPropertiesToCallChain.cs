@@ -23,11 +23,11 @@ namespace RngFix.CustomRngs
 
         public static string GetId(MethodBase method) => GetId(method.FullDescription());
 
-        public static void Attach(string caller, GameEntity entity)
+        public static void Attach(string caller, GameEntity entity, bool warn = true)
         {
             var id = GetId(caller);
             var wasPresent = properties.AlwaysAdd(id, entity);
-            if (wasPresent)
+            if (warn && wasPresent)
                 log.LogWarning($"{id}:{entity.Name} was not consumed");
         }
 

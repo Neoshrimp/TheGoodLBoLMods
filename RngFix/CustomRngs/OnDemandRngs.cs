@@ -124,5 +124,16 @@ namespace RngFix.CustomRngs
 
             return caller;
         }
+
+        public static Type FindDeclaringGameEntity(Type type)
+        {
+            var t = type;
+            while (t != null
+                && t.IsNested
+                && !IsGameEntity(t)
+                )
+                t = t.DeclaringType;
+            return t;
+        }
     }
 }

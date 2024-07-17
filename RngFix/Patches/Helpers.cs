@@ -7,11 +7,14 @@ using LBoL.Core.Adventures;
 using LBoL.Core.Cards;
 using LBoL.Core.Randoms;
 using LBoL.Core.Stations;
+using LBoL.Core.Units;
 using RngFix.CustomRngs;
+using RngFix.Patches.Battle;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
@@ -31,6 +34,50 @@ namespace RngFix.Patches
             return matcher.MatchForward(false, matchFor)
                  .ThrowIfNotMatch($"{targetName} getter not matched.", matchFor)
                  .Set(OpCodes.Call, newCall);
+        }
+
+        private static int RngGuard(IEnumerable<EnemyUnit> alives)
+        {
+            return alives.Count() <= 1 ? 1 : 0;
+        }
+
+        private static RandomGen FakeRng()
+        {
+            return new RandomGen();
+        }
+
+        public static CodeMatcher RngAdvancementGuard(this CodeMatcher matcher, ILGenerator generator, Func<CodeInstruction, bool> searchBack = null)
+        {
+            var currentOperand = matcher.Instruction.operand?.ToString() ?? "";
+            if (!( currentOperand.Contains(nameof(CollectionsExtensions.SampleOrDefault))
+                || currentOperand.Contains(nameof(CollectionsExtensions.SampleManyOrAll))
+                || currentOperand.Contains(nameof(CollectionsExtensions.Sample))
+                || currentOperand.Contains(nameof(CollectionsExtensions.SampleMany))
+                ))
+            {
+                throw new ArgumentException("Matcher's position is not on sampling method");
+            }
+            if (searchBack == null)
+            {
+                searchBack = ci => ci.opcode == OpCodes.Callvirt && ci.operand as MethodInfo == AccessTools.PropertyGetter(typeof(EnemyGroup), nameof(EnemyGroup.Alives));
+            }
+            var skipRng = generator.DefineLabel();
+            var doSampling = generator.DefineLabel();
+            matcher = matcher
+                .AddLabels(new Label[] { doSampling })
+
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Br, doSampling))
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Helpers), nameof(Helpers.FakeRng))).WithLabels(new Label[] { skipRng }))
+
+                .SearchBack(searchBack)
+                .ThrowIfInvalid($"{searchBack} didn't match anything")
+
+                .Advance(1)
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Dup))
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Helpers), nameof(Helpers.RngGuard))))
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Brtrue, skipRng))
+                ;
+            return matcher;
         }
 
         public static bool IsActTransition(MapNode node) => 

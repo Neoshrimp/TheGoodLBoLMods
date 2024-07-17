@@ -9,6 +9,7 @@ using LBoL.Core.Cards;
 using LBoL.Core.Stations;
 using LBoL.Core.Units;
 using LBoL.EntityLib.Cards.Character.Cirno;
+using LBoL.EntityLib.Cards.Character.Marisa;
 using LBoL.EntityLib.Exhibits.Common;
 using LBoL.Presentation.UI.Widgets;
 using LBoLEntitySideloader;
@@ -49,7 +50,7 @@ namespace RngFix.Patches.Battle
 
             string callerName = null;
 
-            if (EntityToCallchain.TryConsume(RandomAliveEnemy_RngId_Patch.GetAttachId(), out var entity))
+            if (EntityToCallchain.TryConsume(RandomAliveEnemy_AttachRngId_Patch.GetAttachId(), out var entity))
             {
                 callerName  = entity.GetType().FullName;
             }
@@ -285,17 +286,17 @@ namespace RngFix.Patches.Battle
 
 
 
+    // used to consume attached property
     [HarmonyPatch(typeof(BattleController), nameof(BattleController.RandomAliveEnemy), MethodType.Getter)]
     class RandomAliveEnemy_Patch
     {
 
         static bool Prefix(BattleController __instance, ref EnemyUnit __result)
         {
-            log.LogDebug("deez");
             var b = __instance;
             if (b.EnemyGroup.Alives.Count() == 1)
             {
-                EntityToCallchain.TryConsume(RandomAliveEnemy_RngId_Patch.GetAttachId(), out var _);
+                EntityToCallchain.TryConsume(RandomAliveEnemy_AttachRngId_Patch.GetAttachId(), out var _);
                 __result = b.EnemyGroup.Alives.First();
                 return false;
             }
@@ -304,14 +305,12 @@ namespace RngFix.Patches.Battle
         }
 
 
-
-
     }
 
 
 
     [HarmonyPatch(typeof(Card), nameof(Card.AttackAction), new Type[] { typeof(UnitSelector), typeof(DamageInfo), typeof(GunPair) })]
-    class RandomAliveEnemy_RngId_Patch
+    class RandomAliveEnemy_AttachRngId_Patch
     {
 
         public static string GetAttachId() => "AttackAction";
@@ -329,7 +328,7 @@ namespace RngFix.Patches.Battle
                 .Advance(1)
                 .MatchEndForward(new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(UnitSelector), nameof(UnitSelector.GetEnemy))))
 
-                .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RandomAliveEnemy_RngId_Patch), nameof(RandomAliveEnemy_RngId_Patch.AttachCard))))
+                .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RandomAliveEnemy_AttachRngId_Patch), nameof(RandomAliveEnemy_AttachRngId_Patch.AttachCard))))
                 .Insert(new CodeInstruction(OpCodes.Ldarg_0))
 
 
@@ -338,7 +337,7 @@ namespace RngFix.Patches.Battle
 
     }
 
-
+    
     [HarmonyPatch]
     //[HarmonyDebug]
     class RandomHandAction_Patch
@@ -385,7 +384,8 @@ namespace RngFix.Patches.Battle
 
 
     [HarmonyPatch]
-    class TargetEnemies_Patch
+    //[HarmonyDebug]
+    class TargetSingleEnemy_Patch
     {
 
 
@@ -397,6 +397,63 @@ namespace RngFix.Patches.Battle
         }
 
         static EnemyUnit SampleByRootIndex(IEnumerable<EnemyUnit> alives, RandomGen subRng)
+        {
+
+            var aliveDic = alives.ToDictionary(e => e.RootIndex, e => e);
+
+            if (aliveDic.Count == 0)
+                return null;
+
+            if (aliveDic.Count == 1)
+                return alives.First();
+
+            int max = Math.Max(20, aliveDic.Count);
+            var allPos = new List<int>();
+            for (int i = 0; i < max; i++)
+                allPos.Add(i);
+            allPos.Shuffle(subRng);
+            var rez = aliveDic[allPos.First(i => aliveDic.ContainsKey(i))];
+            return rez;
+        }
+
+
+
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator, MethodBase __originalMethod)
+        {
+
+            Func<CodeInstruction, bool> searchBack = null;
+
+            var declaringEntityName = OnDemandRngs.FindDeclaringGameEntity(__originalMethod.DeclaringType)?.Name ?? "";
+            switch (declaringEntityName)
+            {
+                case nameof(IceLaser):
+                    searchBack = ci => ci.opcode == OpCodes.Call && (ci.operand?.ToString().Contains("Where") ?? false);
+                    break;
+                default:
+                    break;
+            }
+
+            return new CodeMatcher(instructions)
+                .SearchForward(ci => ci.opcode == OpCodes.Call && ci.operand.ToString().Contains("SampleOrDefault"))
+                .SetInstruction(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(TargetSingleEnemy_Patch), nameof(TargetSingleEnemy_Patch.SampleByRootIndex))))
+                .RngAdvancementGuard(generator, searchBack)
+
+                .InstructionEnumeration();
+        }
+
+
+    }
+
+/*    [HarmonyPatch]
+    class TargetMultipleEnemies_Patch
+    {
+        static IEnumerable<MethodBase> TargetMethods()
+        {
+            yield return ExtraAccess.InnerMoveNext(typeof(Potion), nameof(Potion.EnterHandReactor));
+
+        }
+
+        static EnemyUnit[] SampleByRootIndex(IEnumerable<EnemyUnit> alives, int amount, RandomGen subRng)
         {
 
             var aliveDic = alives.ToDictionary(e => e.RootIndex, e => e);
@@ -416,12 +473,13 @@ namespace RngFix.Patches.Battle
 
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
+
             return new CodeMatcher(instructions)
                 .SearchForward(ci => ci.opcode == OpCodes.Call && ci.operand.ToString().Contains("SampleOrDefault"))
-                .SetInstruction(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(TargetEnemies_Patch), nameof(TargetEnemies_Patch.SampleByRootIndex))))
+                .SetInstruction(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(TargetMultipleEnemies_Patch), nameof(TargetMultipleEnemies_Patch.SampleByRootIndex))))
                 .InstructionEnumeration();
         }
-    }
+    }*/
 
 
 
