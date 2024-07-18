@@ -15,13 +15,31 @@ namespace RngFix.CustomRngs
     {
         public static string GetId(string str) => str.Substring(Math.Max(0, str.Length - 64), Math.Min(str.Length, 64));
 
+        private static ulong instanceCounter = 0;
+        public static ulong InstanceCounter { get => instanceCounter; }
+
         private Dictionary<string, RandomGen> rngs = new Dictionary<string, RandomGen>();
         public IReadOnlyDictionary<string, RandomGen> Rngs { get => rngs; }
+
+        public readonly ulong seedOffset = 0;
+
+        public OnDemandRngs()
+        {
+            instanceCounter++;
+        }
+
+        public OnDemandRngs(ulong? seedOffset = 0) : this()
+        {
+            if (seedOffset == null)
+                this.seedOffset = instanceCounter - 1;
+            else
+                this.seedOffset = seedOffset.Value;
+        }
 
         public RandomGen GetOrCreateRootRng(string str, ulong initialState)
         {
             var id = GetId(str);
-            log.LogDebug(id);
+            log.LogDebug(id+"_"+seedOffset);
 
 
             rngs.GetOrCreateVal(
@@ -29,7 +47,7 @@ namespace RngFix.CustomRngs
                 () => {
                     ulong seed = 0;
                     unchecked {
-                        seed = initialState + UlongHash(id);
+                        seed = initialState + UlongHash(id) + seedOffset;
                     }
                     log.LogDebug(seed);
                     return new RandomGen(seed);

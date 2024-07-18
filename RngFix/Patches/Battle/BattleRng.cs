@@ -47,52 +47,7 @@ using static RngFix.BepinexPlugin;
 namespace RngFix.Patches.Battle
 {
 
-    //2do
     //technically hand targeting could much more sophisticated, by taking into what in the hand and selecting rng state accordingly but w/e
-
-
-    [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.BattleRng), MethodType.Getter)]
-    class BattleRng_Patch
-    {
-
-
-        static void Postfix(GameRunController __instance, ref RandomGen __result)
-        {
-
-            var battle = __instance.Battle;
-            if (battle == null)
-                return;
-
-            string callerName = null;
-
-            if (EntityToCallchain.TryConsume(RandomAliveEnemy_AttachRngId_Patch.GetAttachId(), out var entity))
-            {
-                callerName  = entity.GetType().FullName;
-            }
-
-
-            var brngs = BattleRngs.GetOrCreate(battle);
-            var grrngs = GrRngs.GetOrCreate(__instance);
-            if(callerName == null)
-                callerName = OnDemandRngs.FindCallingEntity().FullName;
-
-
-
-            // sometimes Sub is correct
-            //__result = brngs.entityRngs.GetOrCreateRootRng(callerName, grrngs.NodeMaster.rng.State);
-            __result = brngs.entityRngs.GetSubRng(callerName, grrngs.NodeMaster.rng.State);
-
-
-        }
-
-
-        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-        {
-            return instructions;
-        }
-
-    }
-
 
     [HarmonyPatch]
     class LockRandomTurnManaAction_Patch
@@ -122,9 +77,7 @@ namespace RngFix.Patches.Battle
 
         static RandomGen GetEntityRng(GameRunController gr)
         {
-
             var grrngs = GrRngs.GetOrCreate(gr);
-
             return grrngs.overdraftRng;
         }
 
@@ -189,7 +142,7 @@ namespace RngFix.Patches.Battle
             if (!Attach_InsertActionSource_Patch.cwt_actionUsers.TryGetValue(card, out var actionSourceId))
                 actionSourceId = card.GetType().FullName;
 
-            return brngs.entityRngs.GetOrCreateRootRng(actionSourceId, grrngs.NodeMaster.rng.State);
+            return brngs.battleRngs.GetOrCreateRootRng(actionSourceId, grrngs.NodeMaster.rng.State);
         }
 
         static int ConsistentDeckPos(RandomGen subRng, int _zero, int deckCount)
@@ -381,7 +334,7 @@ namespace RngFix.Patches.Battle
                 if (amount >= hand.Count)
                 {
                     // technically discard order matters
-                    var rng = BattleRngs.GetOrCreate(__instance.Battle).entityRngs.GetSubRng(__instance.GetType().FullName, GrRngs.GetOrCreate(__instance.GameRun).NodeMaster.rng.State);
+                    var rng = BattleRngs.GetOrCreate(__instance.Battle).battleRngs.GetSubRng(__instance.GetType().FullName, GrRngs.GetOrCreate(__instance.GameRun).NodeMaster.rng.State);
 
                     var randomizedHand = BattleRngs.Shuffle(rng, hand.ToList());
                     __result = new DiscardManyAction(randomizedHand);

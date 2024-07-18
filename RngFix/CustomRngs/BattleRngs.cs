@@ -42,7 +42,11 @@ namespace RngFix.CustomRngs
 
         static ConditionalWeakTable<BattleController, BattleRngs> table = new ConditionalWeakTable<BattleController, BattleRngs>();
 
-        public OnDemandRngs entityRngs = new OnDemandRngs();
+        public OnDemandRngs battleRngs = new OnDemandRngs(0);
+        public OnDemandRngs battleCardRngs = new OnDemandRngs(1);
+        public OnDemandRngs enemyRngs = new OnDemandRngs(2);
+        public OnDemandRngs enemyMoveRngs = new OnDemandRngs(3);
+
 
 
 
