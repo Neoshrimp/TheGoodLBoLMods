@@ -10,7 +10,21 @@ using LBoL.Core.Stations;
 using LBoL.Core.Units;
 using LBoL.EntityLib.Cards.Character.Cirno;
 using LBoL.EntityLib.Cards.Character.Marisa;
+using LBoL.EntityLib.Cards.Character.Reimu;
+using LBoL.EntityLib.Cards.Character.Sakuya;
+using LBoL.EntityLib.Cards.Enemy;
+using LBoL.EntityLib.Cards.Neutral.Black;
+using LBoL.EntityLib.Cards.Neutral.NoColor;
+using LBoL.EntityLib.Cards.Neutral.TwoColor;
+using LBoL.EntityLib.Exhibits.Adventure;
 using LBoL.EntityLib.Exhibits.Common;
+using LBoL.EntityLib.Exhibits.Shining;
+using LBoL.EntityLib.JadeBoxes;
+using LBoL.EntityLib.StatusEffects.Cirno;
+using LBoL.EntityLib.StatusEffects.Marisa;
+using LBoL.EntityLib.StatusEffects.Neutral.TwoColor;
+using LBoL.EntityLib.StatusEffects.Neutral.White;
+using LBoL.EntityLib.StatusEffects.Sakuya;
 using LBoL.Presentation.UI.Widgets;
 using LBoLEntitySideloader;
 using LBoLEntitySideloader.CustomHandlers;
@@ -18,6 +32,7 @@ using LBoLEntitySideloader.ReflectionHelpers;
 using RngFix.CustomRngs;
 using RngFix.CustomRngs.Sampling.Pads;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -150,7 +165,6 @@ namespace RngFix.Patches.Battle
         }
 
     }
-
 
 
     [HarmonyPatch]
@@ -294,10 +308,10 @@ namespace RngFix.Patches.Battle
         static bool Prefix(BattleController __instance, ref EnemyUnit __result)
         {
             var b = __instance;
-            if (b.EnemyGroup.Alives.Count() == 1)
+            if (b.EnemyGroup.Alives.Count() <= 1)
             {
                 EntityToCallchain.TryConsume(RandomAliveEnemy_AttachRngId_Patch.GetAttachId(), out var _);
-                __result = b.EnemyGroup.Alives.First();
+                __result = b.EnemyGroup.Alives.FirstOrDefault();
                 return false;
             }
 
@@ -339,7 +353,6 @@ namespace RngFix.Patches.Battle
 
     
     [HarmonyPatch]
-    //[HarmonyDebug]
     class RandomHandAction_Patch
     {
 
@@ -384,7 +397,6 @@ namespace RngFix.Patches.Battle
 
 
     [HarmonyPatch]
-    //[HarmonyDebug]
     class TargetSingleEnemy_Patch
     {
 
@@ -393,6 +405,10 @@ namespace RngFix.Patches.Battle
         {
             yield return AccessTools.PropertyGetter(typeof(BattleController), nameof(BattleController.RandomAliveEnemy));
             yield return ExtraAccess.InnerMoveNext(typeof(IceLaser), nameof(IceLaser.Actions));
+            yield return ExtraAccess.InnerMoveNext(typeof(Changzhizhen), nameof(Changzhizhen.OnPlayerTurnEnding));
+            yield return ExtraAccess.InnerMoveNext(typeof(SakuyaAttackX), nameof(SakuyaAttackX.Actions));
+
+
 
         }
 
@@ -421,22 +437,26 @@ namespace RngFix.Patches.Battle
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator, MethodBase __originalMethod)
         {
 
-            Func<CodeInstruction, bool> searchBack = null;
+            CodeMatch searchBackMatch = null;
 
             var declaringEntityName = OnDemandRngs.FindDeclaringGameEntity(__originalMethod.DeclaringType)?.Name ?? "";
             switch (declaringEntityName)
             {
                 case nameof(IceLaser):
-                    searchBack = ci => ci.opcode == OpCodes.Call && (ci.operand?.ToString().Contains("Where") ?? false);
+                    searchBackMatch = new CodeMatch(ci => ci.opcode == OpCodes.Call && (ci.operand?.ToString().Contains("Where") ?? false));
+                    break;
+                case nameof(SakuyaAttackX):
+                    searchBackMatch = new CodeMatch(new CodeInstruction(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(BattleController), nameof(BattleController.AllAliveEnemies))));
                     break;
                 default:
                     break;
             }
 
             return new CodeMatcher(instructions)
-                .SearchForward(ci => ci.opcode == OpCodes.Call && ci.operand.ToString().Contains("SampleOrDefault"))
+                .SearchForward(ci => ci.opcode == OpCodes.Call && ci.operand is MethodBase mb && (mb.Name.StartsWith("SampleOrDefault") || mb.Name == "Sample"))
+               
                 .SetInstruction(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(TargetSingleEnemy_Patch), nameof(TargetSingleEnemy_Patch.SampleByRootIndex))))
-                .RngAdvancementGuard(generator, searchBack)
+                .RngAdvancementGuard(generator, searchBackMatch)
 
                 .InstructionEnumeration();
         }
@@ -444,12 +464,14 @@ namespace RngFix.Patches.Battle
 
     }
 
-/*    [HarmonyPatch]
+    [HarmonyPatch]
     class TargetMultipleEnemies_Patch
     {
         static IEnumerable<MethodBase> TargetMethods()
         {
             yield return ExtraAccess.InnerMoveNext(typeof(Potion), nameof(Potion.EnterHandReactor));
+            yield return ExtraAccess.InnerMoveNext(typeof(ForeverCoolSe), nameof(ForeverCoolSe.OnCardUsed));
+
 
         }
 
@@ -458,67 +480,153 @@ namespace RngFix.Patches.Battle
 
             var aliveDic = alives.ToDictionary(e => e.RootIndex, e => e);
 
-            if (aliveDic.Count == 1)
-                return alives.First();
+            if (aliveDic.Count == 0 || amount <= 0)
+                return new EnemyUnit[0];
+
+            if (amount >= aliveDic.Count)
+                return alives.ToArray();
 
             int max = Math.Max(20, aliveDic.Count);
             var allPos = new List<int>();
             for (int i = 0; i < max; i++)
                 allPos.Add(i);
             allPos.Shuffle(subRng);
-            var rez = aliveDic[allPos.First(i => aliveDic.ContainsKey(i))];
+
+            var rez = new EnemyUnit[amount];
+            int index = 0;
+            foreach(var p in allPos)
+            {
+                if (aliveDic.TryGetValue(p, out var enemy))
+                {
+                    rez[index] = enemy;
+                    index++;
+                    if (index >= amount)
+                        break;
+                    aliveDic.Remove(p);
+                }
+            }
+
             return rez;
         }
 
 
-        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator, MethodBase __originalMethod)
         {
 
+            CodeMatch searchBackMatch =  new CodeMatch(ci =>
+                        (ci.opcode == OpCodes.Call || ci.opcode == OpCodes.Callvirt)
+                            && (ci.operand is MethodInfo mi
+                            && mi.ReturnType.GetInterfaces().FirstOrDefault(i => i == typeof(IEnumerable)) != null
+                        ));
+
+
+            CodeMatch[] amountMatch = new CodeMatch[] {
+                new CodeMatch(ci => ci.IsLdloc() || ci.opcode == OpCodes.Ldarg_0),
+                new CodeMatch(ci => (ci.opcode == OpCodes.Call || ci.opcode == OpCodes.Callvirt) && (ci.operand is MethodBase mb && mb.Name.Contains("Level")))
+            };
+            var declaringEntityName = OnDemandRngs.FindDeclaringGameEntity(__originalMethod.DeclaringType)?.Name ?? "";
+
+            switch (declaringEntityName)
+            {
+                case nameof(Potion):
+                    amountMatch = null;
+                    break;
+                default:
+                    break;
+            }
+
+
             return new CodeMatcher(instructions)
-                .SearchForward(ci => ci.opcode == OpCodes.Call && ci.operand.ToString().Contains("SampleOrDefault"))
+                .SearchForward(ci => ci.opcode == OpCodes.Call && ci.operand is MethodBase mb && (mb.Name.StartsWith("SampleManyOrAll") || mb.Name == "SampleMany"))
                 .SetInstruction(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(TargetMultipleEnemies_Patch), nameof(TargetMultipleEnemies_Patch.SampleByRootIndex))))
+
+                .RngAdvancementGuard(generator, searchBackMatch, many: true, amountMatch: amountMatch)
+
                 .InstructionEnumeration();
         }
-    }*/
-
+    }
 
 
 
     [HarmonyPatch]
-    class TargetCards_Patch
+    class TargetSingleCard_Patch
     {
 
         static IEnumerable<MethodBase> TargetMethods()
         {
-            yield return AccessTools.Method(typeof(Card), nameof(Card.UpgradeRandomHandAction));
-            yield return AccessTools.Method(typeof(Card), nameof(Card.DiscardRandomHandAction));
-            yield return ExtraAccess.InnerMoveNext(typeof(IceWing), nameof(IceWing.Actions));
+            yield return ExtraAccess.InnerMoveNext(typeof(MoonPurify), "Actions");
+            yield return ExtraAccess.InnerMoveNext(typeof(MeilingWater), "Actions");
+            yield return ExtraAccess.InnerMoveNext(typeof(SadinYuebing), nameof(SadinYuebing.OnPlayerTurnStarted));
+            yield return ExtraAccess.InnerMoveNext(typeof(TangSan), nameof(TangSan.OnPlayerTurnStarted));
+            yield return ExtraAccess.InnerMoveNext(typeof(YouxiangWakeSe), nameof(YouxiangWakeSe.OnPlayerTurnStarted));
+            yield return AccessTools.Method(typeof(MoonWorldSe), nameof(MoonWorldSe.OnTurnStarted));
+
+
         }
 
-        static Card[] SampleCards(IEnumerable<Card> pool, int amount, RandomGen rng)
+        static Card SampleCard(IEnumerable<Card> pool, RandomGen rng)
         {
-            if (amount >= pool.Count())
-            {
-                return pool.ToArray();
-            }
+            if (pool.Count() == 0)
+                return null;
+            if (pool.Count() == 1)
+                return pool.First();
             var subRng = rng;
             var randomizedHand = BattleRngs.Shuffle(subRng, pool.ToList());
-            return randomizedHand.GetRange(0, amount).ToArray();
+            return randomizedHand.First();
 
         }
 
-        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator, MethodBase __originalMethod)
         {
 
+            CodeMatch[] searchBackMatches = new CodeMatch[] { new CodeMatch(ci =>
+                        (ci.opcode == OpCodes.Call || ci.opcode == OpCodes.Callvirt)
+                            && (ci.operand is MethodInfo mi
+                            && mi.ReturnType.GetInterfaces().FirstOrDefault(i => i == typeof(IEnumerable)) != null
+                        )) };
+
+
+
+            var declaringEntityName = OnDemandRngs.FindDeclaringGameEntity(__originalMethod.DeclaringType)?.Name ?? "";
+
+            switch (declaringEntityName)
+            {
+                case nameof(MoonPurify):
+                    searchBackMatches = new CodeMatch[] { OpCodes.Ldloc_3, OpCodes.Ldloc_S };
+                    break;
+                case nameof(MeilingWater):
+                case nameof(TangSan):
+                    searchBackMatches = new CodeMatch[] { OpCodes.Ldloc_2 };
+                    break;
+                case nameof(SadinYuebing):
+                    searchBackMatches = new CodeMatch[] { OpCodes.Ldloc_3, OpCodes.Ldloc_2 };
+                    break;
+                case nameof(YouxiangWakeSe):
+                    searchBackMatches = new CodeMatch[] { OpCodes.Ldloc_S };
+                    break;
+                case nameof(MoonWorldSe):
+                    searchBackMatches = new CodeMatch[] { OpCodes.Ldloc_2, OpCodes.Ldloc_3 };
+                    break;
+                default:
+                    break;
+            }
+
             var matcher = new CodeMatcher(instructions);
+            int i = 0;
             while (true)
             {
                 try
                 {
-                    matcher = matcher.SearchForward(ci => ci.opcode == OpCodes.Call && ci.operand.ToString().Contains("SampleManyOrAll"))
+                    matcher = matcher
+                        .SearchForward(ci => ci.opcode == OpCodes.Call && ci.operand is MethodBase mb && (mb.Name.StartsWith("SampleOrDefault") || mb.Name == "Sample"))
                         .ThrowIfInvalid("")
-                        .SetInstruction(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(TargetCards_Patch), nameof(TargetCards_Patch.SampleCards))))
-                        ;
+                        .SetInstruction(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(TargetSingleCard_Patch), nameof(TargetSingleCard_Patch.SampleCard))));
+                    if (declaringEntityName != nameof(Card))
+                    {
+                        matcher.RngAdvancementGuard(generator, searchBackMatches[Math.Min(i, searchBackMatches.Length-1)],
+                        many: false);
+                    }
+                    i++;
                 }
                 catch (InvalidOperationException)
                 {
@@ -530,9 +638,219 @@ namespace RngFix.Patches.Battle
     }
 
 
+    [HarmonyPatch]
+    class TargetMultipleCards_Patch
+    {
+
+        static IEnumerable<MethodBase> TargetMethods()
+        {
+            yield return AccessTools.Method(typeof(Card), nameof(Card.UpgradeRandomHandAction));
+            yield return AccessTools.Method(typeof(Card), nameof(Card.DiscardRandomHandAction));
+            yield return ExtraAccess.InnerMoveNext(typeof(IceWing), nameof(IceWing.Actions));
+            yield return ExtraAccess.InnerMoveNext(typeof(FangxiangHeal), "Actions");
+            yield return ExtraAccess.InnerMoveNext(typeof(SatoriMemory), "Actions");
+            yield return AccessTools.Method(typeof(Bingzhilin), nameof(Bingzhilin.OnCardUsed));
+            yield return ExtraAccess.InnerMoveNext(typeof(PiaoliangPanzi), nameof(PiaoliangPanzi.OnPlayerTurnStarted));
+            yield return ExtraAccess.InnerMoveNext(typeof(ForeverCoolSe), nameof(ForeverCoolSe.OnCardUsed));
+            yield return ExtraAccess.InnerMoveNext(typeof(YonglinUpgradeSe), nameof(YonglinUpgradeSe.OnPlayerTurnStarted));
+
+        }
+
+        static Card[] SampleCards(IEnumerable<Card> pool, int amount, RandomGen rng)
+        {
+            if (amount >= pool.Count() || amount <= 0)
+            {
+                return pool.ToArray();
+            }
+            var subRng = rng;
+            var randomizedHand = BattleRngs.Shuffle(subRng, pool.ToList());
+            return randomizedHand.GetRange(0, amount).ToArray();
+
+        }
+
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator, MethodBase __originalMethod)
+        {
+
+            CodeMatch searchBackMatch = new CodeMatch(ci =>
+                        (ci.opcode == OpCodes.Call || ci.opcode == OpCodes.Callvirt)
+                        && (ci.operand is MethodInfo mi
+                        && mi.ReturnType.GetInterfaces().FirstOrDefault(i => i == typeof(IEnumerable)) != null
+                        ));
+
+
+            CodeMatch[] amountMatch = new CodeMatch[] {
+                new CodeMatch(ci => ci.IsLdloc() || ci.opcode == OpCodes.Ldarg_0),
+                new CodeMatch(ci => (ci.opcode == OpCodes.Call || ci.opcode == OpCodes.Callvirt) && (ci.operand is MethodBase mb && (mb.Name.Contains("Value") || mb.Name.Contains("Level"))))
+            };
+
+
+            var declaringEntityName = OnDemandRngs.FindDeclaringGameEntity(__originalMethod.DeclaringType)?.Name ?? "";
+
+            switch (declaringEntityName)
+            {
+                case nameof(IceWing):
+                    searchBackMatch = new CodeMatch(new CodeInstruction(OpCodes.Ldloc_3));
+                    break;
+                case nameof(Bingzhilin):
+                    searchBackMatch = new CodeMatch(new CodeInstruction(OpCodes.Ldloc_0));
+                    break;
+                default:
+                    break;
+            }
+
+            var matcher = new CodeMatcher(instructions);
+            while (true)
+            {
+                try
+                {
+                    matcher = matcher
+                        .SearchForward(ci => ci.opcode == OpCodes.Call && ci.operand is MethodBase mb && (mb.Name.StartsWith("SampleManyOrAll") || mb.Name == "SampleMany"))
+                        .ThrowIfInvalid("")
+                        .SetInstruction(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(TargetMultipleCards_Patch), nameof(TargetMultipleCards_Patch.SampleCards))));
+
+                    if (declaringEntityName != nameof(Card)) // guard is handled in prefix
+                    {
+                        matcher.RngAdvancementGuard(generator, searchBackMatch, 
+                        many: true, 
+                        amountMatch: amountMatch);
+                    }
+                }
+                catch (InvalidOperationException)
+                {
+                    break;
+                }
+            }
+            return matcher.InstructionEnumeration();
+        }
+    }
+
+
+    [HarmonyPatch]
+    class SampleSingleMana_Patch
+    {
+
+        static IEnumerable<MethodBase> TargetMethods()
+        {
+            yield return ExtraAccess.InnerMoveNext(typeof(JingQiXi), nameof(JingQiXi.OnOwnerTurnStarted));
+
+        }
+
+
+        private static ManaColor SampleSingleMana(IEnumerable<ManaColor> pool, RandomGen subRng)
+        {
+            if (pool.Count() == 0)
+                return default;
+
+            if (pool.Count() == 1)
+                return pool.First();
+
+            var samplingPool = Padding.PadManaColours(pool);
+            samplingPool.Shuffle(subRng);
+
+            ManaColor rez = default;
+            foreach (var c in samplingPool)
+            {
+                if (c == null)
+                    continue;
+                rez = c.Value;
+                break;
+            }
+            return rez;
+        }
+
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+
+
+            var matcher = new CodeMatcher(instructions);
+            while (true)
+            {
+                try
+                {
+                    matcher = matcher
+                        .SearchForward(ci => ci.opcode == OpCodes.Call && ci.operand is MethodBase mb && (mb.Name.StartsWith("SampleOrDefault") || mb.Name == "Sample"))
+                        .ThrowIfInvalid("")
+                        .SetInstruction(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(SampleSingleMana_Patch), nameof(SampleSingleMana_Patch.SampleSingleMana))));
+
+                }
+                catch (InvalidOperationException)
+                {
+                    break;
+                }
+            }
+            return matcher.InstructionEnumeration();
+
+
+        }
+
+
+    }
 
 
 
+    [HarmonyPatch]
+    class SampleMultipleMana_Patch
+    {
+
+        static IEnumerable<MethodBase> TargetMethods()
+        {
+            yield return AccessTools.Method(typeof(ConvertManaAction), nameof(ConvertManaAction.PhilosophyRandomMana));
+            yield return ExtraAccess.InnerMoveNext(typeof(Yueguang), nameof(Yueguang.OnDraw));
+            yield return AccessTools.Method(typeof(SlowMana), nameof(SlowMana.OnCardUsed));
+            yield return AccessTools.Method(typeof(MasterOfCollectionSe), nameof(MasterOfCollectionSe.OnCardRetaining));
+            yield return ExtraAccess.InnerMoveNext(typeof(PerfectServantWSe), nameof(PerfectServantWSe.OnOwnerTurnStarted));
+            yield return AccessTools.Method(typeof(StopTimeSe), nameof(StopTimeSe.OnManaLosing));
+
+
+        }
+
+
+        private static ManaColor[] SampleMana(IEnumerable<ManaColor> pool, int amount, RandomGen subRng)
+        {
+            var samplingPool = Padding.PadManaColours(pool);
+            samplingPool.Shuffle(subRng);
+
+            var rez = new List<ManaColor>();
+            int a = 0;
+            foreach (var c in samplingPool)
+            {
+                if (c == null)
+                    continue;
+                rez.Add(c.Value);
+                a++;
+                if (a >= amount)
+                    break;
+            }
+            return rez.ToArray();
+        }
+
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+
+
+            var matcher = new CodeMatcher(instructions);
+            while (true)
+            {
+                try
+                {
+                    matcher = matcher
+                        .SearchForward(ci => ci.opcode == OpCodes.Call && ci.operand is MethodBase mb && (mb.Name.StartsWith("SampleManyOrAll") || mb.Name == "SampleMany"))
+                        .ThrowIfInvalid("")
+                        .SetInstruction(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(SampleMultipleMana_Patch), nameof(SampleMultipleMana_Patch.SampleMana))));
+                  
+                }
+                catch (InvalidOperationException)
+                {
+                    break;
+                }
+            }
+            return matcher.InstructionEnumeration();
+
+
+        }
+
+
+    }
 
 
 }

@@ -8,6 +8,7 @@ using LBoL.Core.Cards;
 using LBoL.Core.Randoms;
 using LBoL.Core.Stations;
 using LBoL.Core.Units;
+using LBoLEntitySideloader.Utils;
 using RngFix.CustomRngs;
 using RngFix.Patches.Battle;
 using System;
@@ -36,9 +37,15 @@ namespace RngFix.Patches
                  .Set(OpCodes.Call, newCall);
         }
 
-        private static int RngGuard(IEnumerable<EnemyUnit> alives)
+        private static int RngGuardSingle(IEnumerable<EnemyUnit> alives)
         {
             return alives.Count() <= 1 ? 1 : 0;
+        }
+
+        private static int RngGuardMany(IEnumerable<EnemyUnit> alives, int amount)
+        {
+            var count = alives.Count();
+            return amount >= count || amount <= 0 ? 1 : 0;
         }
 
         private static RandomGen FakeRng()
@@ -46,7 +53,7 @@ namespace RngFix.Patches
             return new RandomGen();
         }
 
-        public static CodeMatcher RngAdvancementGuard(this CodeMatcher matcher, ILGenerator generator, Func<CodeInstruction, bool> searchBack = null)
+        public static CodeMatcher RngAdvancementGuard(this CodeMatcher matcher, ILGenerator generator, CodeMatch searchBackMatch = null, bool many = false, CodeMatch[] amountMatch = null)
         {
             var currentOperand = matcher.Instruction.operand?.ToString() ?? "";
             if (!( currentOperand.Contains(nameof(CollectionsExtensions.SampleOrDefault))
@@ -57,28 +64,81 @@ namespace RngFix.Patches
             {
                 throw new ArgumentException("Matcher's position is not on sampling method");
             }
-            if (searchBack == null)
+            if (searchBackMatch == null)
             {
-                searchBack = ci => ci.opcode == OpCodes.Callvirt && ci.operand as MethodInfo == AccessTools.PropertyGetter(typeof(EnemyGroup), nameof(EnemyGroup.Alives));
+                searchBackMatch = new CodeMatch (ci => ci.opcode == OpCodes.Callvirt && ci.operand as MethodInfo == AccessTools.PropertyGetter(typeof(EnemyGroup), nameof(EnemyGroup.Alives)));
             }
             var skipRng = generator.DefineLabel();
             var doSampling = generator.DefineLabel();
-            matcher = matcher
-                .AddLabels(new Label[] { doSampling })
+            matcher.AddLabels(new Label[] { doSampling })
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Br, doSampling));
 
-                .InsertAndAdvance(new CodeInstruction(OpCodes.Br, doSampling))
-                .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Helpers), nameof(Helpers.FakeRng))).WithLabels(new Label[] { skipRng }))
+            if (many)
+                matcher.InsertAndAdvance(new CodeInstruction(OpCodes.Ldstr, "deezdeeznuts"));
+            else
+                matcher.InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Helpers), nameof(Helpers.FakeRng))).WithLabels(new Label[] { skipRng }));
 
-                .SearchBack(searchBack)
-                .ThrowIfInvalid($"{searchBack} didn't match anything")
-
+            matcher
+                .Advance(-1) // avoids matching sampling method
+                .ThrowIfNotMatchBack($"{searchBackMatch} didn't match anything", searchBackMatch)
+                .MatchEndBackwards(searchBackMatch)
                 .Advance(1)
-                .InsertAndAdvance(new CodeInstruction(OpCodes.Dup))
-                .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Helpers), nameof(Helpers.RngGuard))))
-                .InsertAndAdvance(new CodeInstruction(OpCodes.Brtrue, skipRng))
-                ;
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Dup));
+
+
+
+            var amountIns = new List<CodeInstruction>();
+            if (many)
+            {
+                if (amountMatch == null)
+                { 
+                    amountIns.Add(matcher.Instruction);
+                }
+                else
+                {
+                    matcher.ThrowIfNotMatchForward($"AmountMatch@{matcher.Pos}: {amountMatch} didn't match anything", amountMatch)
+                        .MatchEndForward(amountMatch);
+                    amountIns.AddRange(matcher.InstructionsWithOffsets(-amountMatch.Length+1, 0));
+                }
+
+                matcher.Advance(1);
+                matcher.InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Helpers), nameof(Helpers.RngGuardMany))));
+            }
+            else
+                matcher.InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Helpers), nameof(Helpers.RngGuardSingle))));
+
+            matcher.InsertAndAdvance(new CodeInstruction(OpCodes.Brtrue, skipRng));
+            foreach ((var ci, var i) in amountIns.Select((ci, i) => (ci, i)))
+            {
+                matcher.InsertAndAdvance(ci.Clone());
+            }
+
+
+
+            if (many)
+            {
+                matcher.ThrowIfNotMatchForward("SATORRI",new CodeMatch(ci => (ci.operand?.ToString() ?? "") == "deezdeeznuts"));
+
+                matcher.MatchEndForward(new CodeMatch(ci => (ci.operand?.ToString() ?? "") == "deezdeeznuts"));
+                
+                foreach ((var ci, var i) in amountIns.Select((ci, i) => (ci, i)))
+                {
+                    if (i == 0)
+                    {
+                        matcher.SetInstruction(ci.Clone())
+                            .AddLabels(new Label[] { skipRng })
+                            .Advance(1);
+                    }
+                    else
+                        matcher.InsertAndAdvance(ci.Clone());
+                }
+                matcher.InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Helpers), nameof(Helpers.FakeRng))));
+            }
+
             return matcher;
         }
+
+        
 
         public static bool IsActTransition(MapNode node) => 
                    node.StationType is StationType.Entry 
