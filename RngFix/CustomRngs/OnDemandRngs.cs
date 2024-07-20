@@ -7,7 +7,7 @@ using System.Text;
 using LBoL.Base;
 using RngFix.Patches;
 using static RngFix.BepinexPlugin;
-
+using System.Diagnostics.CodeAnalysis;
 
 namespace RngFix.CustomRngs
 {
@@ -36,20 +36,21 @@ namespace RngFix.CustomRngs
                 this.seedOffset = seedOffset.Value;
         }
 
-        public RandomGen GetOrCreateRootRng(string str, ulong initialState)
+        public RandomGen GetOrCreateRootRng(string str, [MaybeNull] ulong? initialState)
         {
             var id = GetId(str);
-            log.LogDebug(id+"_"+seedOffset);
-
+            //log.LogDebug(id+"_"+seedOffset);
+            if (initialState == null)
+                initialState = GrRngs.GetOrCreate(GrRngs.Gr()).NodeMaster.rng.State;
 
             rngs.GetOrCreateVal(
                 id,
                 () => {
                     ulong seed = 0;
                     unchecked {
-                        seed = initialState + UlongHash(id) + seedOffset;
+                        seed = initialState.Value + UlongHash(id) + seedOffset;
                     }
-                    log.LogDebug(seed);
+                    //log.LogDebug(seed);
                     return new RandomGen(seed);
                 },
                 out var rootRng);
@@ -100,16 +101,18 @@ namespace RngFix.CustomRngs
             Type firstCaller = null;
             bool gameEntityFound = false;
 
-            var st = new StackTrace();
 
-/*            log.LogDebug($"---------------");
+/*
+            var st = new StackTrace();
+            log.LogDebug($"---------------");
             int i = 0;
             foreach (var f in st.GetFrames())
             {
                 log.LogDebug($"{i}:{f.GetMethod().DeclaringType.FullName}::{f.GetMethod().Name}");
                 i++;
             }
-            log.LogDebug($"---------------");*/
+            log.LogDebug($"---------------");
+*/
 
             int s = stackDepth;
             while (s <= maxStackDepth)

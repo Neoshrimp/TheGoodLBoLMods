@@ -10,7 +10,7 @@ namespace RngFix.Patches.Battle
 
 
     [HarmonyPatch]
-    class RngDistributor
+    class CardRngDistributor
     {
 
         static IEnumerable<MethodBase> TargetMethods()

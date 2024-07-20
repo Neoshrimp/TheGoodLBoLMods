@@ -10,7 +10,7 @@ using YamlDotNet.Serialization;
 
 namespace RngFix.CustomRngs
 {
-    public abstract class MasterRng
+    public abstract class MasterRng<T>
     {
         public RandomGen rng;
 
@@ -21,12 +21,12 @@ namespace RngFix.CustomRngs
             this.rng = new RandomGen(seed);
         }
 
-        public abstract void Advance(GameRunController gr);
+        public abstract void Advance(T target);
 
-        public void AdvanceSteps(GameRunController gr, int steps)
+        public void AdvanceSteps(T target, int steps)
         {
             for (int i = 0; i < steps; i++)
-                Advance(gr);
+                Advance(target);
         }
     }
   

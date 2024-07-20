@@ -8,6 +8,7 @@ using LBoL.Core.Cards;
 using LBoL.Core.Stations;
 using LBoL.EntityLib.Cards.Neutral.TwoColor;
 using LBoL.EntityLib.Cards.Neutral.White;
+using LBoL.EntityLib.EnemyUnits.Normal.Bats;
 using LBoL.Presentation;
 using RngFix.CustomRngs.Sampling;
 using RngFix.CustomRngs.Sampling.Pads;
@@ -44,9 +45,11 @@ namespace RngFix.CustomRngs
 
         public OnDemandRngs battleRngs = new OnDemandRngs(0);
         public OnDemandRngs battleCardRngs = new OnDemandRngs(1);
-        public OnDemandRngs enemyRngs = new OnDemandRngs(2);
+        public OnDemandRngs unitRootRngs = new OnDemandRngs(2);
         public OnDemandRngs enemyMoveRngs = new OnDemandRngs(3);
 
+
+        public RandomGen BatLockOnRng { get => unitRootRngs.GetOrCreateRootRng(typeof(BatOrigin).FullName + "lckOn", null); }
 
 
 

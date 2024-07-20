@@ -10,7 +10,7 @@ using static RngFix.BepinexPlugin;
 namespace RngFix.CustomRngs
 {
 
-    public class StageMasterRng : MasterRng
+    public class StageMasterRng : MasterRng<GameRunController>
     {
         public StageMasterRng() : base() { }
         public StageMasterRng(ulong seed) : base(seed) { }
@@ -34,7 +34,7 @@ namespace RngFix.CustomRngs
         }
     }
 
-    public class ActMasterRng : MasterRng
+    public class ActMasterRng : MasterRng<GameRunController>
     {
         public ActMasterRng() : base() { }
         public ActMasterRng(ulong seed) : base(seed) { }
@@ -50,7 +50,7 @@ namespace RngFix.CustomRngs
         }
     }
 
-    public class NodeMasterRng : MasterRng
+    public class NodeMasterRng : MasterRng<GameRunController>
     {
         public NodeMasterRng() : base() { }
         public NodeMasterRng(ulong seed) : base(seed) { }

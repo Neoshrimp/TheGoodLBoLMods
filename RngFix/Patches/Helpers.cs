@@ -25,9 +25,12 @@ namespace RngFix.Patches
 {
     public static class Helpers
     {
-        public static CodeMatcher ReplaceRngGetter(this CodeMatcher matcher, string targetName, MethodInfo newCall)
+        public static CodeMatcher ReplaceRngGetter(this CodeMatcher matcher, string targetName, MethodInfo newCall, MethodInfo targetMethod = null)
         {
-            var targetGetter = AccessTools.PropertyGetter(typeof(GameRunController), targetName);
+
+            var targetGetter = targetMethod;
+            if(targetGetter == null)
+                targetGetter = AccessTools.PropertyGetter(typeof(GameRunController), targetName);
             if (targetGetter == null)
                 throw new ArgumentException($"Could not find {nameof(GameRunController)}.{targetGetter}");
             var matchFor = new CodeMatch ((ci) => ci.operand as MethodInfo == targetGetter);
