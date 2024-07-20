@@ -16,6 +16,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -26,7 +27,7 @@ namespace RngFix.CustomRngs.Sampling.Pads
     public static class Padding
     {
         private static IEnumerable<Type> paddedCards = null;
-
+        private static List<(Type cardType, CardConfig config)?> paddedMisfortunes = null;
 
         private const string lostBin = "LostBin";
         private const string modNeutral = "ModNeutral";
@@ -38,6 +39,17 @@ namespace RngFix.CustomRngs.Sampling.Pads
                 return GetRewardCards(GrRngs.Gr());
             }
         }
+
+        public static List<(Type cardType, CardConfig config)?> PaddedMisfortunes 
+        { 
+            get 
+            {
+                if (paddedMisfortunes == null) 
+                    paddedMisfortunes = PadMisfortunes().ToList();
+                return paddedMisfortunes;
+            }  
+        }
+
         public static IEnumerable<Type> GetRewardCards(GameRunController gr)
         {
             if (paddedCards == null)
@@ -207,6 +219,18 @@ namespace RngFix.CustomRngs.Sampling.Pads
             return EndPadding(total, vanilla);
         }
 
+        public static IEnumerable<(Type cardType, CardConfig config)?> PadMisfortunes(int vanillaBuffer = 200, int modBuffer = 300)
+        {
+            return Library.EnumerateCardTypes()
+                .Where(tu => tu.config.Type == CardType.Misfortune)
+                .OrderBy(tu => tu.config.Index)
+                .Select(tu => new Nullable<(Type cardType, CardConfig config)>((tu.cardType, tu.config)))
+                .GroupBy(tu => tu.Value.config.Index >= 10000)
+                .Select((g, i) => i == 0 ? g.PadEnd(vanillaBuffer) : g.AsEnumerable())
+                .Aggregate((l1, l2) => l1.Concat(l2))
+                .PadEnd(vanillaBuffer + modBuffer);
+        }
+
 
         public static IEnumerable<Type> CardPadding(IEnumerable<CardConfig> validCards, int total = (int)10E3, int charSize = 200, int charBuffer = 2400, int moddedBuffer = 2000, int lostBuffer = 400)
         {
@@ -329,6 +353,7 @@ namespace RngFix.CustomRngs.Sampling.Pads
             {
                 GetRewardCards(__instance);
                 var __ = BattleRngs.PaddedCards;
+                var _ = PaddedMisfortunes;
             }
         }
 
@@ -345,6 +370,7 @@ namespace RngFix.CustomRngs.Sampling.Pads
             {
                 GetRewardCards(__result);
                 var __ = BattleRngs.PaddedCards;
+                var _ = PaddedMisfortunes;
             }
         }
 

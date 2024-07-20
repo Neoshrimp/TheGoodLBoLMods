@@ -127,7 +127,10 @@ namespace RngFix
                 //DisableManaBaseAffectedCardWeights_Patch.tempDebugDisable = false;
                 var seed = RandomGen.ParseSeed("deeznuts");
 
-                log.LogDebug(string.Join(";", Padding.PadManaColours(new ManaGroup()
+                log.LogDebug(string.Join(";", Padding.PaddedMisfortunes.Select(tu => tu?.config.Id ?? "null")));
+
+
+/*                log.LogDebug(string.Join(";", Padding.PadManaColours(new ManaGroup()
                 {
                     Any = 2,
                     Black = 3,
@@ -140,7 +143,7 @@ namespace RngFix
                     HybridColor = 1
                 }.EnumerateComponents(),
                     true
-                ).Select(c => c?.ToString() ?? "null")));
+                ).Select(c => c?.ToString() ?? "null")));*/
 
                 //Padding.OutputPadding(BattleRngs.PaddedCards);
 
