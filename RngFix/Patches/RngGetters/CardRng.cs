@@ -14,7 +14,7 @@ using static RngFix.BepinexPlugin;
 namespace RngFix.Patches.RngGetters
 {
     [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.GetRewardCards))]
-    [HarmonyDebug]
+    //[HarmonyDebug]
     class CardReward_Patch
     {
 

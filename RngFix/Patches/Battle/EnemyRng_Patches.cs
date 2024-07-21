@@ -53,7 +53,7 @@ namespace RngFix.Patches.Battle
         public static RandomGen BattleOneRng(GameRunController gr, Unit unit)
         {
             var rez =  UnitRngs.GetOrCreate(unit, gr, unit.Battle).battleRng1;
-            log.LogDebug($"battle1Rng {unit.GetType().Name} {rez.State}");
+            //log.LogDebug($"battle1Rng {unit.GetType().Name} {rez.State}");
             return rez;
         }
 

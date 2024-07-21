@@ -119,7 +119,7 @@ namespace RngFix
 
         private void Update()
         {
-            if (/*false && */debgugBind.IsDown() && GrRngs.Gr() != null)
+            if (false && debgugBind.IsDown() && GrRngs.Gr() != null)
             {
                 var gr = GrRngs.Gr();
 /*                var grrngs = GrRngs.GetOrCreate(gr);

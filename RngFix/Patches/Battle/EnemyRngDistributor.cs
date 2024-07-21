@@ -65,7 +65,7 @@ namespace RngFix.Patches.Battle
             else
             {
                 __result = brngs.independentEnemyRngs.GetSubRng(callerName, grrngs.NodeMaster.rng.State);
-                log.LogDebug("independentEnmeyrng " + callerName + " " + __result.State.ToString());
+                //log.LogDebug("independentEnmeyrng " + callerName + " " + __result.State.ToString());
             }
 
 
