@@ -48,10 +48,17 @@ namespace RngFix.CustomRngs
 
 
                 var subRng = BattleRngs.GetOrCreate(battle).unitRootRngs.GetSubRng(unit.GetType().FullName, initState);
-                log.LogDebug($"rng init {unit.Name} {subRng.State}");
+                //log.LogDebug($"rng init {unit.Name} {subRng.State}");
                 unitRngs.InitRng(subRng);
                 return unitRngs;
             });
+        }
+
+        public UnitRngs() { }
+
+        public UnitRngs(RandomGen rng) :this() 
+        {
+            this.InitRng(rng);
         }
 
 
@@ -63,10 +70,14 @@ namespace RngFix.CustomRngs
             this.moveRng1 = new RandomGen(rng.NextULong());
             this.moveRng2 = new RandomGen(rng.NextULong());
             this.moveRng3 = new RandomGen(rng.NextULong());
+            this.moveRng4 = new RandomGen(rng.NextULong());
+            this.moveRng5 = new RandomGen(rng.NextULong());
 
             this.battleRng1 = new RandomGen(rng.NextULong());
             this.battleRng2 = new RandomGen(rng.NextULong());
             this.battleRng3 = new RandomGen(rng.NextULong());
+            this.battleRng4 = new RandomGen(rng.NextULong());
+            this.battleRng5 = new RandomGen(rng.NextULong());
 
             this.dropRng = new RandomGen(rng.NextULong());
 
@@ -85,10 +96,16 @@ namespace RngFix.CustomRngs
         public RandomGen moveRng1;
         public RandomGen moveRng2;
         public RandomGen moveRng3;
+        public RandomGen moveRng4;
+        public RandomGen moveRng5;
+
 
         public RandomGen battleRng1;
         public RandomGen battleRng2;
         public RandomGen battleRng3;
+        public RandomGen battleRng4;
+        public RandomGen battleRng5;
+
 
         public RandomGen dropRng;
 

@@ -9,11 +9,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Emit;
+using static RngFix.BepinexPlugin;
 
 namespace RngFix.Patches.RngGetters
 {
     [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.GetRewardCards))]
-    //[HarmonyDebug]
+    [HarmonyDebug]
     class CardReward_Patch
     {
 
@@ -46,9 +47,22 @@ namespace RngFix.Patches.RngGetters
             return GrRngs.GetOrCreate(gr).persRngs.extraCardRewardRng;
         }
 
+        static RandomGen UpgradeRng(GameRunController gr)
+        {
+            var rootUrng = GrRngs.GetOrCreate(gr).persRngs.cardUpgradeQueueRng;
+            return new RandomGen(rootUrng.NextULong());
+
+        }
+
+        static float UpgradeFloat(RandomGen rng)
+        {
+            var rez = rng.NextFloat(0f, 1f);
+            return rez;
+        }
+
         static bool CheckRepeatRareBoss(bool repeat, bool boss) => repeat && !boss;
 
-        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
             var matcher = new CodeMatcher(instructions);
 
@@ -68,10 +82,33 @@ namespace RngFix.Patches.RngGetters
                 i++;
             }
 
+
+
             matcher = matcher.ReplaceRngGetter(nameof(GameRunController.CardRng), AccessTools.Method(typeof(CardReward_Patch), nameof(CardReward_Patch.ExtraCardRewardRng)));
 
-            // 2do advance regardless of rarity
-            matcher = matcher.ReplaceRngGetter(nameof(GameRunController.CardRng), AccessTools.Method(typeof(GrRngs), nameof(GrRngs.GetCardUpgradeQueueRng)));
+            var upgradeMiniRootRng_local = generator.DeclareLocal(typeof(RandomGen));
+            var randomFloat_local = generator.DeclareLocal(typeof(float));
+
+            matcher.MatchEndForward(new CodeInstruction(OpCodes.Call, AccessTools.PropertyGetter(typeof(GameRunController), nameof(GameRunController.CardRng))))
+                .MatchEndBackwards(new CodeInstruction(OpCodes.Ldarg_0))
+                .RemoveInstructions(5)
+                .Insert(new CodeInstruction(OpCodes.Ldloc, randomFloat_local.LocalIndex))
+
+                .MatchEndBackwards(new CodeMatch(OpCodes.Br))
+                .Advance(-1)
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Ldarg_0))
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(CardReward_Patch), nameof(CardReward_Patch.UpgradeRng))))
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Stloc, upgradeMiniRootRng_local.LocalIndex))
+
+                .MatchEndForward(new CodeInstruction(OpCodes.Ldloca_S))
+                .Advance(1)
+
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Ldloc, upgradeMiniRootRng_local.LocalIndex))
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(CardReward_Patch), nameof(CardReward_Patch.UpgradeFloat))))
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Stloc, randomFloat_local.LocalIndex))
+
+                ;
+
 
 
             return matcher.InstructionEnumeration();

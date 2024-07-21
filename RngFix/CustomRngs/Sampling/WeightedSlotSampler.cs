@@ -98,7 +98,6 @@ namespace RngFix.CustomRngs.Sampling
                 var itemProb = w / probabilityFraction;
                 var passThreshold = wRollingRng.NextFloat(0, 1);
 
-                // 2do
 /*                if (debugAction != null)
                 {
                     var rollLI = new SamplerLogInfo()

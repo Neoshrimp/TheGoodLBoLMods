@@ -56,7 +56,7 @@ namespace RngFix.Patches
             return new RandomGen();
         }
 
-        public static CodeMatcher RngAdvancementGuard(this CodeMatcher matcher, ILGenerator generator, CodeMatch searchBackMatch = null, bool many = false, CodeMatch[] amountMatch = null)
+        public static CodeMatcher RngAdvancementGuard(this CodeMatcher matcher, ILGenerator generator, CodeMatch searchBackMatch = null, bool many = false, CodeMatch[] amountMatch = null, bool searchForAmountMatchFirst = false)
         {
             var currentOperand = matcher.Instruction.operand?.ToString() ?? "";
             if (!( currentOperand.Contains(nameof(CollectionsExtensions.SampleOrDefault))
@@ -81,12 +81,18 @@ namespace RngFix.Patches
             else
                 matcher.InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Helpers), nameof(Helpers.FakeRng))).WithLabels(new Label[] { skipRng }));
 
-            matcher
-                .Advance(-1) // avoids matching sampling method
-                .ThrowIfNotMatchBack($"{searchBackMatch} didn't match anything", searchBackMatch)
-                .MatchEndBackwards(searchBackMatch)
-                .Advance(1)
-                .InsertAndAdvance(new CodeInstruction(OpCodes.Dup));
+            matcher.Advance(-1);// avoids matching sampling method
+            if (amountMatch != null && searchForAmountMatchFirst)
+            {
+                matcher.ThrowIfNotMatchBack($"{amountMatch} didn't match anything", amountMatch)
+                    .MatchStartBackwards(amountMatch).
+                    Advance(-1);
+            }
+
+            matcher.ThrowIfNotMatchBack($"{searchBackMatch} didn't match anything", searchBackMatch)
+            .MatchEndBackwards(searchBackMatch)
+            .Advance(1)
+            .InsertAndAdvance(new CodeInstruction(OpCodes.Dup));
 
 
 

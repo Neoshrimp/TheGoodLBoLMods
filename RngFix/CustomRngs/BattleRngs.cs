@@ -46,8 +46,10 @@ namespace RngFix.CustomRngs
         public OnDemandRngs battleRngs = new OnDemandRngs(0);
         public OnDemandRngs battleCardRngs = new OnDemandRngs(1);
         public OnDemandRngs unitRootRngs = new OnDemandRngs(2);
-        public OnDemandRngs enemyMoveRngs = new OnDemandRngs(3);
+        public OnDemandRngs independentEnemyRngs = new OnDemandRngs(3);
 
+
+        public Dictionary<string, UnitRngs> lostUnitRngs = new Dictionary<string, UnitRngs>();
 
         public RandomGen BatLockOnRng { get => unitRootRngs.GetOrCreateRootRng(typeof(BatOrigin).FullName + "lckOn", null); }
 
@@ -58,27 +60,6 @@ namespace RngFix.CustomRngs
         private static RepeatableUniformRandomPool<Type> infiteDeck = null;
         
 
-
-        private static WeightedSlotSampler<Type> shuffler = null;
-        public static WeightedSlotSampler<Type> Shuffler 
-        { 
-            get 
-            {
-                if (shuffler == null)
-                    shuffler = new WeightedSlotSampler<Type>(
-                            requirements: new List<ISlotRequirement<Type>>(),
-                            initAction: t => t,
-                            successAction: null,
-                            failureAction: () => log.LogDebug("RollingDeez"),
-                            potentialPool: PaddedCards
-                        )
-                        {
-                            factionRange = new ProbFactionRange(new float[] { 5f, 7f, 10f })
-                        };
-
-                return shuffler;
-            } 
-        }
 
 
         public static IEnumerable<Type> PaddedCards

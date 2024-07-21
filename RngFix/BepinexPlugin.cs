@@ -127,7 +127,7 @@ namespace RngFix
                 //DisableManaBaseAffectedCardWeights_Patch.tempDebugDisable = false;
                 var seed = RandomGen.ParseSeed("deeznuts");
 
-                log.LogDebug(string.Join(";", Padding.PaddedMisfortunes.Select(tu => tu?.config.Id ?? "null")));
+                //gr.RollBossExhibits
 
 
 /*                log.LogDebug(string.Join(";", Padding.PadManaColours(new ManaGroup()

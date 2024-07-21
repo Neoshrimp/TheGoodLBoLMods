@@ -39,6 +39,11 @@ namespace RngFix.CustomRngs
         public void InitialiseRngs(IEnumerable<string> initOrder)
         {
             initOrder.Do(id => {
+                if (id == null)
+                { 
+                    rootRng.NextULong();
+                    return;
+                }
                 rngs.TryAdd(id, new RandomGen(rootRng.NextULong()));
             });
         }

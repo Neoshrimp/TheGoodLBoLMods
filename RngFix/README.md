@@ -1,14 +1,19 @@
 ### Rng Fix
 
+*v2.0.0 Final major release(?)*
+
 *v1.1.0 Limitation removed*
+
 *v1.0.0 big changes, no time to log*
+
 *v0.9 Oni sampling methods*
 
 Vanilla seeding is a clusterfuck. Encounters are path dependent, past choices affect future rolls, battle rngs are not isolated. Needless to say using the same seed will result in very different experience.
 
-*Mod is still in early release so reports of inconsistencies in reruns or same seed co-op runs are greatly appreciated*
 
-This mod roughly tries to ensure that n'th node of the same type will have the same rng state no matter where or when encountered. I.e. first 1-2 regular battle will always be the fixed for the same seed, including deck shuffle state and random enemy moves. 
+~~This mod roughly tries to ensure that n'th node of the same type will have the same rng state no matter where or when encountered. I.e. first 1-2 regular battle will always be the fixed for the same seed, including deck shuffle state and random enemy moves.~~
+
+Probably the most algorithmically involved mod I've ever coded. Blog post about core ideas which make it work soon (perhaps).
 
 What this fixes:
 - Pathing no longer affects encounters
@@ -21,13 +26,21 @@ What this fixes:
 
 
 What this does **not** fix:
-~~- Card rewards are wildly affected by player's manabase (same state, different pool issue)~~
-~~- Weight shifts in adventure and exhibit pools sometimes produce completely different outcomes.~~
-* In battle rng manipulation.
+- Should fix everything **vanilla**.
+- Modded entities will be assigned entity unique rngs when using vanilla getters. 
+- Ensuring consistent sampling method is up to the modder, however.
 
 
 ---
 *Change log*
+
+`2.0.0` Greatly reduces manipulation possible via save/loading:
+- Consistent deck shuffling, independent from discard order.
+- Consistent card discovery, independent from play order.
+- Consistent random targeting.
+- Somewhat consistent random insertion into the draw pile.
+- Consistent enemy moves, damage, P and score drops.
+- Other miscellaneous improvements and fixes.
 
 `1.1.2` Logging softlock fix.
 

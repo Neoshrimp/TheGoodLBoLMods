@@ -40,6 +40,7 @@ namespace RngFix.CustomRngs
         {
             var id = GetId(str);
             //log.LogDebug(id+"_"+seedOffset);
+
             if (initialState == null)
                 initialState = GrRngs.GetOrCreate(GrRngs.Gr()).NodeMaster.rng.State;
 

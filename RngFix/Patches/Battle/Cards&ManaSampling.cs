@@ -16,11 +16,16 @@ using LBoL.EntityLib.Cards.Enemy;
 using LBoL.EntityLib.Cards.Neutral.Black;
 using LBoL.EntityLib.Cards.Neutral.NoColor;
 using LBoL.EntityLib.Cards.Neutral.TwoColor;
+using LBoL.EntityLib.EnemyUnits.Character;
+using LBoL.EntityLib.EnemyUnits.Normal;
+using LBoL.EntityLib.EnemyUnits.Normal.Yinyangyus;
 using LBoL.EntityLib.Exhibits.Adventure;
 using LBoL.EntityLib.Exhibits.Common;
 using LBoL.EntityLib.Exhibits.Shining;
 using LBoL.EntityLib.JadeBoxes;
 using LBoL.EntityLib.StatusEffects.Cirno;
+using LBoL.EntityLib.StatusEffects.Enemy;
+using LBoL.EntityLib.StatusEffects.Enemy.SeijaItems;
 using LBoL.EntityLib.StatusEffects.Marisa;
 using LBoL.EntityLib.StatusEffects.Neutral.TwoColor;
 using LBoL.EntityLib.StatusEffects.Neutral.White;
@@ -52,8 +57,6 @@ namespace RngFix.Patches.Battle
     [HarmonyPatch]
     class LockRandomTurnManaAction_Patch
     {
-
-
         static IEnumerable<MethodBase> TargetMethods()
         {
             yield return ExtraAccess.InnerMoveNext(typeof(LockRandomTurnManaAction), nameof(LockRandomTurnManaAction.ResolvePhaseEnumerator));
@@ -81,7 +84,7 @@ namespace RngFix.Patches.Battle
             return grrngs.overdraftRng;
         }
 
-        static ManaColor[] SampleOverdraft(IEnumerable<ManaColor> remainingManaBase, int count, RandomGen seedCarrier) 
+        static ManaColor[] SampleOverdraft(IEnumerable<ManaColor> remainingManaBase, int count, RandomGen seedCarrier)
         {
             var gr = GrRngs.Gr();
             var battle = gr.Battle;
@@ -236,7 +239,7 @@ namespace RngFix.Patches.Battle
                 .MatchEndForward(OpCodes.Ldfld);
             var instance = matcher.Instruction;
 
-                
+
             return matcher
                 .MatchEndForward(new CodeInstruction(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(CardMovingToDrawZoneEventArgs), nameof(CardMovingToDrawZoneEventArgs.Card))))
                 .Advance(1)
@@ -304,7 +307,7 @@ namespace RngFix.Patches.Battle
 
     }
 
-    
+
     [HarmonyPatch]
     class RandomHandAction_Patch
     {
@@ -324,7 +327,7 @@ namespace RngFix.Patches.Battle
             {
                 var canUpgrade = hand.Where(c => c.CanUpgradeAndPositive).ToList();
                 if (amount >= canUpgrade.Count)
-                { 
+                {
                     __result = new UpgradeCardsAction(canUpgrade);
                     return false;
                 }
@@ -360,7 +363,9 @@ namespace RngFix.Patches.Battle
             yield return ExtraAccess.InnerMoveNext(typeof(IceLaser), nameof(IceLaser.Actions));
             yield return ExtraAccess.InnerMoveNext(typeof(Changzhizhen), nameof(Changzhizhen.OnPlayerTurnEnding));
             yield return ExtraAccess.InnerMoveNext(typeof(SakuyaAttackX), nameof(SakuyaAttackX.Actions));
-
+            // enemyRng
+            yield return ExtraAccess.InnerMoveNext(typeof(HetongKailang), nameof(HetongKailang.RepairActions));
+            yield return ExtraAccess.InnerMoveNext(typeof(YinyangyuBlueOrigin), nameof(YinyangyuBlueOrigin.DefendActions));
 
 
         }
@@ -401,13 +406,19 @@ namespace RngFix.Patches.Battle
                 case nameof(SakuyaAttackX):
                     searchBackMatch = new CodeMatch(new CodeInstruction(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(BattleController), nameof(BattleController.AllAliveEnemies))));
                     break;
+                case nameof(HetongKailang):
+                    searchBackMatch = new CodeMatch(OpCodes.Ldloc_2);
+                    break;
+                case nameof(YinyangyuBlueOrigin):
+                    searchBackMatch = new CodeMatch(OpCodes.Ldloc_2);
+                    break;
                 default:
                     break;
             }
 
             return new CodeMatcher(instructions)
                 .SearchForward(ci => ci.opcode == OpCodes.Call && ci.operand is MethodBase mb && (mb.Name.StartsWith("SampleOrDefault") || mb.Name == "Sample"))
-               
+
                 .SetInstruction(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(TargetSingleEnemy_Patch), nameof(TargetSingleEnemy_Patch.SampleByRootIndex))))
                 .RngAdvancementGuard(generator, searchBackMatch)
 
@@ -447,7 +458,7 @@ namespace RngFix.Patches.Battle
 
             var rez = new EnemyUnit[amount];
             int index = 0;
-            foreach(var p in allPos)
+            foreach (var p in allPos)
             {
                 if (aliveDic.TryGetValue(p, out var enemy))
                 {
@@ -466,7 +477,7 @@ namespace RngFix.Patches.Battle
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator, MethodBase __originalMethod)
         {
 
-            CodeMatch searchBackMatch =  new CodeMatch(ci =>
+            CodeMatch searchBackMatch = new CodeMatch(ci =>
                         (ci.opcode == OpCodes.Call || ci.opcode == OpCodes.Callvirt)
                             && (ci.operand is MethodInfo mi
                             && mi.ReturnType.GetInterfaces().FirstOrDefault(i => i == typeof(IEnumerable)) != null
@@ -576,7 +587,7 @@ namespace RngFix.Patches.Battle
                         .SetInstruction(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(TargetSingleCard_Patch), nameof(TargetSingleCard_Patch.SampleCard))));
                     if (declaringEntityName != nameof(Card))
                     {
-                        matcher.RngAdvancementGuard(generator, searchBackMatches[Math.Min(i, searchBackMatches.Length-1)],
+                        matcher.RngAdvancementGuard(generator, searchBackMatches[Math.Min(i, searchBackMatches.Length - 1)],
                         many: false);
                     }
                     i++;
@@ -606,6 +617,11 @@ namespace RngFix.Patches.Battle
             yield return ExtraAccess.InnerMoveNext(typeof(PiaoliangPanzi), nameof(PiaoliangPanzi.OnPlayerTurnStarted));
             yield return ExtraAccess.InnerMoveNext(typeof(ForeverCoolSe), nameof(ForeverCoolSe.OnCardUsed));
             yield return ExtraAccess.InnerMoveNext(typeof(YonglinUpgradeSe), nameof(YonglinUpgradeSe.OnPlayerTurnStarted));
+
+            yield return ExtraAccess.InnerMoveNext(typeof(SuwakoLimao), nameof(SuwakoLimao.HexActions));
+            yield return ExtraAccess.InnerMoveNext(typeof(InfinityGemsSe), nameof(InfinityGemsSe.OnOwnerTurnStarted));
+            yield return ExtraAccess.InnerMoveNext(typeof(SuwakoHex), nameof(SuwakoHex.OnPlayerTurnStarted));
+
 
         }
 
@@ -638,6 +654,7 @@ namespace RngFix.Patches.Battle
 
 
             var declaringEntityName = OnDemandRngs.FindDeclaringGameEntity(__originalMethod.DeclaringType)?.Name ?? "";
+            var searchForAmountMatchFirst = false;
 
             switch (declaringEntityName)
             {
@@ -646,6 +663,26 @@ namespace RngFix.Patches.Battle
                     break;
                 case nameof(Bingzhilin):
                     searchBackMatch = new CodeMatch(new CodeInstruction(OpCodes.Ldloc_0));
+                    break;
+                case nameof(SuwakoLimao):
+                    amountMatch = new CodeMatch[] {
+                        new CodeMatch(OpCodes.Ldloc_2),
+                        new CodeMatch(ci => ci.opcode == OpCodes.Call && (ci.operand is MethodBase mb &&  mb.Name.Contains("Count")))
+                    };
+                    break;
+                case nameof(InfinityGemsSe):
+                    searchBackMatch = new CodeMatch(new CodeInstruction(OpCodes.Ldloc_2));
+
+                    amountMatch = new CodeMatch[] {
+                        new CodeMatch(OpCodes.Ldloc_2),
+                        new CodeMatch(ci => ci.opcode == OpCodes.Callvirt && (ci.operand is MethodBase mb &&  mb.Name.Contains("Count"))),
+                        new CodeMatch(OpCodes.Ldc_I4_2),
+                        new CodeMatch(OpCodes.Div),
+                    };
+                    searchForAmountMatchFirst = true;
+                    break;
+                case nameof(SuwakoHex):
+                    searchBackMatch = new CodeMatch(ci => ci.opcode == OpCodes.Ldfld && (ci.operand?.ToString().Contains("cards") ?? false));
                     break;
                 default:
                     break;
@@ -663,9 +700,11 @@ namespace RngFix.Patches.Battle
 
                     if (declaringEntityName != nameof(Card)) // guard is handled in prefix
                     {
-                        matcher.RngAdvancementGuard(generator, searchBackMatch, 
-                        many: true, 
-                        amountMatch: amountMatch);
+                        matcher.RngAdvancementGuard(generator, searchBackMatch,
+                        many: true,
+                        amountMatch: amountMatch,
+                        searchForAmountMatchFirst: searchForAmountMatchFirst
+                        );
                     }
                 }
                 catch (InvalidOperationException)
