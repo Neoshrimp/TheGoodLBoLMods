@@ -34,6 +34,12 @@ What this does **not** fix:
 ---
 *Change log*
 
+`2.1.0` 
+- Make card and other entity sampling method fairer to the weights.
+- Fix some exhibits not having rng assigned. Requires starting a new run for fix to take effect.
+- Change logs location to `rngFix_logs/` in LBoL.exe folder.
+- Minor fallback and consistency upgrades.
+
 `2.0.0` Greatly reduces manipulation possible via save/loading:
 - Consistent deck shuffling, independent from discard order.
 - Consistent card discovery, independent from play order.

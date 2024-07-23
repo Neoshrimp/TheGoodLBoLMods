@@ -82,6 +82,15 @@ namespace RngFix.CustomRngs.Sampling
             logInfo.totalW = possibleTotalW;
             logInfo.maxW = possibleMaxW;
 
+            if (possibleMaxW <= 0)
+            {
+                if (fallback != null)
+                    rez = fallback();
+                if (failureAction != null)
+                    failureAction();
+                return null;
+            }
+
             //var probabilityFraction = possibleMaxW + Math.Max(0, possibleTotalW - possibleMaxW) * probabiltyMul;
 
             var rangeRez = factionRange.GetFraction(possibleMaxW);

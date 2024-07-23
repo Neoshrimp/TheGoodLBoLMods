@@ -19,9 +19,6 @@ using static RngFix.BepinexPlugin;
 
 namespace RngFix.CustomRngs
 {
-    // 2do FallbackShinning uses ExhibitRng (doesn't really matter)
-    // 2do lesson learned
-    // 2do transform card double roll (never happens in practice)
     public class GrRngs
     {
         static ConditionalWeakTable<GameRunController, GrRngs> table = new ConditionalWeakTable<GameRunController, GrRngs>();

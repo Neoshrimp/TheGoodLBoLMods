@@ -238,7 +238,7 @@ namespace RngFix.Patches.Debug
                     logFile: logName,
                     ass: gr,
                     ext: ext,
-                    subFolder: "RngFix",
+                    subFolder: "rngFix_logs",
                     isEnabled: isEnabled);
                 currentGrId = tupple.Item2.ToString();
                 return tupple.Item1;
@@ -248,7 +248,8 @@ namespace RngFix.Patches.Debug
                     logFile: logName,
                     id: currentGrId,
                     ext: ext,
-                    subFolder: "RngFix",
+                    subFolder: "rngFix_logs" +
+                    "",
                     isEnabled: isEnabled);
         }
 

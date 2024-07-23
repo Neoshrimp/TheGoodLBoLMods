@@ -524,6 +524,8 @@ namespace RngFix.Patches.Battle
             yield return ExtraAccess.InnerMoveNext(typeof(TangSan), nameof(TangSan.OnPlayerTurnStarted));
             yield return ExtraAccess.InnerMoveNext(typeof(YouxiangWakeSe), nameof(YouxiangWakeSe.OnPlayerTurnStarted));
             yield return AccessTools.Method(typeof(MoonWorldSe), nameof(MoonWorldSe.OnTurnStarted));
+            // not battle
+            yield return ExtraAccess.InnerMoveNext(typeof(QingeUpgrade), nameof(QingeUpgrade.OnEnemyDied));
 
 
         }
@@ -570,6 +572,9 @@ namespace RngFix.Patches.Battle
                     break;
                 case nameof(MoonWorldSe):
                     searchBackMatches = new CodeMatch[] { OpCodes.Ldloc_2, OpCodes.Ldloc_3 };
+                    break;
+                case nameof(QingeUpgrade):
+                    searchBackMatches = new CodeMatch[] { OpCodes.Ldloc_3 };
                     break;
                 default:
                     break;
