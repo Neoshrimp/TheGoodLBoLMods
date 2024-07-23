@@ -35,6 +35,7 @@ namespace RngFix.Patches
         static void InitRngs(GameRunController gr)
         {
             var grRngs = GrRngs.GetOrCreate(gr);
+            log.LogDebug("Initing GrRngs..");
             grRngs.persRngs.stageMasterRng = new StageMasterRng(gr.RootRng.NextULong());
             grRngs.persRngs.actMasterRng = new ActMasterRng(gr.RootRng.NextULong());
 
@@ -46,7 +47,7 @@ namespace RngFix.Patches
             grRngs.persRngs.fallbackInitRng = new RandomGen(gr.RootRng.NextULong());
 
             grRngs.ExhibitSelfRngs = new EntitySelfRngs<Exhibit>(ex => ex.Id, gr.RootRng.NextULong());
-            grRngs.ExhibitSelfRngs.InitialiseRngs(Padding.ExPadding().Select(ec => ec?.Name));
+            grRngs.ExhibitSelfRngs.InitialiseRngs(Padding.AllExhibits.Select(ec => ec?.Name));
 
             var cardRngInit = new RandomGen(gr.RootRng.NextULong());
 
@@ -55,7 +56,7 @@ namespace RngFix.Patches
             grRngs.persRngs.bossCardRng = new RandomGen(cardRngInit.NextULong());
 
             grRngs.persRngs.adventureSelfRngs = new EntitySelfRngs<Adventure>(a => a.Id, gr.RootRng.NextULong());
-            grRngs.persRngs.adventureSelfRngs.InitialiseRngs(Padding.AdventurePadding().Select(ac => ac?.Name));
+            grRngs.persRngs.adventureSelfRngs.InitialiseRngs(Padding.AllAdventurePadding().Select(ac => ac?.Name));
             
             grRngs.persRngs.shopRngs = ShopRngs.Init(gr.RootRng.NextULong());
 

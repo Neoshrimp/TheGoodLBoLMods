@@ -57,6 +57,24 @@ namespace RngFix.CustomRngs.Sampling.Pads
             return paddedCards;
         }
 
+        
+
+        public static IEnumerable<Type> AllExhibits
+        {
+            get
+            {
+                return ExPadding(ExhibitConfig.AllConfig());
+            }
+        }
+
+        public static IEnumerable<Type> RollableExhibits
+
+        {
+            get
+            {
+                return ExPadding(ExhibitConfig.AllConfig().Where(c => c.Rarity is Rarity.Common || c.Rarity is Rarity.Uncommon || c.Rarity is Rarity.Rare));
+            }
+        }
 
         public static void OutputPadding(IEnumerable<Type> padded)
         {
@@ -164,9 +182,8 @@ namespace RngFix.CustomRngs.Sampling.Pads
         }
 
 
-        public static IEnumerable<Type> ExPadding(int total = 2000, int reserveForDupes = 50)
+        public static IEnumerable<Type> ExPadding(IEnumerable<ExhibitConfig> validExhibits, int total = 2000, int reserveForDupes = 50)
         {
-            var validExhibits = ExhibitConfig.AllConfig().Where(c => c.Rarity is Rarity.Common || c.Rarity is Rarity.Uncommon || c.Rarity is Rarity.Rare);
 
             var vanilla = SlotByIndex(800, validExhibits
                 .Where(ec => ec.Index < 800)
@@ -193,7 +210,7 @@ namespace RngFix.CustomRngs.Sampling.Pads
 
         }
 
-        public static IEnumerable<Type> AdventurePadding(int total = 300, int reserveForDupes = 50)
+        public static IEnumerable<Type> AllAdventurePadding(int total = 300, int reserveForDupes = 50)
         {
             var adventures = AdventureConfig.AllConfig().OrderBy(ac => ac.No);
             var vanilla = SlotByIndex(100, adventures.Where(ac => ac.No < 100)

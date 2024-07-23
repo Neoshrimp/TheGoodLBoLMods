@@ -106,7 +106,7 @@ namespace RngFix.CustomRngs
             initAction: (t) => { var ex = Library.CreateExhibit(t); Gr().ExhibitPool.Remove(ex.GetType()); return ex; },
             successAction: null,
             failureAction: null,
-            potentialPool: Padding.ExPadding())
+            potentialPool: Padding.RollableExhibits)
         );
         public AbstractSlotSampler<Exhibit, Type> NormalExSampler { get => normalExSampler.Value; }
 
@@ -129,7 +129,7 @@ namespace RngFix.CustomRngs
                     potentialPool: CardConfig.AllConfig().Where(cc => cc.IsPooled && cc.DebugLevel <= Gr().CardValidDebugLevel).Select(cc => TypeFactory<Card>.TryGetType(cc.Id)).Where(t => t != null).ToList()));*/
 
 
-        public AbstractSlotSampler<Card, Type> CardSampler { get => cardSampler.Value; }
+        public AbstractSlotSampler<Card, Type> RewardCardSampler { get => cardSampler.Value; }
 
 
         private Lazy<AbstractSlotSampler<Type, Type>> adventureSampler = new Lazy<AbstractSlotSampler<Type, Type>>(() => 
@@ -138,7 +138,7 @@ namespace RngFix.CustomRngs
             initAction: (t) => { return t; },
             successAction: null,
             failureAction: null,
-            potentialPool: Padding.AdventurePadding())
+            potentialPool: Padding.AllAdventurePadding())
         );
         public AbstractSlotSampler<Type, Type> AdventureSampler { get => adventureSampler.Value; }
 
@@ -190,6 +190,8 @@ namespace RngFix.CustomRngs
 
         static public GrRngs GetOrCreate(GameRunController gr)
         {
+            if (!table.TryGetValue(gr, out var _))
+                log.LogWarning("Creating grrngs for the first time");
             var grRgns = table.GetOrCreateValue(gr);
             return grRgns;
         }

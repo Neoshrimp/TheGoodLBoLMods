@@ -38,6 +38,8 @@ namespace RngFix.CustomRngs
         public static BattleController Battle() => GameMaster.Instance?.CurrentGameRun?.Battle;
         public static BattleRngs GetOrCreate(BattleController battle)
         {
+            if (!table.TryGetValue(battle, out var _))
+                log.LogWarning("Creating BattleRngs for the first time");
             return table.GetOrCreateValue(battle);
         }
 

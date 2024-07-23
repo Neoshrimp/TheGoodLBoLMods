@@ -126,23 +126,25 @@ namespace RngFix
                 //DisableManaBaseAffectedCardWeights_Patch.tempDebugDisable = false;
                 var seed = RandomGen.ParseSeed("deeznuts");
 
+
+
                 //gr.RollBossExhibits
 
 
-/*                log.LogDebug(string.Join(";", Padding.PadManaColours(new ManaGroup()
-                {
-                    Any = 2,
-                    Black = 3,
-                    Blue = 5,
-                    Colorless = 6,
-                    Green = 27,
-                    Hybrid = 5,
-                    Red = 10,
-                    White = 22,
-                    HybridColor = 1
-                }.EnumerateComponents(),
-                    true
-                ).Select(c => c?.ToString() ?? "null")));*/
+                /*                log.LogDebug(string.Join(";", Padding.PadManaColours(new ManaGroup()
+                                {
+                                    Any = 2,
+                                    Black = 3,
+                                    Blue = 5,
+                                    Colorless = 6,
+                                    Green = 27,
+                                    Hybrid = 5,
+                                    Red = 10,
+                                    White = 22,
+                                    HybridColor = 1
+                                }.EnumerateComponents(),
+                                    true
+                                ).Select(c => c?.ToString() ?? "null")));*/
 
                 //Padding.OutputPadding(BattleRngs.PaddedCards);
 

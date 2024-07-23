@@ -87,7 +87,7 @@ namespace RngFix.CustomRngs.Sampling
                                 state: rng.NextULong(),
                                 weightTable: weightTable,
                                 logInfo: out logInfo,
-                                sampler: grRgns.CardSampler,
+                                sampler: grRgns.RewardCardSampler,
                                 battleRolling: battleRolling,
                                 manaBase: manaBase,
                                 filter: filter,
@@ -155,7 +155,7 @@ namespace RngFix.CustomRngs.Sampling
 
             var grRgns = GrRngs.GetOrCreate(gr);
             if(sampler == null)
-                sampler = grRgns.CardSampler;
+                sampler = grRgns.RewardCardSampler;
             var rng = RandomGen.FromState(state);
 
             var ogManabase = gr.BaseMana;

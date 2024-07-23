@@ -94,7 +94,7 @@ namespace RngFix.Patches
             var grngs = GrRngs.GetOrCreate(gr);
             var rolledCards = new List<Card>();
 
-            var cardPoolReq = grngs.CardSampler.requirements.Find(r => r is CardInPool) as CardInPool;
+            var cardPoolReq = grngs.RewardCardSampler.requirements.Find(r => r is CardInPool) as CardInPool;
 
             cardPoolReq.poolSet = new HashSet<Type>(gr.CreateValidCardsPool(weightTable, manaLimit, colorLimit, applyFactors, battleRolling, filter).Select(re => re.Elem));
 
@@ -113,7 +113,7 @@ namespace RngFix.Patches
             {
 
                 var prevState = rng.State;
-                var card = grngs.CardSampler.Roll(rng, getW, logInfo: out var logInfo, filter: t => rolledCards.All(c => c.GetType() != t));
+                var card = grngs.RewardCardSampler.Roll(rng, getW, logInfo: out var logInfo, filter: t => rolledCards.All(c => c.GetType() != t));
 
 
                 if (card == null)
@@ -121,7 +121,7 @@ namespace RngFix.Patches
                     {
                         BepinexPlugin.log.LogWarning("ENSURING COUNT ENSURING COUNT ENSURING COUNT");
                         rng.State = prevState;
-                        card = grngs.CardSampler.Roll(rng, getW, logInfo: out logInfo);
+                        card = grngs.RewardCardSampler.Roll(rng, getW, logInfo: out logInfo);
                     }
                     else
                     {

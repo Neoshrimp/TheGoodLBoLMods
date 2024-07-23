@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using YamlDotNet.Serialization;
+using static RngFix.BepinexPlugin;
 
 namespace RngFix.CustomRngs
 {
@@ -20,6 +21,9 @@ namespace RngFix.CustomRngs
             grRngs.persRngs.exhibitSelfRngs.GetId = ex => ex.Id;
             grRngs.persRngs.adventureSelfRngs.GetId = adv => adv.Id;
 
+            log.LogDebug("Restoring GrRngs..");
+
+
             StatsLogger.currentGrId = currentGrId;
         }
 
@@ -27,6 +31,9 @@ namespace RngFix.CustomRngs
         {
             var grRngs = GrRngs.GetOrCreate(gameRun);
             persRngs = grRngs.persRngs;
+
+            log.LogDebug("Saving GrRngs..");
+
             currentGrId = StatsLogger.currentGrId;
         }
 
