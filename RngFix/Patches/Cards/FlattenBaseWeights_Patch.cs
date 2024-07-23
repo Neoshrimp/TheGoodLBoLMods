@@ -2,22 +2,30 @@
 using LBoL.Base;
 using LBoL.ConfigData;
 using LBoL.Core;
+using LBoL.EntityLib.Exhibits;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection.Emit;
 
 
 namespace RngFix.Patches.Cards
 {
     [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.BaseCardWeight))]
-    class DisableManaBaseAffectedCardWeights_Patch
+    class FlattenBaseWeights_Patch
     {
         public static bool tempDebugDisable = false;
 
         static int CheckOption(int colourCount)
         {
-            if (BepinexPlugin.disableManaBaseAffectedCardWeights.Value || tempDebugDisable)
+            if (tempDebugDisable)
                 return 0;
             return colourCount;
+        }
+
+        static int NormalizeAmount(ref ManaGroup _, GameRunController gr)
+        {
+            
+            return gr.Player.Config.InitialMana.Amount + gr.Player.Exhibits.Where(ex => ex is ShiningExhibit).Count();
         }
 
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
@@ -32,7 +40,12 @@ namespace RngFix.Patches.Cards
                     OpCodes.Ldloc_S
                 })
                 .Advance(-1)
-                .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(DisableManaBaseAffectedCardWeights_Patch), nameof(DisableManaBaseAffectedCardWeights_Patch.CheckOption))))
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(FlattenBaseWeights_Patch), nameof(FlattenBaseWeights_Patch.CheckOption))))
+                
+                .MatchEndForward(new CodeInstruction(OpCodes.Call, AccessTools.PropertyGetter(typeof(ManaGroup), nameof(ManaGroup.Amount))))
+                .SetInstruction(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(FlattenBaseWeights_Patch), nameof(FlattenBaseWeights_Patch.NormalizeAmount))))
+                .Insert(new CodeInstruction(OpCodes.Ldarg_0))
+
                 .InstructionEnumeration();
         }
 

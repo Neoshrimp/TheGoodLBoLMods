@@ -51,7 +51,7 @@ namespace RngFix.Patches.Debug
             log.SetValSafe(VersionInfo.Current.Version, "GameVersion");
             log.SetValSafe(gr.CardValidDebugLevel, "CardValidDebugLevel");
             log.SetValSafe(string.Join(";", gr.JadeBoxes.Select(jb => jb.Name)), "Jadeboxes");
-            log.SetValSafe(string.Join("|", new object[] { BepinexPlugin.ignoreFactorsTableConf.Value, BepinexPlugin.doLoggingConf.Value, BepinexPlugin.disableManaBaseAffectedCardWeights.Value }), "rngFixOptions");
+            log.SetValSafe(string.Join("|", new object[] { BepinexPlugin.ignoreFactorsTableConf.Value, BepinexPlugin.doLoggingConf.Value}), "rngFixOptions");
             log.SetValSafe(string.Join(";", Chainloader.PluginInfos.Values.Select(pi => $"{pi.Metadata.GUID}|{pi.Metadata.Version}")), "Mods");
 
             log.FlushVals();

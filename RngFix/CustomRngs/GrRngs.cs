@@ -101,7 +101,7 @@ namespace RngFix.CustomRngs
 
 
         private Lazy<AbstractSlotSampler<Exhibit, Type>> normalExSampler = new Lazy<AbstractSlotSampler<Exhibit, Type>>(() => 
-        new WeightedSlotSampler<Exhibit>(
+        new LessRandomWeightedSlotSampler<Exhibit>(
             requirements: new List<ISlotRequirement<Type>>() { new ExInPool(), new ExHasManaColour() },
             initAction: (t) => { var ex = Library.CreateExhibit(t); Gr().ExhibitPool.Remove(ex.GetType()); return ex; },
             successAction: null,
@@ -111,8 +111,8 @@ namespace RngFix.CustomRngs
         public AbstractSlotSampler<Exhibit, Type> NormalExSampler { get => normalExSampler.Value; }
 
 
-        private Lazy<WeightedSlotSampler<Card>> cardSampler = new Lazy<WeightedSlotSampler<Card>>(() => 
-        new WeightedSlotSampler<Card>(
+        private Lazy<AbstractSlotSampler<Card, Type>> cardSampler = new Lazy<AbstractSlotSampler<Card, Type>>(() => 
+        new LessRandomWeightedSlotSampler<Card>(
             requirements: new List<ISlotRequirement<Type>>() { new CardInPool() },
             initAction: (t) => { var c = Library.CreateCard(t); c.GameRun = GrRngs.Gr(); return c; },
             successAction: null,
@@ -129,11 +129,11 @@ namespace RngFix.CustomRngs
                     potentialPool: CardConfig.AllConfig().Where(cc => cc.IsPooled && cc.DebugLevel <= Gr().CardValidDebugLevel).Select(cc => TypeFactory<Card>.TryGetType(cc.Id)).Where(t => t != null).ToList()));*/
 
 
-        public WeightedSlotSampler<Card> CardSampler { get => cardSampler.Value; }
+        public AbstractSlotSampler<Card, Type> CardSampler { get => cardSampler.Value; }
 
 
         private Lazy<AbstractSlotSampler<Type, Type>> adventureSampler = new Lazy<AbstractSlotSampler<Type, Type>>(() => 
-        new WeightedSlotSampler<Type>(
+        new LessRandomWeightedSlotSampler<Type>(
             requirements: new List<ISlotRequirement<Type>>() { new AdventureInPool(), new AdventureNOTinHistory() },
             initAction: (t) => { return t; },
             successAction: null,

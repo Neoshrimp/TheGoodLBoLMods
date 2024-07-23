@@ -59,7 +59,6 @@ namespace RngFix
 
         public static ConfigEntry<bool> doLoggingConf;
 
-        public static ConfigEntry<bool> disableManaBaseAffectedCardWeights;
 
 
 
@@ -78,7 +77,7 @@ namespace RngFix
 
             doLoggingConf = Config.Bind("Stats", "DoLogging", true, "Log various run stats (card, exhibits etc.) to <gameSaveDir>/RngFix");
 
-            disableManaBaseAffectedCardWeights = Config.Bind("Rng", "disableManaBaseAffectedCardWeights", false, "In vanilla, card weights are influenced by current mana. Roughly the more of a certain colour there is in the mana base the more likely cards of that colour are to appear. This disrupts seed consistency somewhat. But disabling this mechanic by default is potentially a big enough deviation from vanilla experience that an optional toggle is justified.");
+/*            disableManaBaseAffectedCardWeights = Config.Bind("Rng", "disableManaBaseAffectedCardWeights", false, "In vanilla, card weights are influenced by current mana. Roughly the more of a certain colour there is in the mana base the more likely cards of that colour are to appear. This disrupts seed consistency somewhat. But disabling this mechanic by default is potentially a big enough deviation from vanilla experience that an optional toggle is justified.");*/
 
             EntityManager.RegisterSelf();
 
@@ -122,8 +121,8 @@ namespace RngFix
             if (false && debgugBind.IsDown() && GrRngs.Gr() != null)
             {
                 var gr = GrRngs.Gr();
-/*                var grrngs = GrRngs.GetOrCreate(gr);
-                var stage = gr.CurrentStage;*/
+                var grrngs = GrRngs.GetOrCreate(gr);
+                var stage = gr.CurrentStage;
                 //DisableManaBaseAffectedCardWeights_Patch.tempDebugDisable = false;
                 var seed = RandomGen.ParseSeed("deeznuts");
 
@@ -281,29 +280,29 @@ namespace RngFix
                                         .Aggregate((g1, g2) => g1.Concat(g2))*/
                     ;
 
-/*                log.LogDebug(string.Join(";", groupsByProperties.Select(g => g.Key).OrderBy(k => k)));
-                log.LogDebug("count: " + groupsByProperties.Count());
-*/
+                /*                log.LogDebug(string.Join(";", groupsByProperties.Select(g => g.Key).OrderBy(k => k)));
+                                log.LogDebug("count: " + groupsByProperties.Count());
+                */
 
                 //int cardGroup = 3;
 
-                int upgradeGn = 2;
-                int costGn = 10;
-                int keywordGn = 8 + 1;
-                int totalG = upgradeGn * costGn * keywordGn;
-                var groupList = new List<string>(Enumerable.Repeat<string>(null, totalG));
+                /*                int upgradeGn = 2;
+                                int costGn = 10;
+                                int keywordGn = 8 + 1;
+                                int totalG = upgradeGn * costGn * keywordGn;
+                                var groupList = new List<string>(Enumerable.Repeat<string>(null, totalG));
 
 
-                foreach (var g in groupsByProperties)
-                {
-                    var card = g.First();
-                    var maskedKeywords = (card.Keywords ^ (card.IsUpgraded ? card.Config.UpgradedKeywords : card.Config.Keywords));
-                    groupList[g.Key] = $"{card.IsUpgraded}{card.Cost.Amount}|{maskedKeywords}";
+                                foreach (var g in groupsByProperties)
+                                {
+                                    var card = g.First();
+                                    var maskedKeywords = (card.Keywords ^ (card.IsUpgraded ? card.Config.UpgradedKeywords : card.Config.Keywords));
+                                    groupList[g.Key] = $"{card.IsUpgraded}{card.Cost.Amount}|{maskedKeywords}";
 
-                    //add = add + ()
-                }
-                log.LogDebug(string.Join(";", groupList.Select((k, i) => (k, i)).Where(tu => tu.k != null).Select(tu => $"{tu.i}:{tu.k}")));
-                log.LogDebug("count: " + groupList.Where(k => k != null).Count());
+                                    //add = add + ()
+                                }
+                                log.LogDebug(string.Join(";", groupList.Select((k, i) => (k, i)).Where(tu => tu.k != null).Select(tu => $"{tu.i}:{tu.k}")));
+                                log.LogDebug("count: " + groupList.Where(k => k != null).Count());*/
 
                 /*                var bigDick = new List<Card>(Enumerable.Repeat<Card>(Library.CreateCard<Shoot>(), 9999));
                                 var bigRng = new RandomGen(RandomGen.GetRandomSeed());
@@ -315,13 +314,7 @@ namespace RngFix
                                 sw.Stop();
                                 log.LogDebug(sw.Elapsed);*/
 
-                /*                gr.CardValidDebugLevel = 0;
-                                grrngs.CardSampler.BuildPool(Padding.CardPadding());
-                                SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.Slot, battleRolling: false, rolls: 1000, seed: 2405181760243075183);
 
-                                gr.CardValidDebugLevel = 1;
-                                grrngs.CardSampler.BuildPool(Padding.CardPadding());
-                                SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.Slot, battleRolling: false, rolls: 1000, seed: 2405181760243075183)*/
 
 
 
@@ -361,12 +354,18 @@ namespace RngFix
 
 
 
+                /*                SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.Slot, battleRolling: false, rolls: 1000, seed: 12012204824104114439, manaBase: new ManaGroup() { White = 2, Blue = 2, Red = 2, Black = 0 });
 
-                //SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.Vanilla, battleRolling: false, rolls: 1000, seed: 12012204824104114439, manaBase: new ManaGroup() { White = 2, Blue = 3, Black = 0 });
 
+                                SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.Slot, battleRolling: false, rolls: 1000, seed: 12012204824104114439, manaBase: new ManaGroup() { White = 2, Blue = 2, Red = 2, Black = 1 });*/
 
-                //SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.EwSlot, battleRolling: false, rolls: 1000, seed: 4627015065581599883, manaBase: new ManaGroup() { White = 2, Blue = 2, Black = 1 });
+                //----
 
+                //grrngs.CardSampler.BuildPool(Padding.RewardCards);
+/*                SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.Vanilla, battleRolling: false, rolls: 10000, seed: 2405181760243075183);*/
+
+                //grrngs.CardSampler.BuildPool(Padding.RewardCards);
+                //SamplerDebug.RollDistribution(GameMaster.Instance.CurrentGameRun.CurrentStage.DrinkTeaAdditionalCardWeight, SamplerDebug.SamplingMethod.Slot, battleRolling: false, rolls: 1000, seed: 2405181760243075183);
 
                 /*                var sampler = SamplerDebug._ewSampler.Value;
                                 var seed = RandomGen.FromState(1062950951210960947).NextULong();
