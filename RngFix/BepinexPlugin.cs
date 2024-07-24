@@ -126,7 +126,7 @@ namespace RngFix
                 //DisableManaBaseAffectedCardWeights_Patch.tempDebugDisable = false;
                 var seed = RandomGen.ParseSeed("deeznuts");
 
-
+                //SamplerDebug.TestInsert(seed, 3, 10, deckCount: 10);
 
                 //gr.RollBossExhibits
 

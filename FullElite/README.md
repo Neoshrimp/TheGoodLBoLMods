@@ -15,6 +15,8 @@ Challenge is selectable and configurable via jadeboxes. Jadebox bonuses are pret
 ---
 *Change log*
 
+`1.1.40` Add 'Reward Exhibit' bonus jadebox.
+
 `1.1.30` Reduce Doremy's barrier and hp gain in earlier acts.
 
 `1.1.2` Add Korean localization.

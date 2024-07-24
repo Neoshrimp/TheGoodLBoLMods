@@ -17,3 +17,7 @@ PowerBonusBox:
 BlockToysBonusBox:
   Name: '|FE Bonus| Block Toys'    
   Description: Start with |Block Toys| exhibit.
+
+AllRewardExhibit:
+  Name: '|FE Bonus| Reward Exhibit'
+  Description: All fights reward an exhibit as an elite would.

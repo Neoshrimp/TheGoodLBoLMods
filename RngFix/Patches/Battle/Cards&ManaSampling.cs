@@ -148,7 +148,7 @@ namespace RngFix.Patches.Battle
             return brngs.battleRngs.GetOrCreateRootRng(actionSourceId, grrngs.NodeMaster.rng.State);
         }
 
-        static int ConsistentDeckPos(RandomGen subRng, int _zero, int deckCount)
+        public static int ConsistentDeckPos(RandomGen subRng, int _zero, int deckCount)
         {
             if (deckCount == 0)
                 return 0;

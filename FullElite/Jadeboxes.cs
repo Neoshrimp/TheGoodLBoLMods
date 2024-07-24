@@ -217,6 +217,9 @@ namespace FullElite
     }
 
 
+
+
+
     public sealed class BlockToysBonusBoxDef : JadeBoxTemplate
     {
         public override IdContainer GetId() => nameof(BlockToysBonusBox);
@@ -248,5 +251,37 @@ namespace FullElite
 
     }
 
+
+    public sealed class AllRewardExhibitDef : JadeBoxTemplate
+    {
+        public override IdContainer GetId() => nameof(AllRewardExhibit);
+
+        public override LocalizationOption LoadLocalization() => jadeboxBatchLoc.AddEntity(this);
+        public override JadeBoxConfig MakeConfig()
+        {
+            var con = DefaultConfig();
+            return con;
+        }
+
+        [EntityLogic(typeof(AllRewardExhibitDef))]
+        public sealed class AllRewardExhibit : JadeBox
+        {
+            protected override void OnGain(GameRunController gameRun)
+            {
+                base.OnGain(gameRun);
+                HandleGameRunEvent(gameRun.StationRewardGenerating, OnStationRewardGenerating);
+                
+            }
+            private void OnStationRewardGenerating(StationEventArgs args)
+            {
+                var station = args.Station;
+                if (station is EnemyStation)
+                {
+                    station.AddReward(StationReward.CreateExhibit(station.Stage.GetEliteEnemyExhibit()));
+                }
+            }
+        }
+
+    }
 
 }

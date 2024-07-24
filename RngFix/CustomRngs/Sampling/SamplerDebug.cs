@@ -6,6 +6,7 @@ using LBoL.Core.Cards;
 using LBoL.Core.Randoms;
 using Logging;
 using RngFix.CustomRngs.Sampling.Pads;
+using RngFix.Patches.Battle;
 using RngFix.Patches.Debug;
 using System;
 using System.Collections.Generic;
@@ -32,7 +33,36 @@ namespace RngFix.CustomRngs.Sampling
             }
         }
 
+        public static void TestInsert(ulong seed, int toInsert, int iterations = 10000, int deckCount = 50)
+        {
+            using var logger = new CsvLogger($"{DateTime.Now.Ticks % (int)1E8}_{seed}_{toInsert}insertInto{deckCount}", subFolder: "Rngfix");
 
+            log.LogDebug("Insert test..");
+            var rng = new RandomGen(seed);
+            var posCount = new Dictionary<int, int>();
+
+            for (int i = 0; i < iterations; i++)
+            {
+                var subRng = new RandomGen(rng.NextULong());
+                for (int j = 0; j < toInsert; j++)
+                {
+                    var pos = AddCardToDrawZone_Patch.ConsistentDeckPos(subRng, 0, deckCount+j);
+                    posCount.TryAdd(pos, 0);
+                    posCount[pos]++;
+                
+                }
+            }
+
+            log.LogDebug($"total:{toInsert * iterations}");
+            log.LogDebug(string.Join(";", posCount.OrderBy(kv => kv.Key).Select(kv => $"{kv.Key}:{kv.Value}")));
+            logger.SetHeader(new string[] { "Pos", "Count" });
+            logger.LogHead();
+            posCount.OrderBy(kv => kv.Key).Do(kv => {
+                logger.SetVal(kv.Key, "Pos");
+                logger.SetVal(kv.Value, "Count");
+                logger.FlushVals();
+            });
+        }
 
         public enum SamplingMethod 
         {
