@@ -14,6 +14,7 @@ using RngFix.Patches;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -26,11 +27,21 @@ namespace RngFix.CustomRngs.Sampling.Pads
 {
     public static class Padding
     {
-        private static IEnumerable<Type> paddedCards = null;
+        private static IEnumerable<Type> rewardPaddedCards = null;
         private static List<(Type cardType, CardConfig config)?> paddedMisfortunes = null;
+        private static IEnumerable<Type> allPaddedCards = null;
 
         private const string lostBin = "LostBin";
         private const string modNeutral = "ModNeutral";
+
+        internal static void ResetPadCache()
+        {
+            log.LogDebug("Clearing pad cache..");
+            rewardPaddedCards = null;
+            paddedMisfortunes = null;
+            allPaddedCards = null;
+        }
+
 
         public static IEnumerable<Type> RewardCards 
         {
@@ -39,6 +50,17 @@ namespace RngFix.CustomRngs.Sampling.Pads
                 return GetRewardCards(GrRngs.Gr());
             }
         }
+
+        public static IEnumerable<Type> AllCards
+        {
+            get
+            {
+                if (Padding.allPaddedCards == null)
+                    Padding.allPaddedCards = Padding.CardPadding(CardConfig.AllConfig());
+                return Padding.allPaddedCards;
+            }
+        }
+
 
         public static List<(Type cardType, CardConfig config)?> PaddedMisfortunes 
         { 
@@ -52,9 +74,9 @@ namespace RngFix.CustomRngs.Sampling.Pads
 
         public static IEnumerable<Type> GetRewardCards(GameRunController gr)
         {
-            if (paddedCards == null)
-                paddedCards = CardPadding(CardConfig.AllConfig().Where(cc => cc.IsPooled && cc.DebugLevel <= gr.CardValidDebugLevel));
-            return paddedCards;
+            if (rewardPaddedCards == null)
+                rewardPaddedCards = CardPadding(CardConfig.AllConfig().Where(cc => cc.IsPooled && cc.DebugLevel <= gr.CardValidDebugLevel));
+            return rewardPaddedCards;
         }
 
         
@@ -101,7 +123,7 @@ namespace RngFix.CustomRngs.Sampling.Pads
 	            if(t == null)
                     agg++;
             }
-            Debug.Log(string.Join(";", rez));
+            UnityEngine.Debug.Log(string.Join(";", rez));
         }
 
 
@@ -369,7 +391,7 @@ namespace RngFix.CustomRngs.Sampling.Pads
             static void Postfix(GameRunController __instance)
             {
                 GetRewardCards(__instance);
-                var __ = BattleRngs.PaddedCards;
+                var __ = Padding.AllCards;
                 var _ = PaddedMisfortunes;
             }
         }
@@ -386,7 +408,7 @@ namespace RngFix.CustomRngs.Sampling.Pads
             static void Postfix(GameRunController __result)
             {
                 GetRewardCards(__result);
-                var __ = BattleRngs.PaddedCards;
+                var __ = Padding.AllCards;
                 var _ = PaddedMisfortunes;
             }
         }

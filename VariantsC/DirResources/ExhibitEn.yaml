@@ -13,3 +13,11 @@ BloodyRipperEx:
       After a non-|Knife| card is played lose <color=#B2FFFF>1~3</color> life. This lifeloss can never kill {PlayerName}.
       Whenever {PlayerName} plays an attack card increase counter by <color=#B2FFFF>1</color>. When the counter reaches {Value2}, reset the counter and gain |Blood Drain|. Counter is decreased by <color=#B2FFFF>1</color> at the end of the turn.
     FlavorText: Rip and tear, tear and rip.
+
+PachyBagEx:
+    Name: Bag with a Hole
+    Description: |-
+      Adds {BaseMana} to the mana base. Cards unique to |Marisa| are added to the card pool.
+      At the start of {PlayerName}'s turn, for every {Value1} cards in the |Library| gain 1 random mana.
+      The number of choices for card rewards is decreased by {Value2} but |non-boss| combats reward an additional card reward.
+    FlavorText: "Makes |Too Big to Fail| unupgradable."

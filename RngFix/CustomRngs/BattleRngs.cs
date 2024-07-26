@@ -10,10 +10,12 @@ using LBoL.EntityLib.Cards.Neutral.TwoColor;
 using LBoL.EntityLib.Cards.Neutral.White;
 using LBoL.EntityLib.EnemyUnits.Normal.Bats;
 using LBoL.Presentation;
+using LBoLEntitySideloader;
 using RngFix.CustomRngs.Sampling;
 using RngFix.CustomRngs.Sampling.Pads;
 using RngFix.CustomRngs.Sampling.UniformPools;
 using RngFix.Patches;
+using RngFix.Patches.Battle;
 using Spine;
 using System;
 using System.Collections.Generic;
@@ -55,37 +57,6 @@ namespace RngFix.CustomRngs
 
         public RandomGen BatLockOnRng { get => unitRootRngs.GetOrCreateRootRng(typeof(BatOrigin).FullName + "lckOn", null); }
 
-
-
-
-        private static IEnumerable<Type> paddedCards = null;
-        private static RepeatableUniformRandomPool<Type> infiteDeck = null;
-        
-
-
-
-        public static IEnumerable<Type> PaddedCards
-        {
-            get
-            {
-                if (paddedCards == null)
-                    paddedCards = Padding.CardPadding(CardConfig.AllConfig());
-                return paddedCards;
-            }
-        }
-
-        public static RepeatableUniformRandomPool<Type> InfiteDeck 
-        {
-            get
-            {
-                if (infiteDeck == null)
-                { 
-                    infiteDeck = new RepeatableUniformRandomPool<Type>();
-                    infiteDeck.AddRange(PaddedCards);
-                }
-                return infiteDeck;
-            }
-        }
 
 
         public static List<Card> Shuffle(RandomGen rng, IList<Card> toShuffle)
@@ -130,7 +101,7 @@ namespace RngFix.CustomRngs
 
 
             var infiniteShufflingDeck = new List<Type>();
-            foreach (var t in PaddedCards)
+            foreach (var t in Padding.AllCards)
             {
                 if (t != null && potentialCards.IsSatisfied(t))
                     infiniteShufflingDeck.AddRange(Enumerable.Repeat(t, Math.Min(potentialCards.CountedPool[t], maxDupes)).PadEnd(maxDupes));
@@ -147,7 +118,7 @@ namespace RngFix.CustomRngs
             int infiniteCount = infiniteShufflingDeck.Count;
 
             infiniteShufflingDeck.Shuffle(slotRng);
-            while (potentialCards.Count > 0)
+            while (potentialCards.Count > 0 && rolls < infiniteShufflingDeck.Count)
             {
 
                 Type cType = infiniteShufflingDeck[rolls];
@@ -164,6 +135,25 @@ namespace RngFix.CustomRngs
                 rolls += 1;
             }
 
+            if (potentialCards.Count > 0)
+            {
+                log.LogError($"Unknown Card types left to shuffle. {string.Join(", ", potentialCards.CountedPool.Keys.Select(t => t.Name))} not shuffled in.");
+/*                var unknownToSlot = potentialCards.CountedPool
+                    .SelectMany(kv => Enumerable.Repeat(kv.Key, kv.Value))
+                    .Select(t => (type: t, config: CardConfig.FromId(t.Name)))
+                    .OrderBy(tu => tu.config?.Index ?? int.MaxValue)
+                    .Select(tu => tu.type);
+
+                foreach (var cType in unknownToSlot)
+                {
+                    typeSlots.GetOrCreateVal(cType, () => new List<int>(), out var ctIndexes);
+                    var subRng = new RandomGen(slotRng.NextULong());
+                    AddCardToDrawZone_Patch.ConsistentDeckPos(subRng, 0, )
+                }
+*/
+
+            }
+                    
 
             var rez = new Card[toShuffle.Count];
 

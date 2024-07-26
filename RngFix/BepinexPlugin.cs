@@ -77,8 +77,9 @@ namespace RngFix
 
             doLoggingConf = Config.Bind("Stats", "DoLogging", false, "Log various run stats (card, exhibits etc.) to <gameSaveDir>/RngFix");
 
-/*            disableManaBaseAffectedCardWeights = Config.Bind("Rng", "disableManaBaseAffectedCardWeights", false, "In vanilla, card weights are influenced by current mana. Roughly the more of a certain colour there is in the mana base the more likely cards of that colour are to appear. This disrupts seed consistency somewhat. But disabling this mechanic by default is potentially a big enough deviation from vanilla experience that an optional toggle is justified.");*/
+            /*            disableManaBaseAffectedCardWeights = Config.Bind("Rng", "disableManaBaseAffectedCardWeights", false, "In vanilla, card weights are influenced by current mana. Roughly the more of a certain colour there is in the mana base the more likely cards of that colour are to appear. This disrupts seed consistency somewhat. But disabling this mechanic by default is potentially a big enough deviation from vanilla experience that an optional toggle is justified.");*/
 
+            EntityManager.AddPostLoadAction(() => Padding.ResetPadCache());
             EntityManager.RegisterSelf();
 
             harmony.PatchAll();

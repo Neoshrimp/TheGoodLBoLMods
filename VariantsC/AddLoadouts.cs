@@ -14,6 +14,7 @@ using VariantsC.Reimu.C;
 using VariantsC.Sakuya.C;
 using LBoL.EntityLib.Cards.Character.Sakuya;
 using LBoL.EntityLib.UltimateSkills;
+using VariantsC.Marisa.C;
 
 namespace VariantsC
 {
