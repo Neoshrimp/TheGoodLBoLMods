@@ -29,6 +29,7 @@ using LBoL.Core.Stations;
 using LBoL.EntityLib.Adventures.Stage2;
 using LBoL.EntityLib.Cards.Character.Marisa;
 using HarmonyLib;
+using System.Reflection;
 
 namespace VariantsC.Marisa.C
 {
@@ -155,9 +156,18 @@ namespace VariantsC.Marisa.C
         }
 
         // stinky
-        [HarmonyPatch(typeof(GameMaster), nameof(GameMaster.LeaveGameRun))]
+        [HarmonyPatch]
         class GameRunController_Patch
         {
+
+            static IEnumerable<MethodBase> TargetMethods()
+            {
+                yield return AccessTools.Method(typeof(GameMaster), nameof(GameMaster.LeaveGameRun));
+                yield return AccessTools.Method(typeof(GameMaster), nameof(GameMaster.RequestReenterStation));
+
+            }
+
+
             static void Prefix()
             {
                 CardConfig.FromId(nameof(CollectionDefense)).IsUpgradable = true;

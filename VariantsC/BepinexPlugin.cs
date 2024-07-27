@@ -5,7 +5,7 @@ using LBoLEntitySideloader.Entities;
 using LBoLEntitySideloader.Resource;
 using System.Reflection;
 using UnityEngine;
-
+using VariantsC.Rng;
 
 namespace VariantsC
 {
@@ -44,6 +44,8 @@ namespace VariantsC
             gameObject.hideFlags = HideFlags.HideAndDontSave;
 
             poolNewCards = Config.Bind("Pools", "poolNewCards", true, "Makes new non-basic starting cards discoverable/undiscoverable during game run.");
+
+            new SaveContainer().RegisterSelf(PInfo.GUID);
 
             EntityManager.RegisterSelf();
 

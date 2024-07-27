@@ -33,8 +33,8 @@ MoonTipsSpacesuitCard:
 EverHoardingCard:
   Description: |-
     Whenever {CardCounter} cards are played, increase {SelfName} cost by {Mana}.
-    Add as many random cards to the |Library| as there was mana spend casting this card minus <color=#B2FFFF>1</color>, up to <color=#B2FFFF>20</color>,  .
+    Add as many random cards to the |Library| as there was mana spend casting this card minus <color=#B2FFFF>1</color>, up to <color=#B2FFFF>20</color>. (<color=#B2FFFF><b>{GenAmount}</b></color>)
     <color=#898e89>Comm:<b>{CommonChance}</b></color> <color=#3277d1>Uncomm:<b>{UncommonChance}</b></color> <color=#d6cd28>Rare:<b>{RareChance}</b></color> 
-  DetailText: "The more mana is spent casting this card, the greater Uncommon and Rare chances.\n{SelfName} cannot be randomly generated in combat."
+  DetailText: "The more mana is spent casting this card, the greater Uncommon and Rare chances. {SelfName} cannot be randomly generated in combat."
   FlavorText: "The probabilities are displayed only to encourage gambling, really."
   Name: Ever Hoarding

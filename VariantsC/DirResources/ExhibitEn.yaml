@@ -19,5 +19,6 @@ PachyBagEx:
     Description: |-
       Adds {BaseMana} to the mana base. Cards unique to |Marisa| are added to the card pool.
       At the start of {PlayerName}'s turn, for every {Value1} cards in the |Library| gain 1 random mana.
+
       The number of choices for card rewards is decreased by {Value2} but |non-boss| combats reward an additional card reward.
     FlavorText: "Makes |Too Big to Fail| unupgradable."

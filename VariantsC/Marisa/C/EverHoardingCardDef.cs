@@ -10,9 +10,12 @@ using LBoLEntitySideloader.Attributes;
 using LBoLEntitySideloader.Entities;
 using LBoLEntitySideloader.Resource;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
+using VariantsC.Rng;
 
 namespace VariantsC.Marisa.C
 {
@@ -109,13 +112,17 @@ namespace VariantsC.Marisa.C
         {
             CardCounter = Value1;
             HandleBattleEvent(Battle.CardUsed, args => {
-                CardCounter--;
-                NotifyChanged();
-                if (CardCounter <= 0)
+                if (base.Zone == CardZone.Hand)
                 { 
-                    IncreaseBaseCost(Mana);
-                    CardCounter = Value1;
-                    NotifyActivating();
+                    CardCounter--;
+                    NotifyChanged();
+                    if (CardCounter <= 0)
+                    { 
+                        IncreaseBaseCost(Mana);
+                        CardCounter = Value1;
+                        NotifyActivating();
+                    }
+                
                 }
             });
         }
@@ -125,15 +132,6 @@ namespace VariantsC.Marisa.C
 
         public int CardCounter { get => _cardCounter; set => _cardCounter = value % (Value1+1); }
 
-        // change trigger condition probably
-        public override IEnumerable<BattleAction> OnRetain()
-        {
-            if (base.Zone == CardZone.Hand)
-            {
-                base.IncreaseBaseCost(base.Mana);
-            }
-            yield break;
-        }
 
         public readonly float rareWMult = 1.15f;
         public readonly float uncommonWMult = 0.95f;
@@ -151,15 +149,20 @@ namespace VariantsC.Marisa.C
             return new RarityWeightTable(commonW, unCommonW, rareW, 0f);
         }
 
+
+        int GetRarityX(int x)
+        { 
+            return x - 2;   
+        }
+        public int XAmount { get { return GetRarityX(Cost.Amount); } }
+        public int GenAmount { get { return Math.Min(20, Cost.Amount - 1); } }
+
+
         public string CommonChance
         {
             get
             {
-                //string.Join("; ", CardConfig.AllConfig().GroupBy(cc => cc.Rarity).Select(g => $"{g.Key}: {g.Count()}"));
-                int amount = Cost.Amount - 1;
-
-                var rwt = GetDynamicRarityTable(amount);
-
+                var rwt = GetDynamicRarityTable(XAmount);
                 return $"{rwt.Common:F2}";
             }
         }
@@ -168,11 +171,7 @@ namespace VariantsC.Marisa.C
         {
             get
             {
-                //string.Join("; ", CardConfig.AllConfig().GroupBy(cc => cc.Rarity).Select(g => $"{g.Key}: {g.Count()}"));
-                int amount = Cost.Amount - 1;
-
-                var rwt = GetDynamicRarityTable(amount);
-
+                var rwt = GetDynamicRarityTable(XAmount);
                 return $"{rwt.Uncommon:F2}";
             }
         }
@@ -181,27 +180,39 @@ namespace VariantsC.Marisa.C
         {
             get
             {
-                //string.Join("; ", CardConfig.AllConfig().GroupBy(cc => cc.Rarity).Select(g => $"{g.Key}: {g.Count()}"));
-                int amount = Cost.Amount - 1;
 
-                var rwt = GetDynamicRarityTable(amount);
-
+                var rwt = GetDynamicRarityTable(XAmount);
                 return $"{rwt.Rare:F2}";
             }
         }
+
 
         protected override IEnumerable<BattleAction> Actions(UnitSelector selector, ManaGroup consumingMana, Interaction precondition)
         {
             int synergyAmount = Math.Min(consumingMana.Amount - 1, 20);
             if (synergyAmount > 0)
             {
-                var cardWTable = new CardWeightTable(GetDynamicRarityTable(synergyAmount), OwnerWeightTable.Hierarchy, CardTypeWeightTable.CanBeLoot);
+                var cardWTable = new CardWeightTable(GetDynamicRarityTable(GetRarityX(synergyAmount)), OwnerWeightTable.Hierarchy, CardTypeWeightTable.CanBeLoot);
                 // which rng to use
-                var cards = GameRun.RollCards(GameRun.BattleCardRng, cardWTable, synergyAmount, false, true);
-                GameRun.AddDeckCards(cards, true);
+                var cards = GameRun.RollCards(PerRngs.Get(GameRun).everHoardingRng, cardWTable, synergyAmount, false, true);
+
+                yield return new WaitForCoroutineAction(AddManyCards(cards));
             }
             yield break;
         }
 
+        private IEnumerator AddManyCards(Card[] cards)
+        {
+            for (int i = 0; i < cards.Length; i += 7)
+            {
+                var upper = Math.Min(cards.Length, i + 7);
+                var display = cards[i..upper];
+                GameRun.AddDeckCards(display, true);
+                if(upper < cards.Length)
+                    yield return new WaitForSeconds(2);
+            }
+            yield break;
+
+        }
     }
 }
