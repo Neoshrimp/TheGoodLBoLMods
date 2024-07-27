@@ -34,6 +34,8 @@ What this does **not** fix:
 ---
 *Change log*
 
+`2.2.0` More consistent Shining Exhibit sampling, some fixes.
+
 `2.1.0` 
 - Make card and other entity sampling method fairer to the weights.
 - Fix some exhibits not having rng assigned. Requires starting a new run for fix to take effect.

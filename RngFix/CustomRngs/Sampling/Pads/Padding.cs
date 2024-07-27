@@ -36,7 +36,6 @@ namespace RngFix.CustomRngs.Sampling.Pads
 
         internal static void ResetPadCache()
         {
-            log.LogDebug("Clearing pad cache..");
             rewardPaddedCards = null;
             paddedMisfortunes = null;
             allPaddedCards = null;

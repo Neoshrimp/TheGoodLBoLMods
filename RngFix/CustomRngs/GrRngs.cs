@@ -108,6 +108,16 @@ namespace RngFix.CustomRngs
         public AbstractSlotSampler<Exhibit, Type> NormalExSampler { get => normalExSampler.Value; }
 
 
+/*        private Lazy<AbstractSlotSampler<Type, Type>> shiningSampler = new Lazy<AbstractSlotSampler<Type, Type>>(() =>
+        new LessRandomWeightedSlotSampler<Type>(
+            requirements: new List<ISlotRequirement<Type>>() { new ExInPool() },
+            initAction: (t) => { return t; },
+            successAction: null,
+            failureAction: null,
+            potentialPool: Padding.AllExhibits)
+        );
+        public AbstractSlotSampler<Type, Type> ShiningSampler { get => shiningSampler.Value; }*/
+
         private Lazy<AbstractSlotSampler<Card, Type>> cardSampler = new Lazy<AbstractSlotSampler<Card, Type>>(() => 
         new LessRandomWeightedSlotSampler<Card>(
             requirements: new List<ISlotRequirement<Type>>() { new CardInPool() },
@@ -187,8 +197,6 @@ namespace RngFix.CustomRngs
 
         static public GrRngs GetOrCreate(GameRunController gr)
         {
-            if (!table.TryGetValue(gr, out var _))
-                log.LogWarning("Creating grrngs for the first time");
             var grRgns = table.GetOrCreateValue(gr);
             return grRgns;
         }

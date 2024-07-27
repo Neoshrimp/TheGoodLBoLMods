@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using LBoL.Base;
+using LBoL.ConfigData;
 using LBoL.Core;
 using LBoL.Core.Randoms;
 using LBoL.EntityLib.Cards.Character.Cirno;
@@ -16,8 +17,7 @@ namespace RngFix.Patches.Exhibits
 {
 
 
-    // 2do enable with next update
-    //[HarmonyPatch(typeof(GameRunController), nameof(GameRunController.RollShiningExhibit))]
+    [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.RollShiningExhibit))]
     class RollShiningExhibit_Patch
     {
         public const float maxTotalWeight = 200f;
