@@ -462,10 +462,10 @@ namespace RngFix.Patches.Battle
             {
                 if (aliveDic.TryGetValue(p, out var enemy))
                 {
-                    rez[index] = enemy;
-                    index++;
                     if (index >= amount)
                         break;
+                    rez[index] = enemy;
+                    index++;
                     aliveDic.Remove(p);
                 }
             }
@@ -811,12 +811,12 @@ namespace RngFix.Patches.Battle
             int a = 0;
             foreach (var c in samplingPool)
             {
+                if (a >= amount)
+                    break;
                 if (c == null)
                     continue;
                 rez.Add(c.Value);
                 a++;
-                if (a >= amount)
-                    break;
             }
             return rez.ToArray();
         }
