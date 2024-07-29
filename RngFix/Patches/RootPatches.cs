@@ -192,20 +192,38 @@ namespace RngFix.Patches
     }
 
 
-    [HarmonyPatch(typeof(Stage), nameof(Stage.GetAdventure))]
+    [HarmonyPatch(typeof(AdventureStation), nameof(AdventureStation.OnEnter))]
     class InitAdventureNode_Patch
     {
-        static void Postfix(Stage __instance, Type __result)
+        static void SetNodeMaster(Type aType, Stage stage)
         {
-            var stage = __instance;
+            log.LogDebug($"{stage}: {aType}");
             var gr = stage.GameRun;
             var grngs = GrRngs.GetOrCreate(gr);
 
-            ulong seed = grngs.persRngs.adventureSelfRngs.GetRng(__result.Name).NextULong();
+            ulong seed = grngs.persRngs.adventureSelfRngs.GetRng(aType.Name).NextULong();
 
             grngs.NodeMaster = new NodeMasterRng(seed);
             grngs.NodeMaster.Advance(gr);
         }
+
+
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+        {
+            return new CodeMatcher(instructions)
+                .MatchEndForward(new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(Stage), nameof(Stage.GetAdventure))))
+                .Advance(1)
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Dup))
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Ldarg_0))
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.PropertyGetter(typeof(AdventureStation), nameof(AdventureStation.Stage))))
+
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(InitAdventureNode_Patch), nameof(InitAdventureNode_Patch.SetNodeMaster))))
+
+                .InstructionEnumeration();
+        }
+
+
+
     }
 
 
