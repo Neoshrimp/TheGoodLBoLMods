@@ -42,7 +42,7 @@ namespace VariantsC.Rng
     }
 
     [HarmonyPatch]
-    [HarmonyPriority(Priority.VeryLow)]
+    [HarmonyPriority(Priority.Low)]
     class Gr_cctor_Patch
     {
 

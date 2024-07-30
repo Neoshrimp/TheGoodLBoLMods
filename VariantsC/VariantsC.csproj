@@ -313,11 +313,28 @@
         <Reference Include="YamlDotNet">
             <HintPath>$(GameFolder)\LBoL_Data\Managed\YamlDotNet.dll</HintPath>
         </Reference>
+        <Reference Include="DOTween">
+            <HintPath>$(GameFolder)\LBoL_Data\Managed\DOTween.dll</HintPath>
+        </Reference>
+        <Reference Include="DOTween.Modules">
+            <HintPath>$(GameFolder)\LBoL_Data\Managed\DOTween.Modules.dll</HintPath>
+        </Reference>
+        <Reference Include="DOTweenPro">
+            <HintPath>$(GameFolder)\LBoL_Data\Managed\DOTweenPro.dll</HintPath>
+        </Reference>
+        <Reference Include="DOTweenPro.Scripts">
+            <HintPath>$(GameFolder)\LBoL_Data\Managed\DOTweenPro.Scripts.dll</HintPath>
+        </Reference>
     </ItemGroup>
 
 
     <ItemGroup>
       <EmbeddedResource Include="Resources\*" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <None Remove="Resources\PachyBagEx.png" />
     </ItemGroup>
 
 

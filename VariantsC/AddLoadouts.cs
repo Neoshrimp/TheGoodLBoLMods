@@ -15,6 +15,8 @@ using VariantsC.Sakuya.C;
 using LBoL.EntityLib.Cards.Character.Sakuya;
 using LBoL.EntityLib.UltimateSkills;
 using VariantsC.Marisa.C;
+using LBoL.EntityLib.Cards.Character.Marisa;
+using LBoL.EntityLib.Cards.Enemy;
 
 namespace VariantsC
 {
@@ -51,6 +53,21 @@ namespace VariantsC
                 }.ToList(),
                 complexity: 3);
 
+
+
+            PlayerUnitTemplate.AddLoadout(
+                charId: CharNames.Marisa,
+                ultimateSkill: nameof(SpringCleaningUlt),
+                exhibit: nameof(PachyBagEx),
+                deck: new List<string>() {
+                                nameof(EverHoardingCard),
+                                nameof(BasicTreasurePack),
+                                nameof(BasicAttacksPack),
+                                nameof(BasicDefencePack),
+                                nameof(BasicMiseryPack),
+
+                }.ToList(),
+                complexity: 2);
         }
     }
 }

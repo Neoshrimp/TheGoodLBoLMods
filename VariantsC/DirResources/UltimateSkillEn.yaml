@@ -9,3 +9,17 @@ BatFormUlt:
   Description: |-
     Gain {Value1} |Blood Drain|. 
     Add {Value2} |Throwing Knifes| to the hand.
+
+
+SpringCleaningUlt:
+  Title: I'll wash your ass!
+  Content: Spring Cleaning
+  Description: |-
+    Randomly remove half the cards in the |Library|, prioritizing non-upgraded cards. 
+    Randomly re-add half of them. 
+    |Upgrade| half of the re-added cards.
+    Gain a random |Misfortune|.
+    Update cards on the |battlefield| accordingly.
+
+    Discard all cards in the hand and draw pile.
+    Draw {Value1} cards. Gain {Mana}.

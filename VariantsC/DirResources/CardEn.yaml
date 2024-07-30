@@ -32,9 +32,26 @@ MoonTipsSpacesuitCard:
 
 EverHoardingCard:
   Description: |-
-    Whenever {CardCounter} cards are played, increase {SelfName} cost by {Mana}.
+    Whenever {CardCounter} cards are played, increase {JustNameBlue} cost by {Mana}.
     Add as many random cards to the |Library| as there was mana spend casting this card minus <color=#B2FFFF>1</color>, up to <color=#B2FFFF>20</color>. (<color=#B2FFFF><b>{GenAmount}</b></color>)
     <color=#898e89>Comm:<b>{CommonChance}</b></color> <color=#3277d1>Uncomm:<b>{UncommonChance}</b></color> <color=#d6cd28>Rare:<b>{RareChance}</b></color> 
-  DetailText: "The more mana is spent casting this card, the greater Uncommon and Rare chances. {SelfName} cannot be randomly generated in combat."
+  DetailText: "The more mana is spent casting this card, the greater Uncommon and Rare chances. {JustNameBlue} cannot be randomly generated in combat."
   FlavorText: "The probabilities are displayed only to encourage gambling, really."
-  Name: Ever Hoarding
+  Name: "{CardCounterWrap}{JustName}"
+  JustName: "Ever Hoarding"
+
+FakePackForCommonLoc:
+    Description: "At the start of the run, randomly transform {JustNameBlue} to one of the following set of cards: \n{ListCards}"
+    Name: "{JustName}{AddTimesWrap}"
+
+BasicTreasurePack:
+    JustName: Treasured Junk
+
+BasicAttacksPack:
+    JustName: Rusting Equipment
+
+BasicDefencePack:
+    JustName: Dusty Books
+
+BasicMiseryPack:
+    JustName: Something Stinky

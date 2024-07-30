@@ -15,7 +15,7 @@ BloodyRipperEx:
     FlavorText: Rip and tear, tear and rip.
 
 PachyBagEx:
-    Name: Bag with a Hole
+    Name: Treasure Sack
     Description: |-
       Adds {BaseMana} to the mana base. Cards unique to |Marisa| are added to the card pool.
       At the start of {PlayerName}'s turn, for every {Value1} cards in the |Library| gain 1 random mana.

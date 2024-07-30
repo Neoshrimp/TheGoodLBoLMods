@@ -1,4 +1,5 @@
-﻿using LBoL.Base;
+﻿using HarmonyLib;
+using LBoL.Base;
 using LBoL.ConfigData;
 using LBoL.Core;
 using LBoL.Core.Battle;
@@ -16,6 +17,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using VariantsC.Rng;
+
 
 namespace VariantsC.Marisa.C
 {
@@ -39,7 +41,7 @@ namespace VariantsC.Marisa.C
                 Id: "",
                 Order: 10,
                 AutoPerform: true,
-                Perform: new string[0][],
+                Perform: new string[0][],//new string[][] { new string[]{ "2", "MoonG" }, new string[] { "3", "spell" }, new string[] { "4", "MoonG" } },
                 GunName: "", // 
                 GunNameBurst: "",
                 DebugLevel: 0,
@@ -49,12 +51,12 @@ namespace VariantsC.Marisa.C
                 HideMesuem: false,
                 IsUpgradable: true,
                 Rarity: Rarity.Rare,
-                Type: CardType.Skill,
+                Type: CardType.Ability,
                 TargetType: TargetType.Nobody,
                 Colors: new List<ManaColor>() { ManaColor.Green },
                 IsXCost: false,
                 Cost: new ManaGroup() { Green = 1 },
-                UpgradedCost: null,
+                UpgradedCost: new ManaGroup() { Green = 1, Any = 2 },
                 MoneyCost: null,
                 Damage: null,
                 UpgradedDamage: null,
@@ -63,7 +65,7 @@ namespace VariantsC.Marisa.C
                 Shield: null,
                 UpgradedShield: null,
                 Value1: 3,
-                UpgradedValue1: null,
+                UpgradedValue1: 2,
                 Value2: null,
                 UpgradedValue2: null,
                 Mana: new ManaGroup() { Any = 1 },
@@ -80,7 +82,7 @@ namespace VariantsC.Marisa.C
                 UltimateCost: null,
                 UpgradedUltimateCost: null,
                 Keywords: Keyword.Exile | Keyword.Retain,
-                UpgradedKeywords: Keyword.Exile | Keyword.Retain | Keyword.Initial,
+                UpgradedKeywords: Keyword.Exile | Keyword.Retain,
                 EmptyDescription: false,
                 RelativeKeyword: Keyword.None,
                 UpgradedRelativeKeyword: Keyword.None,
@@ -101,6 +103,7 @@ namespace VariantsC.Marisa.C
     [EntityLogic(typeof(EverHoardingCardDef))]
     public sealed class EverHoardingCard : Card
     {
+
 
         public override void Initialize()
         {
@@ -127,11 +130,30 @@ namespace VariantsC.Marisa.C
             });
         }
 
+        public override void Upgrade()
+        {
+            base.Upgrade();
+            if (Battle == null)
+                CardCounter = Value1;
+            NotifyChanged();
+        }
+
 
         private int _cardCounter = 0;
 
         public int CardCounter { get => _cardCounter; set => _cardCounter = value % (Value1+1); }
+        public string CardCounterWrap { get => Battle == null ? "" : $"{{<color=#B2FFFF>{CardCounter}</color>}} "; }
 
+        public string JustName { get => base.LocalizeProperty("JustName", false, true); }
+
+        public string JustNameBlue { get => StringDecorator.GetEntityName(JustName); }
+
+        public override string Name => base.Name.RuntimeFormat(FormatWrapper);
+
+        protected override IReadOnlyList<string> LocalizeListProperty(string key, bool required = true)
+        {
+            return base.LocalizeListProperty(key, required);
+        }
 
         public readonly float rareWMult = 1.15f;
         public readonly float uncommonWMult = 0.95f;
@@ -154,8 +176,8 @@ namespace VariantsC.Marisa.C
         { 
             return x - 2;   
         }
-        public int XAmount { get { return GetRarityX(Cost.Amount); } }
-        public int GenAmount { get { return Math.Min(20, Cost.Amount - 1); } }
+        public int XAmount { get { return GetRarityX(GenAmount); } }
+        public int GenAmount { get { return Math.Clamp(Cost.Amount - 1, 0, 20); } }
 
 
         public string CommonChance
@@ -203,16 +225,32 @@ namespace VariantsC.Marisa.C
 
         private IEnumerator AddManyCards(Card[] cards)
         {
-            for (int i = 0; i < cards.Length; i += 7)
+            int batchSize = 7;
+            for (int i = 0; i < cards.Length; i += batchSize)
             {
-                var upper = Math.Min(cards.Length, i + 7);
+                var upper = Math.Min(cards.Length, i + batchSize);
                 var display = cards[i..upper];
                 GameRun.AddDeckCards(display, true);
                 if(upper < cards.Length)
-                    yield return new WaitForSeconds(2);
+                    yield return new WaitForSecondsRealtime(0.35f + 0.2f*batchSize);
             }
             yield break;
 
         }
+
+
+
+        [HarmonyPatch(typeof(Card), nameof(Card.Verify))]
+        class DoNotVerify_Patch
+        {
+            static bool Prefix(Card __instance)
+            {
+                if (__instance is EverHoardingCard)
+                    return false;
+                return true;
+            }
+        }
+
+
     }
 }
