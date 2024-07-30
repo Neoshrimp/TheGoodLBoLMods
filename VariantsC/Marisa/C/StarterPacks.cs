@@ -35,6 +35,13 @@ namespace VariantsC.Marisa.C
     public sealed class BasicTreasurePackDef : RootRandomStartersDef
     {
         public override IdContainer GetId() => nameof(BasicTreasurePack);
+
+        public override CardConfig MakeConfig()
+        {
+            var con = base.MakeConfig();
+            con.Illustrator = "lif";
+            return con;
+        }
     }
 
     [EntityLogic(typeof(BasicTreasurePackDef))]
@@ -53,6 +60,13 @@ namespace VariantsC.Marisa.C
     public sealed class BasicAttacksPackDef : RootRandomStartersDef
     {
         public override IdContainer GetId() => nameof(BasicAttacksPack);
+
+        public override CardConfig MakeConfig()
+        {
+            var con = base.MakeConfig();
+            con.Illustrator = "鬼针草";
+            return con;
+        }
     }
 
     [EntityLogic(typeof(BasicAttacksPackDef))]

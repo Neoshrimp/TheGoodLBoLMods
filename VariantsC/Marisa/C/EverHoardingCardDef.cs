@@ -94,7 +94,7 @@ namespace VariantsC.Marisa.C
                 ImageId: "",
                 UpgradeImageId: "",
                 Unfinished: false,
-                Illustrator: "",
+                Illustrator: "porokin",
                 SubIllustrator: new List<string>()
                 );
         }
