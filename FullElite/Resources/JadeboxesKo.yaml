@@ -17,3 +17,7 @@ PowerBonusBox:
 BlockToysBonusBox:
   Name: "|정예 총 출동 보너스| 장난감 블럭"
   Description: "|장난감 블럭| 전시품을 가지고 시작합니다."
+
+AllRewardExhibit:
+  Name: '|정예 총 출동 보너스| 전시품 보상'
+  Description: 모든 전투에서 전시품을 보상으로 얻습니다.
