@@ -1,4 +1,4 @@
-### Variants C v0.0.3000
+### Variants C v0.5.1
 *under development*
 
 *Korean translation by **raspberry Caffeine Monster***
@@ -34,6 +34,8 @@ Mod has a config toggle for making new starting cards pooled or not (pooled by d
 
 #### Changelog
 ---
+`0.5.1000` Add MarisaC.
+
 `0.0.4200` Update for LBoL 1.42.
 
 `0.0.4100` Start using batch loc, instead of global loc.
