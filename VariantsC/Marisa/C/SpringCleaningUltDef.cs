@@ -60,6 +60,11 @@ namespace VariantsC.Marisa.C
         public SpringCleaningUlt()
         {
             TargetType = TargetType.Self;
+            if (GameRun == null)
+                Config.RelativeCards = new List<string> { nameof(EverHoardingCard) };
+            else
+                Config.RelativeCards = new List<string> { };
+
         }
 
         ManaGroup _mana = new ManaGroup { Philosophy = 3 };
