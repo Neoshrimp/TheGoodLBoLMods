@@ -51,7 +51,7 @@ namespace VariantsC.Marisa.C
 
         public override RandomPoolEntry<Type[]>[] PotentialCardTypes => new RandomPoolEntry<Type[]>[] {
             new RandomPoolEntry<Type[]>(new Type[] { typeof(JungleMaster) }, 1),
-            new RandomPoolEntry<Type[]>(new Type[] { typeof(Potion) }, 1),
+            //new RandomPoolEntry<Type[]>(new Type[] { typeof(Potion) }, 1),
             new RandomPoolEntry<Type[]>(new Type[] { typeof(Astrology), typeof(Astrology) }, 1f),
         };
     }

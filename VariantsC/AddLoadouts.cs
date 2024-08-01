@@ -61,6 +61,7 @@ namespace VariantsC
                 exhibit: nameof(PachyBagEx),
                 deck: new List<string>() {
                                 nameof(EverHoardingCard),
+                                nameof(Potion),
                                 nameof(BasicTreasurePack),
                                 nameof(BasicAttacksPack),
                                 nameof(BasicDefencePack),
