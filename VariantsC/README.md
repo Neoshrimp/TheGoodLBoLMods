@@ -14,7 +14,7 @@ Reimu C             |  Sakuya C
 
 Marisa C             |  Koishi
 :-------------------------:|:-------------------------:|
-![image](https://github.com/user-attachments/assets/db2bd603-5a4c-4820-a325-e443b64b2bff)|
+![image](https://github.com/user-attachments/assets/982f559e-fc5a-4234-93ad-b141823f84f7)|
 
 Reimu C nothing special. For the time being.
 
