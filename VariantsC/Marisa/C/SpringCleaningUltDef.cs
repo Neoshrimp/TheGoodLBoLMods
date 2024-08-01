@@ -42,13 +42,13 @@ namespace VariantsC.Marisa.C
                 PowerCost: 200,
                 PowerPerLevel: 200,
                 MaxPowerLevel: 1,
-                RepeatableType: UsRepeatableType.OncePerTurn,
+                RepeatableType: UsRepeatableType.OncePerBattle,
                 Damage: 0,
                 Value1: 7,
                 Value2: 2,
                 Keywords: Keyword.Battlefield,
                 RelativeEffects: new List<string>() {  },
-                RelativeCards: new List<string>() { }
+                RelativeCards: new List<string>() { /*nameof(EverHoardingCard)*/ }
             );
         }
     }

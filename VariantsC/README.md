@@ -34,6 +34,8 @@ Mod has a config toggle for making new starting cards pooled or not (pooled by d
 
 #### Changelog
 ---
+`0.5.1100` Make MarisaC spellcard once per battle to prevent stalling for P.
+
 `0.5.1000` Add MarisaC.
 
 `0.0.4200` Update for LBoL 1.42.
