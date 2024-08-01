@@ -53,6 +53,7 @@ namespace VariantsC.Marisa.C
         }
     }
 
+
     [EntityLogic(typeof(SpringCleaningUltDef))]
     public sealed class SpringCleaningUlt : UltimateSkill
     {
@@ -64,8 +65,9 @@ namespace VariantsC.Marisa.C
         ManaGroup _mana = new ManaGroup { Philosophy = 3 };
         public ManaGroup Mana { get => _mana; }
 
-        public int HalfDeck { get => GameRun.BaseDeck.Count / 2; }
-        public string HalfDeckWrap { get => GameRun == null ? "" : $"(<color=#B2FFFF>{HalfDeck}</color>)"; }
+        public int HalfDeck { get => Math.Min(GameRun.BaseDeck.Count / 2, GameRun.BaseDeckWithOutUnremovable.Where(c => !c.IsUpgraded).Count()); }
+        
+        public string HalfDeckWrap { get => GameRun == null ? LocalizeProperty("Several") : $"<color=#B2FFFF>{HalfDeck}</color>"; }
 
         public int ToRemove { get => HalfDeck / 2; }
         public string ToRemoveWrap { get => GameRun == null ? "" : $"(<color=#B2FFFF>{ToRemove}</color>)"; }
@@ -85,8 +87,8 @@ namespace VariantsC.Marisa.C
             var subRootRng = new RandomGen(PerRngs.Get(GameRun).springCleaningRng.NextULong());
 
             var selected = GameRun.BaseDeckWithOutUnremovable
-                .Where(c => c.Id != nameof(EverHoardingCard))
-                .GroupBy(c => c.IsUpgraded.ToInt() * 1 /*+ c.IsBasic.ToInt() * 2*/)
+                .Where(c => c.Id != nameof(EverHoardingCard) && !c.IsUpgraded)
+                .GroupBy(c => c.IsUpgraded.ToInt() * 1 /*+ c.IsBasic.ToInt() * 2*/) // there's only ever gonna be one group
                 .OrderBy(g => g.Key)
                 .Select(g => { var l = g.ToList(); l.Shuffle(new RandomGen(subRootRng.NextULong())); return l; })
                 .SelectMany(l => l)
@@ -101,10 +103,6 @@ namespace VariantsC.Marisa.C
 
             yield return new ProcessDeckCardsAction(cardsToRemove, cards => GameRun.RemoveDeckCards(cards, true), "Removed");
             yield return new ProcessDeckCardsAction(cardsToUpgrade, cards => GameRun.UpgradeDeckCards(cards, true), "Upgraded");
-
-
-/*            yield return new ProcessDeckCardsAction(ProcessManyCards(cardsToRemove, cards => GameRun.RemoveDeckCards(cards, true), 0.5f));
-            yield return new ProcessDeckCardsAction(ProcessManyCards(cardsToUpgrade, cards => GameRun.UpgradeDeckCards(cards, true), 0.5f));*/
 
 
 

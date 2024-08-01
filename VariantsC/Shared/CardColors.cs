@@ -18,6 +18,7 @@ namespace VariantsC.Shared
 
 
 
+
         public static string ColorName(Card card, string defaultColor = "#000000")
         {
             var name = card.Name + (card.IsUpgraded ? " +" : "");

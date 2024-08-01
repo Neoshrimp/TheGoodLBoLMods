@@ -14,13 +14,15 @@ BatFormUlt:
 SpringCleaningUlt:
   Title: I'll wash your ass!
   Content: Spring Cleaning
+  Several: several
   Description: |-
-    Randomly select number of unupgraded cards at most equal to half{HalfDeckWrap} the |Library| size. <color=#B2FFFF>Ever Hoarding</color> can never be selected.
-    Remove half{ToRemoveWrap} of them and |Upgrade| half{ToUpgradeWrap} of the other half. 
+    Randomly select {HalfDeckWrap} <i>unupgraded</i> cards in the |Library|. The amount is equal to half the |Library| size, at most. 
+    <color=#B2FFFF>Ever Hoarding</color> can never be selected.
+    Remove half{ToRemoveWrap} of the selected cards and |Upgrade| half{ToUpgradeWrap} of the other half. 
     Update cards on the |battlefield| accordingly.
     Gain a random |Misfortune|.
 
     Discard all cards in the hand and draw pile.
     Draw {Value1} cards. Gain {Mana}.
 
-    <i>Removed/Upgraded cards can be viewed in battle log, default bind |F3|.</i>
+    <i>Removed/Upgraded cards can be reviewed in battle log, default bind |F3|.</i>
