@@ -167,7 +167,7 @@ namespace VariantsC.Marisa.C
             pool.AddRange(PotentialCards(gr));
 
             for(int i = 0; i < AddTimes; i++)
-                gr.AddDeckCards(pool.Sample(transformRng), false);
+                gr.AddDeckCards(pool.Sample(transformRng).Select(c => c.Clone()), false);
         }
 
         protected override IEnumerable<BattleAction> Actions(UnitSelector selector, ManaGroup consumingMana, Interaction precondition)

@@ -3,6 +3,7 @@ using LBoL.Base;
 using LBoL.ConfigData;
 using LBoL.Core;
 using LBoL.Core.Battle;
+using LBoL.Core.Battle.BattleActionRecord;
 using LBoL.Core.Battle.BattleActions;
 using LBoL.Core.Cards;
 using LBoL.Core.Randoms;
@@ -17,7 +18,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using VariantsC.Rng;
-
+using VariantsC.Shared;
 
 namespace VariantsC.Marisa.C
 {
@@ -81,8 +82,8 @@ namespace VariantsC.Marisa.C
                 UpgradedActiveCost: null,
                 UltimateCost: null,
                 UpgradedUltimateCost: null,
-                Keywords: Keyword.Exile | Keyword.Retain,
-                UpgradedKeywords: Keyword.Exile | Keyword.Retain,
+                Keywords: Keyword.Retain,
+                UpgradedKeywords: Keyword.Retain,
                 EmptyDescription: false,
                 RelativeKeyword: Keyword.None,
                 UpgradedRelativeKeyword: Keyword.None,
@@ -174,11 +175,12 @@ namespace VariantsC.Marisa.C
 
         int GetRarityX(int x)
         { 
-            return x - 2;   
+            return x - 1;
         }
         public int XAmount { get { return GetRarityX(GenAmount); } }
         public int GenAmount { get { return Math.Clamp(Cost.Amount - 1, 0, 20); } }
 
+        public string CommonColor { get => CardColors.common; }
 
         public string CommonChance
         {
@@ -188,6 +190,7 @@ namespace VariantsC.Marisa.C
                 return $"{rwt.Common:F2}";
             }
         }
+        public string UncommonColor { get => CardColors.uncommon; }
 
         public string UncommonChance
         {
@@ -197,6 +200,9 @@ namespace VariantsC.Marisa.C
                 return $"{rwt.Uncommon:F2}";
             }
         }
+
+
+        public string RareColor { get => CardColors.rare; }
 
         public string RareChance
         {
@@ -215,27 +221,13 @@ namespace VariantsC.Marisa.C
             if (synergyAmount > 0)
             {
                 var cardWTable = new CardWeightTable(GetDynamicRarityTable(GetRarityX(synergyAmount)), OwnerWeightTable.Hierarchy, CardTypeWeightTable.CanBeLoot);
-                // which rng to use
+
                 var cards = GameRun.RollCards(PerRngs.Get(GameRun).everHoardingRng, cardWTable, synergyAmount, false, true);
 
-                yield return new WaitForCoroutineAction(AddManyCards(cards));
+                yield return new ProcessDeckCardsAction(cards, cards => GameRun.AddDeckCards(cards, true), "Gained")
+                { batchSize = 7, batchDelay = 0.35f, finalDelay = 0f};
             }
             yield break;
-        }
-
-        private IEnumerator AddManyCards(Card[] cards)
-        {
-            int batchSize = 7;
-            for (int i = 0; i < cards.Length; i += batchSize)
-            {
-                var upper = Math.Min(cards.Length, i + batchSize);
-                var display = cards[i..upper];
-                GameRun.AddDeckCards(display, true);
-                if(upper < cards.Length)
-                    yield return new WaitForSecondsRealtime(0.35f + 0.2f*batchSize);
-            }
-            yield break;
-
         }
 
 

@@ -15,11 +15,12 @@ SpringCleaningUlt:
   Title: I'll wash your ass!
   Content: Spring Cleaning
   Description: |-
-    Randomly remove half the cards in the |Library|, prioritizing non-upgraded cards. 
-    Randomly re-add half of them. 
-    |Upgrade| half of the re-added cards.
-    Gain a random |Misfortune|.
+    Randomly select number of unupgraded cards at most equal to half{HalfDeckWrap} the |Library| size. <color=#B2FFFF>Ever Hoarding</color> can never be selected.
+    Remove half{ToRemoveWrap} of them and |Upgrade| half{ToUpgradeWrap} of the other half. 
     Update cards on the |battlefield| accordingly.
+    Gain a random |Misfortune|.
 
     Discard all cards in the hand and draw pile.
     Draw {Value1} cards. Gain {Mana}.
+
+    <i>Removed/Upgraded cards can be viewed in battle log, default bind |F3|.</i>
