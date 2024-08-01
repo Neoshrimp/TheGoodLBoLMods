@@ -12,9 +12,9 @@ Reimu C             |  Sakuya C
 :-------------------------:|:-------------------------:|
 ![image](https://github.com/Neoshrimp/TheGoodLBoLMods/assets/89428565/4692e714-894b-4ec4-bdce-a24e7a8b8d95) |  ![image](https://github.com/Neoshrimp/TheGoodLBoLMods/assets/89428565/99dba28e-ab95-4e4e-a85b-aae8c2236a1f)
 
-Marisa C             |  
+Marisa C             |  Koishi
 :-------------------------:|:-------------------------:|
-|
+![image](https://github.com/user-attachments/assets/db2bd603-5a4c-4820-a325-e443b64b2bff)|
 
 Reimu C nothing special. For the time being.
 
