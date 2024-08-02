@@ -4,8 +4,24 @@ JabReimuCUlt:
   Description: 피해를 {Damage} 줍니다. (명중 아님).
 
 BatFormUlt:
-  Title: 피를 빠는 미치광이 반인 살인마
+  Title: 흡혈에 미친 반인 살인마
   Content: 박쥐 태세
   Description: |-
     |흡혈|을 {Value1} 얻습니다. 
     손에 |단검|을 {Value2}장 가져옵니다.
+
+SpringCleaningUlt:
+  Title: 내가 씻겨줄게!
+  Content: 봄청소
+  Several: 광역
+  Description: |-
+    |덱|에서 {HalfDeckWrap} <i>강화되지 않은</i> 무작위 카드를 선택합니다. |덱|크기의 절반까지 선택할 수 있습니다. 
+    <color=#B2FFFF>언젠간 쓰겠지</color>는 선택할 수 없습니다.
+    선택한 카드들 중 절반{ToRemoveWrap}을 제거하고 나머지 절반{ToUpgradeWrap}을 |강화|합니다.
+    그에 따라 |전장|에서 카드를 업데이트합니다.
+    무작위 |액운|을 얻습니다.
+
+    손과 뽑을 카드 더미의 모든 카드를 버립니다.
+    카드를 {Value1}장 뽑습니다.{Mana}를 얻습니다.
+
+    <i>제거/강화된 카드는 전투 기록에서 확인할 수 있습니다, 기본적으로 |F4|입니다.</i>

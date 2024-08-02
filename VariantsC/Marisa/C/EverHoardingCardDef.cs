@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using LBoL.Base;
+using LBoL.Base.Extensions;
 using LBoL.ConfigData;
 using LBoL.Core;
 using LBoL.Core.Battle;
@@ -56,7 +57,7 @@ namespace VariantsC.Marisa.C
                 TargetType: TargetType.Nobody,
                 Colors: new List<ManaColor>() { ManaColor.Green },
                 IsXCost: false,
-                Cost: new ManaGroup() { Green = 1 },
+                Cost: new ManaGroup() { Green = 1},
                 UpgradedCost: new ManaGroup() { Green = 1, Any = 2 },
                 MoneyCost: null,
                 Damage: null,
@@ -83,7 +84,7 @@ namespace VariantsC.Marisa.C
                 UltimateCost: null,
                 UpgradedUltimateCost: null,
                 Keywords: Keyword.Retain,
-                UpgradedKeywords: Keyword.Retain,
+                UpgradedKeywords: Keyword.Retain | Keyword.Initial,
                 EmptyDescription: false,
                 RelativeKeyword: Keyword.None,
                 UpgradedRelativeKeyword: Keyword.None,
@@ -162,14 +163,16 @@ namespace VariantsC.Marisa.C
         private RarityWeightTable GetDynamicRarityTable(int amount)
         {
 
-            float totalW = 1f;
-            var rareW = Math.Clamp(totalW * (amount / 20f) * rareWMult, 0f, 1f);
+            double totalW = 1f;
+            //var rareW = Math.Clamp(totalW * (amount / 20f) * rareWMult, 0f, 1f);
+            var rareW = Math.Clamp(totalW * (1/(1+Math.Exp(-0.4*(amount-11)))) * rareWMult, 0f, 1f);
+
             totalW -= rareW;
-            var unCommonW = Math.Clamp(totalW * (amount / 9f) * uncommonWMult, 0f, 1f);
+            var unCommonW = Math.Clamp(totalW * (amount / 9f) * 0.9f, 0f, 1f);
             totalW -= unCommonW;
             var commonW = Math.Clamp(totalW, 0f, 1f);
 
-            return new RarityWeightTable(commonW, unCommonW, rareW, 0f);
+            return new RarityWeightTable(commonW.ToFloat(), unCommonW.ToFloat(), rareW.ToFloat(), 0f);
         }
 
 

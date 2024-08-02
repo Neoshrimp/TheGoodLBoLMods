@@ -30,6 +30,7 @@ using LBoL.EntityLib.Adventures.Stage2;
 using LBoL.EntityLib.Cards.Character.Marisa;
 using HarmonyLib;
 using System.Reflection;
+using System.Reflection.Emit;
 
 namespace VariantsC.Marisa.C
 {
@@ -82,7 +83,7 @@ namespace VariantsC.Marisa.C
                 InitialCounter: null,
                 Keywords: Keyword.None,
                 RelativeEffects: new List<string>() { },
-                RelativeCards: new List<string>() { nameof(CollectionDefense) }
+                RelativeCards: new List<string>() { }
                 );
         }
 
@@ -101,8 +102,7 @@ namespace VariantsC.Marisa.C
                 
         }
 
-
-
+        
 
 
         protected override void OnAdded(PlayerUnit player)
@@ -110,6 +110,7 @@ namespace VariantsC.Marisa.C
             HandleGameRunEvent(GameRun.DeckCardsAdded, new GameEventHandler<CardsEventArgs>(UpdateCounter));
             HandleGameRunEvent(GameRun.DeckCardsRemoved, new GameEventHandler<CardsEventArgs>(UpdateCounter));
 
+            
 
             HandleGameRunEvent(GameRun.StationRewardGenerating, delegate (StationEventArgs args)
             {
@@ -151,34 +152,39 @@ namespace VariantsC.Marisa.C
             }, (GameEventPriority)(99));
 
 
-            CardConfig.FromId(nameof(CollectionDefense)).IsUpgradable = false;
-            GameRun.BaseDeck.Where(c => c.Id == nameof(CollectionDefense) && c.IsUpgraded).Do(c => c.IsUpgraded = false );
+
+
+            /*CardConfig.FromId(nameof(CollectionDefense)).IsUpgradable = false;
+            GameRun.BaseDeck.Where(c => c.Id == nameof(CollectionDefense) && c.IsUpgraded).Do(c => c.IsUpgraded = false );*/
         }
+
+
+        
 
         // stinky
-        [HarmonyPatch]
-        class GameRunController_Patch
-        {
+        /*        [HarmonyPatch]
+                class GameRunController_Patch
+                {
 
-            static IEnumerable<MethodBase> TargetMethods()
-            {
-                yield return AccessTools.Method(typeof(GameMaster), nameof(GameMaster.LeaveGameRun));
-                yield return AccessTools.Method(typeof(GameMaster), nameof(GameMaster.RequestReenterStation));
+                    static IEnumerable<MethodBase> TargetMethods()
+                    {
+                        yield return AccessTools.Method(typeof(GameMaster), nameof(GameMaster.LeaveGameRun));
+                        yield return AccessTools.Method(typeof(GameMaster), nameof(GameMaster.RequestReenterStation));
 
-            }
-
-
-            static void Prefix()
-            {
-                CardConfig.FromId(nameof(CollectionDefense)).IsUpgradable = true;
-            }
-        }
+                    }
 
 
-        protected override void OnRemoved(PlayerUnit player)
-        {
-            CardConfig.FromId(nameof(CollectionDefense)).IsUpgradable = true;
-        }
+                    static void Prefix()
+                    {
+                        CardConfig.FromId(nameof(CollectionDefense)).IsUpgradable = true;
+                    }
+                }*/
+
+
+        /*        protected override void OnRemoved(PlayerUnit player)
+                {
+                    CardConfig.FromId(nameof(CollectionDefense)).IsUpgradable = true;
+                }*/
 
         private void UpdateCounter(CardsEventArgs args)
         {
@@ -191,8 +197,22 @@ namespace VariantsC.Marisa.C
         protected override void OnEnterBattle()
         {
             ReactBattleEvent(Owner.TurnStarted, new EventSequencedReactor<UnitEventArgs>(OnOwnerTurnStarted));
-
+            HandleBattleEvent(Battle.BattleStarting, new GameEventHandler<GameEventArgs>(OnBattleStarting), (GameEventPriority)(-99));
             
+        }
+
+        private void OnBattleStarting(GameEventArgs args)
+        {
+            int upperIndex = (Battle.DrawZone.Count-1) / 2 +1;
+            var upperDrawZone = Battle.DrawZone.ToArray()[..(upperIndex+1)];
+
+            upperDrawZone.Shuffle(new RandomGen(GameRun.BattleCardRng.NextULong()));
+            Battle._drawZone.RemoveRange(0, upperDrawZone.Length);
+
+            var bottomZone = Battle.DrawZone.ToList();
+            Battle._drawZone.Clear();
+            Battle._drawZone.AddRange(upperDrawZone);
+            Battle._drawZone.AddRange(bottomZone);
         }
 
         private IEnumerable<BattleAction> OnOwnerTurnStarted(UnitEventArgs args)

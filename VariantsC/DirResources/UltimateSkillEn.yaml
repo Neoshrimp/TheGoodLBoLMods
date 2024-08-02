@@ -25,4 +25,4 @@ SpringCleaningUlt:
     Discard all cards in the hand and draw pile.
     Draw {Value1} cards. Gain {Mana}.
 
-    <i>Removed/Upgraded cards can be reviewed in battle log, default bind |F3|.</i>
+    <i>Removed/Upgraded cards can be reviewed in battle log, default bind |F4|.</i>

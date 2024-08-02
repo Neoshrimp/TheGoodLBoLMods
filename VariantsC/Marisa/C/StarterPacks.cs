@@ -72,14 +72,14 @@ namespace VariantsC.Marisa.C
     [EntityLogic(typeof(BasicAttacksPackDef))]
     public sealed class BasicAttacksPack : RootRandomStarter
     {
-        public override int AddTimes => 5;
+        public override int AddTimes => 4;
 
         public override RandomPoolEntry<Type[]>[] PotentialCardTypes => new RandomPoolEntry<Type[]>[] {
             new RandomPoolEntry<Type[]>(new Type[] { typeof(MarisaAttackB) }, 1),
             new RandomPoolEntry<Type[]>(new Type[] { typeof(MarisaAttackR) }, 1),
             new RandomPoolEntry<Type[]>(new Type[] { typeof(Shoot) }, 1.2f),
-            new RandomPoolEntry<Type[]>(new Type[] { typeof(Shoot), typeof(Shoot) }, 0.5f),
             new RandomPoolEntry<Type[]>(new Type[] { typeof(BalancedBasicCard) }, 0.8f),
+            new RandomPoolEntry<Type[]>(new Type[] { typeof(Shoot), typeof(Shoot) }, 0.5f),
             new RandomPoolEntry<Type[]>(new Type[] { typeof(MarisaAttackB), typeof(MarisaAttackR), typeof(BalancedBasicCard) }, 0.2f),
 
             
@@ -102,13 +102,13 @@ namespace VariantsC.Marisa.C
     [EntityLogic(typeof(BasicDefencePackDef))]
     public sealed class BasicDefencePack : RootRandomStarter
     {
-        public override int AddTimes => 5;
+        public override int AddTimes => 6;
 
         public override RandomPoolEntry<Type[]>[] PotentialCardTypes => new RandomPoolEntry<Type[]>[] {
             new RandomPoolEntry<Type[]>(new Type[] { typeof(MarisaBlockB) }, 1),
             new RandomPoolEntry<Type[]>(new Type[] { typeof(MarisaBlockR) }, 1),
             new RandomPoolEntry<Type[]>(new Type[] { typeof(Boundary) }, 1f),
-            new RandomPoolEntry<Type[]>(new Type[] { typeof(BalancedBasicCard) }, 0.8f),
+            new RandomPoolEntry<Type[]>(new Type[] { typeof(BalancedBasicCard) }, 0.75f),
             new RandomPoolEntry<Type[]>(new Type[] { typeof(Boundary), typeof(BalancedBasicCard) }, 0.35f),
             new RandomPoolEntry<Type[]>(new Type[] { typeof(Boundary), typeof(Boundary), typeof(Boundary) }, 0.2f),
         };

@@ -21,4 +21,6 @@ PachyBagEx:
       At the start of {PlayerName}'s turn, for every {Value1} cards in the |Library| gain 1 random mana.
 
       The number of choices for card rewards is decreased by {Value2} but |non-boss| combats reward an additional card reward.
-    FlavorText: "Makes |Too Big to Fail| unupgradable."
+
+      Changes |Innate| keyword behavior. At the start of the battle, instead of being placed at the top of the Draw Pile, |Innate| cards are guaranteed to be shuffled into the <i>first half</i> of the Draw Pile. 
+    FlavorText: "|Smart Speaker| still works."
