@@ -164,11 +164,13 @@ namespace VariantsC.Marisa.C
         {
 
             double totalW = 1f;
-            //var rareW = Math.Clamp(totalW * (amount / 20f) * rareWMult, 0f, 1f);
-            var rareW = Math.Clamp(totalW * (1/(1+Math.Exp(-0.4*(amount-11)))) * rareWMult, 0f, 1f);
+            //var rareW = Math.Clamp(totalW * (amount / MaxGenf) * rareWMult, 0f, 1f);
+            //var rareW = Math.Clamp(totalW * (1/(1+Math.Exp(-0.4*(amount-11)))), 0f, 1f);
+            var rareW = Math.Clamp(totalW * (1 / (1 + Math.Exp(-0.3 * (amount - 11)))), 0f, 0.7f);
+
 
             totalW -= rareW;
-            var unCommonW = Math.Clamp(totalW * (amount / 9f) * 0.9f, 0f, 1f);
+            var unCommonW = Math.Clamp(totalW * (amount / 9f) * 0.9f, 0f, totalW);
             totalW -= unCommonW;
             var commonW = Math.Clamp(totalW, 0f, 1f);
 
@@ -180,8 +182,11 @@ namespace VariantsC.Marisa.C
         { 
             return x - 1;
         }
-        public int XAmount { get { return GetRarityX(GenAmount); } }
-        public int GenAmount { get { return Math.Clamp(Cost.Amount - 1, 0, 20); } }
+
+        public int MaxGen { get => 13; }
+
+        public int _GenAmount(int x) => Math.Clamp(x - 1, 0, MaxGen);
+        public int GenAmount { get { return _GenAmount(Cost.Amount); } }
 
         public string CommonColor { get => CardColors.common; }
 
@@ -189,7 +194,7 @@ namespace VariantsC.Marisa.C
         {
             get
             {
-                var rwt = GetDynamicRarityTable(XAmount);
+                var rwt = GetDynamicRarityTable(GetRarityX(Cost.Amount));
                 return $"{rwt.Common:F2}";
             }
         }
@@ -199,7 +204,7 @@ namespace VariantsC.Marisa.C
         {
             get
             {
-                var rwt = GetDynamicRarityTable(XAmount);
+                var rwt = GetDynamicRarityTable(GetRarityX(Cost.Amount));
                 return $"{rwt.Uncommon:F2}";
             }
         }
@@ -211,8 +216,7 @@ namespace VariantsC.Marisa.C
         {
             get
             {
-
-                var rwt = GetDynamicRarityTable(XAmount);
+                var rwt = GetDynamicRarityTable(GetRarityX(Cost.Amount));
                 return $"{rwt.Rare:F2}";
             }
         }
@@ -220,12 +224,12 @@ namespace VariantsC.Marisa.C
 
         protected override IEnumerable<BattleAction> Actions(UnitSelector selector, ManaGroup consumingMana, Interaction precondition)
         {
-            int synergyAmount = Math.Min(consumingMana.Amount - 1, 20);
-            if (synergyAmount > 0)
+            int genAmount = _GenAmount(consumingMana.Amount);
+            if (genAmount > 0)
             {
-                var cardWTable = new CardWeightTable(GetDynamicRarityTable(GetRarityX(synergyAmount)), OwnerWeightTable.Hierarchy, CardTypeWeightTable.CanBeLoot);
+                var cardWTable = new CardWeightTable(GetDynamicRarityTable(GetRarityX(consumingMana.Amount)), OwnerWeightTable.Hierarchy, CardTypeWeightTable.CanBeLoot);
 
-                var cards = GameRun.RollCards(PerRngs.Get(GameRun).everHoardingRng, cardWTable, synergyAmount, false, true);
+                var cards = GameRun.RollCards(PerRngs.Get(GameRun).everHoardingRng, cardWTable, genAmount, false, true);
 
                 yield return new ProcessDeckCardsAction(cards, cards => GameRun.AddDeckCards(cards, true), "Gained")
                 { batchSize = 7, batchDelay = 0.35f, finalDelay = 0f};
