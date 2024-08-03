@@ -115,7 +115,7 @@ namespace RngFix.Patches.Debug
                 .Advance(1)
                 .InsertAndAdvance(new CodeInstruction(OpCodes.Dup))
                 .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(debutdeez_Patch), nameof(debutdeez_Patch.nuts))))*/
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
 
     }
@@ -308,7 +308,7 @@ namespace RngFix.Patches.Debug
                 .InsertAndAdvance(new CodeInstruction(OpCodes.Dup))
                 .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Up_Patch), nameof(Up_Patch.PrintCond))))
 
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
 
     }

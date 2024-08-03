@@ -24,7 +24,7 @@ namespace RngFix.Patches.Cards
         {
             return new CodeMatcher(instructions)
                  .ReplaceRngGetter(nameof(GameRunController.GameRunEventRng), AccessTools.Method(typeof(GrRngs), nameof(GrRngs.GetQingeUpgradeQueueRng)))
-                 .InstructionEnumeration();
+                 .LeaveJumpFix().InstructionEnumeration();
         }
     }
 

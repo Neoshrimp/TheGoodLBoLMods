@@ -58,7 +58,7 @@ namespace RngFix.Patches.Exhibits
                         .ThrowIfInvalid("")
                         .SetInstruction(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RollShiningExhibit_Patch), nameof(RollShiningExhibit_Patch.ConsistentExSample))))
                         .Insert(new CodeInstruction(OpCodes.Ldarg_0))
-                        .InstructionEnumeration();
+                        .LeaveJumpFix().InstructionEnumeration();
         }
 
 

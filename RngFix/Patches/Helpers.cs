@@ -25,6 +25,21 @@ namespace RngFix.Patches
 {
     public static class Helpers
     {
+
+        public static CodeMatcher LeaveJumpFix(this CodeMatcher matcher)
+        {
+            matcher.Start();
+            while (matcher.IsValid)
+            {
+                matcher.MatchEndForward(OpCodes.Leave)
+                    .Advance(1);
+                if (matcher.IsInvalid)
+                    break;
+                matcher.InsertAndAdvance(new CodeInstruction(OpCodes.Nop));
+            }
+            return matcher;
+        }
+
         public static CodeMatcher ReplaceRngGetter(this CodeMatcher matcher, string targetName, MethodInfo newCall, MethodInfo targetMethod = null)
         {
 

@@ -44,7 +44,7 @@ namespace RngFix.Patches.Stages
                 .Insert(new CodeInstruction(OpCodes.Ldarg_0))
 
 
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
     }
 }

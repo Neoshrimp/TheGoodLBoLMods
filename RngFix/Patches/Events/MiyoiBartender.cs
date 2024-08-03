@@ -15,7 +15,7 @@ namespace RngFix.Patches.Events
 
             return new CodeMatcher(instructions)
                  .ReplaceRngGetter(nameof(GameRunController.StationRng), AccessTools.PropertyGetter(typeof(GameRunController), nameof(GameRunController.AdventureRng)))
-                 .InstructionEnumeration();
+                 .LeaveJumpFix().InstructionEnumeration();
         }
     }
 }

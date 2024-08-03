@@ -22,7 +22,7 @@ namespace RngFix.Patches.RngGetters
                 .ReplaceRngGetter(nameof(GameRunController.StationRng), newCall)
                 .ReplaceRngGetter(nameof(GameRunController.StationRng), newCall)
                 .ReplaceRngGetter(nameof(GameRunController.StationRng), newCall)
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
     }
 
@@ -40,7 +40,7 @@ namespace RngFix.Patches.RngGetters
         {
             return new CodeMatcher(instructions)
                 .ReplaceRngGetter(nameof(GameRunController.StationRng), AccessTools.Method(typeof(GrRngs), nameof(GrRngs.GetEliteQueueRng)))
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
     }
 
@@ -51,7 +51,7 @@ namespace RngFix.Patches.RngGetters
         {
             return new CodeMatcher(instructions)
                  .ReplaceRngGetter(nameof(GameRunController.StationRng), AccessTools.Method(typeof(GrRngs), nameof(GrRngs.GetAdventureQueueRng)))
-                 .InstructionEnumeration();
+                 .LeaveJumpFix().InstructionEnumeration();
         }
     }
 

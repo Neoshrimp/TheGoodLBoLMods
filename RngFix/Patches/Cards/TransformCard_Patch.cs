@@ -32,7 +32,7 @@ namespace RngFix.Patches.Cards
                 .MatchEndForward(new CodeMatch(OpCodes.Ldarg_1))
                 .SetInstruction(new CodeInstruction(OpCodes.Ldloc_S, subRng_local.LocalIndex))
 
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
 
     }

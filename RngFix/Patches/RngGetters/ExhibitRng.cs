@@ -38,7 +38,7 @@ namespace RngFix.Patches.RngGetters
             return new CodeMatcher(instructions)
                .MatchForward(true, new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(Stage), nameof(Stage.RollExhibitInAdventure))))
                .Set(OpCodes.Call, AccessTools.Method(typeof(RareExhibitRoll_Patch), nameof(RareExhibitRoll_Patch.RollExhibitInAdventure)))
-               .InstructionEnumeration();
+               .LeaveJumpFix().InstructionEnumeration();
         }
 
 

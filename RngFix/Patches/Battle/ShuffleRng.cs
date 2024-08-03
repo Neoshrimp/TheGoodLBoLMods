@@ -65,7 +65,7 @@ namespace RngFix.Patches.Battle
                  .SetInstructionAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(BattleController_ccTor_Patch), nameof(BattleController_ccTor_Patch.ProperShuffle))))
                  .InsertAndAdvance(new CodeInstruction(OpCodes.Stloc_1))
 
-                 .InstructionEnumeration();
+                 .LeaveJumpFix().InstructionEnumeration();
         }
 
     }

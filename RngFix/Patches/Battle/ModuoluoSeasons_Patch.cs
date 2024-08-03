@@ -52,7 +52,7 @@ namespace RngFix.Patches.Battle
                 .Insert(new CodeInstruction(OpCodes.Ldarg_0))
 
 
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
 
 

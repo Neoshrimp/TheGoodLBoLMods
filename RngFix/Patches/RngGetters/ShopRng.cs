@@ -38,7 +38,7 @@ namespace RngFix.Patches.RngGetters
             return new CodeMatcher(instructions)
                  .ReplaceRngGetter(nameof(GameRunController.ShopRng), AccessTools.Method(typeof(GetShopCards_Patch), nameof(GetShopCards_Patch.ReplaceShopRng)))
                  .Insert(new CodeInstruction(OpCodes.Ldarg_2))
-                 .InstructionEnumeration();
+                 .LeaveJumpFix().InstructionEnumeration();
         }
     }
 
@@ -52,7 +52,7 @@ namespace RngFix.Patches.RngGetters
         {
             return new CodeMatcher(instructions)
                  .ReplaceRngGetter(nameof(GameRunController.ShopRng), AccessTools.Method(typeof(GrRngs), nameof(GrRngs.GetShopExRng)))
-                 .InstructionEnumeration();
+                 .LeaveJumpFix().InstructionEnumeration();
         }
     }
 

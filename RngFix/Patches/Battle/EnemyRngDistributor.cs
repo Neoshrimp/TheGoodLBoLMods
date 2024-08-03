@@ -109,7 +109,7 @@ namespace RngFix.Patches.Battle
             return new CodeMatcher(instruction)
                 .ReplaceRngGetter(nameof(GameRunController.EnemyBattleRng), AccessTools.Method(typeof(EnemyUnitEnterGameRun_Patch), nameof(EnemyUnitEnterGameRun_Patch.GetMaxHpRng)))
                 .Insert(new CodeInstruction(OpCodes.Ldarg_0))
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
 
     }
@@ -144,7 +144,7 @@ namespace RngFix.Patches.Battle
             return new CodeMatcher(instructions)
                 .ReplaceRngGetter(nameof(GameRunController.EnemyMoveRng), AccessTools.Method(typeof(EnemyMoveRng_Patch), nameof(EnemyMoveRng_Patch.GetEnemyMove1Rng)))
                 .Insert(new CodeInstruction(OpCodes.Ldarg_0))
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
 
     }
@@ -158,7 +158,7 @@ namespace RngFix.Patches.Battle
             return new CodeMatcher(instructions)
                 .ReplaceRngGetter(nameof(GameRunController.EnemyBattleRng), AccessTools.Method(typeof(GetUnitRng), nameof(GetUnitRng.BattleOneRng)))
                 .Insert(new CodeInstruction(OpCodes.Ldarg_0))
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
 
     }

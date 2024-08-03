@@ -74,7 +74,7 @@ namespace RngFix.Patches
                 .Advance(1)
                 .InsertAndAdvance(new CodeInstruction(OpCodes.Ldarg_0))
                 .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Gr_cctor_Patch), nameof(Gr_cctor_Patch.InitRngs))))
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
 
     }
@@ -219,7 +219,7 @@ namespace RngFix.Patches
 
                 .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(InitAdventureNode_Patch), nameof(InitAdventureNode_Patch.SetNodeMaster))))
 
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
 
 

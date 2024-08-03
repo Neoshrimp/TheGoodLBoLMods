@@ -17,7 +17,7 @@ namespace RngFix.Patches.Events
         {
             return new CodeMatcher(instructions)
                  .ReplaceRngGetter(nameof(GameRunController.ShopRng), AccessTools.Method(typeof(GrRngs), nameof(GrRngs.GetTransitionRng)))
-                 .InstructionEnumeration();
+                 .LeaveJumpFix().InstructionEnumeration();
         }
     }
 }

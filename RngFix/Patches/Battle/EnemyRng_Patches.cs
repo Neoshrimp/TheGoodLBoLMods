@@ -110,7 +110,7 @@ namespace RngFix.Patches.Battle
                .Set(OpCodes.Call, AccessTools.Method(typeof(GenerateEnemyPoints_Patch), nameof(GenerateEnemyPoints_Patch.GetLootRng)))
                .Insert(new CodeInstruction(OpCodes.Ldarg_1))
                .Insert(new CodeInstruction(OpCodes.Ldarg_0))
-               .InstructionEnumeration();
+               .LeaveJumpFix().InstructionEnumeration();
         }
     }
 
@@ -129,7 +129,7 @@ namespace RngFix.Patches.Battle
             return new CodeMatcher(instructions)
                 .ReplaceRngGetter("", AccessTools.Method(typeof(GetUnitRng), nameof(GetUnitRng.MoveTwoRng)), AccessTools.PropertyGetter(typeof(EnemyUnit), nameof(EnemyUnit.EnemyMoveRng)))
                 .Insert(new CodeInstruction(OpCodes.Ldloc_1))
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
 
     }
@@ -172,7 +172,7 @@ namespace RngFix.Patches.Battle
                 .Insert(new CodeInstruction(OpCodes.Ldarg_0))
 
 
-              .InstructionEnumeration();
+              .LeaveJumpFix().InstructionEnumeration();
         }
 
     }
@@ -199,7 +199,9 @@ namespace RngFix.Patches.Battle
             return new CodeMatcher(instructions)
                 .ReplaceRngGetter("", AccessTools.Method(typeof(GetUnitRng), nameof(GetUnitRng.MoveTwoRng)), AccessTools.PropertyGetter(typeof(EnemyUnit), nameof(EnemyUnit.EnemyMoveRng)))
                 .Insert(new CodeInstruction(OpCodes.Ldarg_0))
-                .InstructionEnumeration();
+
+                
+                .LeaveJumpFix().InstructionEnumeration();
         }
     }
 
@@ -221,7 +223,7 @@ namespace RngFix.Patches.Battle
             return new CodeMatcher(instructions)
                 .ReplaceRngGetter("", AccessTools.Method(typeof(GetUnitRng), nameof(GetUnitRng.MoveTwoRng)), AccessTools.PropertyGetter(typeof(EnemyUnit), nameof(EnemyUnit.EnemyMoveRng)))
                 .Insert(new CodeInstruction(OpCodes.Ldarg_0))
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
     }
 
@@ -239,7 +241,7 @@ namespace RngFix.Patches.Battle
             return new CodeMatcher(instructions)
                 .ReplaceRngGetter("", AccessTools.Method(typeof(GetUnitRng), nameof(GetUnitRng.MoveThreeRng)), AccessTools.PropertyGetter(typeof(EnemyUnit), nameof(EnemyUnit.EnemyMoveRng)))
                 .Insert(new CodeInstruction(OpCodes.Ldarg_0))
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
     }
 
@@ -259,7 +261,7 @@ namespace RngFix.Patches.Battle
             return new CodeMatcher(instructions)
                 .ReplaceRngGetter("", AccessTools.Method(typeof(GetUnitRng), nameof(GetUnitRng.MoveThreeRng)), AccessTools.PropertyGetter(typeof(EnemyUnit), nameof(EnemyUnit.EnemyMoveRng)))
                 .Insert(new CodeInstruction(OpCodes.Ldloc_1))
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
 
     }
@@ -278,7 +280,7 @@ namespace RngFix.Patches.Battle
             return new CodeMatcher(instructions)
                 .ReplaceRngGetter("", AccessTools.Method(typeof(GetUnitRng), nameof(GetUnitRng.BattleTwoRng)), AccessTools.PropertyGetter(typeof(EnemyUnit), nameof(EnemyUnit.EnemyBattleRng)))
                 .Insert(new CodeInstruction(OpCodes.Ldloc_1))
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
     }
 

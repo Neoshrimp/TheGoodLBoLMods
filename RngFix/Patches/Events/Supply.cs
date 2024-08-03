@@ -15,7 +15,7 @@ namespace RngFix.Patches.Events
         {
             return new CodeMatcher(instructions)
                  .ReplaceRngGetter(nameof(GameRunController.ExhibitRng), AccessTools.Method(typeof(GrRngs), nameof(GrRngs.GetTransitionRng))) // could be adventure rng as well
-                 .InstructionEnumeration();
+                 .LeaveJumpFix().InstructionEnumeration();
         }
     }
 

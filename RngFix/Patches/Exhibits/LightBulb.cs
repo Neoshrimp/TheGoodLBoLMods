@@ -31,7 +31,7 @@ namespace RngFix.Patches.Exhibits
             return new CodeMatcher(instructions)
                 .ReplaceRngGetter(nameof(GameRunController.AdventureRng), AccessTools.Method(typeof(ExhibitsSelfRngs), nameof(ExhibitsSelfRngs.GetSelfRng), new Type[] { typeof(GameRunController), typeof(string) }))
                 .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(LightBulb_Patch), nameof(LightBulb_Patch.LightBulbId))))
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
 
     }

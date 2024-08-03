@@ -49,7 +49,7 @@ namespace RngFix.Patches.RngGetters
                     break;
                 }
             }
-            return matcher.InstructionEnumeration();
+            return matcher.LeaveJumpFix().InstructionEnumeration();
         }
 
     }

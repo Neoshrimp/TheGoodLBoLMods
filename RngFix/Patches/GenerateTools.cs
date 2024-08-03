@@ -45,7 +45,7 @@ namespace RngFix.Patches
                 .Set(OpCodes.Call, AccessTools.Method(typeof(GenerateTools), nameof(GenerateTools.GetTools)))
                 .Insert(new CodeInstruction(OpCodes.Call, AccessTools.PropertyGetter(typeof(GameRunController), nameof(GameRunController.AdventureRng))))
                 .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(GrRngs), nameof(GrRngs.Gr))))
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
 
     }
@@ -68,7 +68,7 @@ namespace RngFix.Patches
                 .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ExhibitsSelfRngs), nameof(ExhibitsSelfRngs.GetSelfRng), new Type[] { typeof(GameRunController), typeof(Exhibit) })))
                 .Insert(new CodeInstruction(OpCodes.Ldloc_1))
                 .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(GrRngs), nameof(GrRngs.Gr))))
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
 
     }
@@ -93,7 +93,7 @@ namespace RngFix.Patches
                 .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ExhibitsSelfRngs), nameof(ExhibitsSelfRngs.GetSelfRng), new Type[] { typeof(GameRunController), typeof(string) })))
                 .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Gongjuxiang_Patch), nameof(Gongjuxiang_Patch.ExId))))
                 .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(GrRngs), nameof(GrRngs.Gr))))
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
 
     }

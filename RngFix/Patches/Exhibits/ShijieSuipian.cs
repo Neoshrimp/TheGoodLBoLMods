@@ -31,7 +31,7 @@ namespace RngFix.Patches.Exhibits
                 //
                 .ReplaceRngGetter(nameof(GameRunController.GameRunEventRng), AccessTools.Method(typeof(ExhibitsSelfRngs), nameof(ExhibitsSelfRngs.GetSelfRng), new Type[] { typeof(GameRunController), typeof(Exhibit) }))
                 .Insert(new CodeInstruction(OpCodes.Ldloc_1))
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
     }
 

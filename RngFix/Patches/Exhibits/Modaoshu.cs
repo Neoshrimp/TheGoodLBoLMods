@@ -26,7 +26,7 @@ namespace RngFix.Patches.Exhibits
             return new CodeMatcher(instructions)
                 .ReplaceRngGetter(nameof(GameRunController.CardRng), AccessTools.Method(typeof(ExhibitsSelfRngs), nameof(ExhibitsSelfRngs.GetSelfRng), new Type[] {typeof(GameRunController), typeof(Exhibit)}))
                 .Insert(new CodeInstruction(OpCodes.Ldloc_1))
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
 
     }

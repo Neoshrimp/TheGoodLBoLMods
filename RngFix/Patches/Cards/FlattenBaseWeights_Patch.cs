@@ -46,7 +46,7 @@ namespace RngFix.Patches.Cards
                 .SetInstruction(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(FlattenBaseWeights_Patch), nameof(FlattenBaseWeights_Patch.NormalizeAmount))))
                 .Insert(new CodeInstruction(OpCodes.Ldarg_0))
 
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
 
 

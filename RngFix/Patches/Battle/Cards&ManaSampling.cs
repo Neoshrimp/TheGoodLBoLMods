@@ -117,7 +117,7 @@ namespace RngFix.Patches.Battle
                 .ReplaceRngGetter(nameof(GameRunController.BattleRng), AccessTools.Method(typeof(LockRandomTurnManaAction_Patch), nameof(LockRandomTurnManaAction_Patch.GetEntityRng)))
                 .SearchForward(ci => ci.opcode == OpCodes.Call && ci.operand.ToString().Contains("SampleManyOrAll"))
                 .SetInstruction(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(LockRandomTurnManaAction_Patch), nameof(LockRandomTurnManaAction_Patch.SampleOverdraft))))
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
 
     }
@@ -172,7 +172,7 @@ namespace RngFix.Patches.Battle
                 .MatchStartForward(new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(RandomGen), nameof(RandomGen.NextInt))))
                 .SetInstruction(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(AddCardToDrawZone_Patch), nameof(AddCardToDrawZone_Patch.ConsistentDeckPos))))
 
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
     }
 
@@ -203,7 +203,7 @@ namespace RngFix.Patches.Battle
                 .InsertAndAdvance(new CodeInstruction(OpCodes.Ldarg_0))
                 .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Attach_InsertActionSource_Patch), nameof(Attach_InsertActionSource_Patch.AttachSource))
                 ))
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
 
 
@@ -248,7 +248,7 @@ namespace RngFix.Patches.Battle
                 .InsertAndAdvance(instance)
                 .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Attach_MoveActionSource_Patch), nameof(Attach_MoveActionSource_Patch.AttachSource))))
 
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
 
 
@@ -302,7 +302,7 @@ namespace RngFix.Patches.Battle
                 .Insert(new CodeInstruction(OpCodes.Ldarg_0))
 
 
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
 
     }
@@ -422,7 +422,7 @@ namespace RngFix.Patches.Battle
                 .SetInstruction(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(TargetSingleEnemy_Patch), nameof(TargetSingleEnemy_Patch.SampleByRootIndex))))
                 .RngAdvancementGuard(generator, searchBackMatch)
 
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
 
 
@@ -506,7 +506,7 @@ namespace RngFix.Patches.Battle
 
                 .RngAdvancementGuard(generator, searchBackMatch, many: true, amountMatch: amountMatch)
 
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
     }
 
@@ -602,7 +602,7 @@ namespace RngFix.Patches.Battle
                     break;
                 }
             }
-            return matcher.InstructionEnumeration();
+            return matcher.LeaveJumpFix().InstructionEnumeration();
         }
     }
 
@@ -717,7 +717,7 @@ namespace RngFix.Patches.Battle
                     break;
                 }
             }
-            return matcher.InstructionEnumeration();
+            return matcher.LeaveJumpFix().InstructionEnumeration();
         }
     }
 
@@ -775,7 +775,7 @@ namespace RngFix.Patches.Battle
                     break;
                 }
             }
-            return matcher.InstructionEnumeration();
+            return matcher.LeaveJumpFix().InstructionEnumeration();
 
 
         }
@@ -841,7 +841,7 @@ namespace RngFix.Patches.Battle
                     break;
                 }
             }
-            return matcher.InstructionEnumeration();
+            return matcher.LeaveJumpFix().InstructionEnumeration();
 
 
         }

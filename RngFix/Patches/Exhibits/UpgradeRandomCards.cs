@@ -66,7 +66,7 @@ namespace RngFix.Patches.Exhibits
                .MatchForward(true, new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(GameRunController), nameof(GameRunController.UpgradeRandomCards))))
                .Set(OpCodes.Call, AccessTools.Method(typeof(UpgradeRandomCards_Patch), nameof(UpgradeRandomCards_Patch.UpgradeRandomCards)))
                .Insert(new CodeInstruction(OpCodes.Ldarg_0))
-               .InstructionEnumeration();
+               .LeaveJumpFix().InstructionEnumeration();
         }
 
     }

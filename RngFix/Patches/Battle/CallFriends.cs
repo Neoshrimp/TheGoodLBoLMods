@@ -52,7 +52,7 @@ namespace RngFix.Patches.Battle
 
                 .ReplaceRngGetter(nameof(GameRunController.BattleRng), AccessTools.Method(typeof(CallFriends_Patch), nameof(CallFriends_Patch.FakeRng)))
 
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
 
     }

@@ -34,6 +34,8 @@ What this does **not** fix:
 ---
 *Change log*
 
+`2.2.3` Fix some unintended enemy behavior changes, like all kedamas attacking on turn 1.
+
 `2.2.1` Fix rng state not being properly set for first adventures.
 
 `2.2.0` More consistent Shining Exhibit sampling, some fixes.

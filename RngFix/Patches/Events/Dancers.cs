@@ -94,7 +94,7 @@ namespace RngFix.Patches.Events
                 .ReplaceRngGetter(nameof(GameRunController.AdventureRng), AccessTools.Method(typeof(DancersInit_Patch), nameof(DancersInit_Patch.GetAbilityRng)))
                 .Insert(new CodeInstruction(thisOpCode))
                 .Insert(new CodeInstruction(OpCodes.Pop))
-                .InstructionEnumeration();
+                .LeaveJumpFix().InstructionEnumeration();
         }
 
     }
@@ -126,7 +126,7 @@ namespace RngFix.Patches.Events
         {
             return new CodeMatcher(instructions)
                  .ReplaceRngGetter(nameof(GameRunController.ExhibitRng), AccessTools.Method(typeof(GetSpecialAdventureExhibit_Patch), nameof(GetSpecialAdventureExhibit_Patch.GetRng)))
-                 .InstructionEnumeration();
+                 .LeaveJumpFix().InstructionEnumeration();
         }
     }
 

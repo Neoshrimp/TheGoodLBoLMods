@@ -111,7 +111,7 @@ namespace RngFix.Patches.RngGetters
 
 
 
-            return matcher.InstructionEnumeration();
+            return matcher.LeaveJumpFix().InstructionEnumeration();
         }
 
     }
