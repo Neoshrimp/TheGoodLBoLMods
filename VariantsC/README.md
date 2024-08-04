@@ -34,6 +34,8 @@ Mod has a config toggle for making new starting cards pooled or not (pooled by d
 
 #### Changelog
 ---
+`0.5.4000` Cap Ever Hoarding numbers, add certain anti-stall mechanic.
+
 `0.5.3000` Improve MarisaC starting deck, change Ever Hoarding rare probability, change how Innate keyword works.
 
 `0.5.1100` Make MarisaC spellcard once per battle to prevent stalling for P.

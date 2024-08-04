@@ -105,7 +105,25 @@ namespace RngFix.Patches
 
             cardPoolReq.poolSet = new HashSet<Type>(gr.CreateValidCardsPool(weightTable, manaLimit, colorLimit, applyFactors, battleRolling, filter).Select(re => re.Elem));
 
-            var charExSet = new HashSet<string>(gr.Player.Exhibits.Where(e => e.OwnerId != null).Select(e => e.OwnerId));
+
+            HashSet<string> charExSet = new HashSet<string> { gr.Player.Id };
+            if (gr.AllCharacterCardsFlag > 0)
+            {
+                foreach (PlayerUnitConfig pc in PlayerUnitConfig.AllConfig())
+                {
+                    charExSet.Add(pc.Id);
+                }
+            }
+            else
+            {
+                foreach (Exhibit exhibit in gr.Player.Exhibits)
+                {
+                    if (exhibit.OwnerId != null)
+                    {
+                        charExSet.Add(exhibit.OwnerId);
+                    }
+                }
+            }
 
             Func<Type, float> getW = t => {
                 var cc = CardConfig.FromId(t.Name);
