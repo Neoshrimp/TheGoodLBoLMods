@@ -27,7 +27,7 @@ namespace RngFix.CustomRngs.Sampling
         public uint extraRolls = 0;
 
 
-        public WeightedSlotSampler(List<ISlotRequirement<Type>> requirements, Func<Type, T> initAction, Action<T> successAction, Action failureAction, IEnumerable<Type> potentialPool) : base(requirements, initAction, successAction, failureAction, potentialPool)
+        public WeightedSlotSampler(List<ISlotRequirement<Type>> requirements, Func<Type, T> initAction, Action<T> successAction, Action failureAction, IEnumerable<Type> potentialPool) : base(requirements, initAction, potentialPool)
         {
         }
 

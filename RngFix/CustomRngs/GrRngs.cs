@@ -100,10 +100,10 @@ namespace RngFix.CustomRngs
         private Lazy<AbstractSlotSampler<Exhibit, Type>> normalExSampler = new Lazy<AbstractSlotSampler<Exhibit, Type>>(() => 
         new LessRandomWeightedSlotSampler<Exhibit>(
             requirements: new List<ISlotRequirement<Type>>() { new ExInPool(), new ExHasManaColour() },
-            initAction: (t) => { var ex = Library.CreateExhibit(t); Gr().ExhibitPool.Remove(ex.GetType()); return ex; },
-            successAction: null,
-            failureAction: null,
+            initAction: (t) => { var ex = Library.CreateExhibit(t); return ex; },
             potentialPool: Padding.RollableExhibits)
+            { failureAction = () => log.LogWarning("Failed to roll Exhibit.") , }
+
         );
         public AbstractSlotSampler<Exhibit, Type> NormalExSampler { get => normalExSampler.Value; }
 
@@ -122,9 +122,8 @@ namespace RngFix.CustomRngs
         new LessRandomWeightedSlotSampler<Card>(
             requirements: new List<ISlotRequirement<Type>>() { new CardInPool() },
             initAction: (t) => { var c = Library.CreateCard(t); c.GameRun = GrRngs.Gr(); return c; },
-            successAction: null,
-            failureAction: () => log.LogDebug("deeznuts"),
             potentialPool: Padding.RewardCards)
+            { failureAction = () => log.LogWarning("Failed to roll Card.") }
         );
 
 
@@ -143,9 +142,8 @@ namespace RngFix.CustomRngs
         new LessRandomWeightedSlotSampler<Type>(
             requirements: new List<ISlotRequirement<Type>>() { new AdventureInPool(), new AdventureNOTinHistory() },
             initAction: (t) => { return t; },
-            successAction: null,
-            failureAction: null,
             potentialPool: Padding.AllAdventurePadding())
+            { failureAction = () => log.LogWarning("Failed to roll Adventure.") }
         );
         public AbstractSlotSampler<Type, Type> AdventureSampler { get => adventureSampler.Value; }
 

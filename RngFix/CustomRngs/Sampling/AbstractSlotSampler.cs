@@ -22,12 +22,10 @@ namespace RngFix.CustomRngs.Sampling
 
 
 
-        public AbstractSlotSampler(List<ISlotRequirement<PT>> requirements, Func<PT, T> initAction, Action<T> successAction, Action failureAction, IEnumerable<PT> potentialPool)
+        public AbstractSlotSampler(List<ISlotRequirement<PT>> requirements, Func<PT, T> initAction, IEnumerable<PT> potentialPool)
         {
             this.requirements = requirements;
             this.initAction = initAction;
-            this.successAction = successAction;
-            this.failureAction = failureAction;
             BuildPool(potentialPool);
         }
 

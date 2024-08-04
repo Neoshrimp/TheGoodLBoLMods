@@ -30,7 +30,7 @@ namespace RngFix.CustomRngs.Sampling
         public bool fullRoll = false;
 
 
-        public UniformSlotSampler(List<ISlotRequirement<PT>> requirements, Func<PT, T> initAction, Action<T> successAction, Action failureAction, IEnumerable<PT> potentialPool) : base(requirements, initAction, successAction, failureAction, potentialPool)
+        public UniformSlotSampler(List<ISlotRequirement<PT>> requirements, Func<PT, T> initAction, Action<T> successAction, Action failureAction, IEnumerable<PT> potentialPool) : base(requirements, initAction, potentialPool)
         {
         }
 

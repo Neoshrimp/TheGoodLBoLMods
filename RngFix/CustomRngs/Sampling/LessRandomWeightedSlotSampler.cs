@@ -28,7 +28,7 @@ namespace RngFix.CustomRngs.Sampling
         public uint extraRolls = 0;
 
 
-        public LessRandomWeightedSlotSampler(List<ISlotRequirement<Type>> requirements, Func<Type, T> initAction, Action<T> successAction, Action failureAction, IEnumerable<Type> potentialPool) : base(requirements, initAction, successAction, failureAction, potentialPool)
+        public LessRandomWeightedSlotSampler(List<ISlotRequirement<Type>> requirements, Func<Type, T> initAction, IEnumerable<Type> potentialPool) : base(requirements, initAction, potentialPool)
         {
         }
 
@@ -84,11 +84,7 @@ namespace RngFix.CustomRngs.Sampling
 
             if (possibleMaxW <= 0)
             {
-                if (fallback != null)
-                    rez = fallback();
-                if (failureAction != null)
-                    failureAction();
-                return null;
+                goto PostActions;
             }
 
             //var probabilityFraction = possibleMaxW + Math.Max(0, possibleTotalW - possibleMaxW) * probabiltyMul;
@@ -159,33 +155,33 @@ namespace RngFix.CustomRngs.Sampling
                         break;
                 }
 
-                if (rezFound)
+/*                if (rezFound)
                 {
                     if (er < extraRolls)
                         er++;
                     else
                         break;
-                }
+                }*/
             }
 
 
 
             logInfo.rolls = (uint)i;
 
+            PostActions:
+                if (rezFound)
+                {
+                    if (successAction != null)
+                        successAction(rez);
 
-            if (rezFound)
-            {
-                if (successAction != null)
-                    successAction(rez);
-
-            }
-            else
-            {
-                if (fallback != null)
-                    rez = fallback();
-                if (failureAction != null)
-                    failureAction();
-            }
+                }
+                else
+                {
+                    if (fallback != null)
+                        rez = fallback();
+                    if (failureAction != null)
+                        failureAction();
+                }
 
 
             return rez;

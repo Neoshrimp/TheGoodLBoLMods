@@ -31,7 +31,7 @@ namespace RngFix.CustomRngs.Sampling
         public bool fullRoll = false;
 
         
-        public ObsoleteSlotSampler(List<ISlotRequirement<Type>> requirements, Func<Type, T> initAction, Action<T> successAction, Action failureAction, IEnumerable<Type> potentialPool) : base(requirements, initAction, successAction, failureAction, potentialPool)
+        public ObsoleteSlotSampler(List<ISlotRequirement<Type>> requirements, Func<Type, T> initAction, Action<T> successAction, Action failureAction, IEnumerable<Type> potentialPool) : base(requirements, initAction, potentialPool)
         {
         }
 

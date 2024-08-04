@@ -19,6 +19,9 @@ using LBoL.Core.Stations;
 
 namespace RngFix.Patches
 {
+
+
+
     [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.RollNormalExhibit))]
     [HarmonyPriority(Priority.Low)]
     class ExhibitRoll_Patch
@@ -28,12 +31,16 @@ namespace RngFix.Patches
             var gr = __instance;
             var grngs = GrRngs.GetOrCreate(gr);
 
+            grngs.NormalExSampler.successAction = ex => gr.ExhibitPool.Remove(ex.GetType());
+
             __result = grngs.NormalExSampler.Roll(
                 rng: rng,
                 getW: (t) => weightTable.WeightFor(ExhibitConfig.FromId(t.Name)) * Library.WeightForExhibit(t, gr),
                 logInfo: out var logInfo,
                 filter: (t) => filter == null || filter(ExhibitConfig.FromId(t.Name)),
                 fallback: fallback);
+
+            grngs.NormalExSampler.successAction = null;
 
 
             StatsLogger.LogEx(__result, gr, logInfo);
