@@ -60,48 +60,43 @@ namespace VariantsC.Reimu.C
                 RelativeCards: new List<string>());
 
         }
-
-        [EntityLogic(typeof(ChocolateCoinExDef))]
-        public sealed class ChocolateCoinEx : ShiningExhibit
-        {
-            protected override void OnEnterBattle()
-            {
-                ReactBattleEvent(Battle.Player.TurnStarting, OnTurnStarting);
-                Counter = Value1;
-            }
-            protected override void OnLeaveBattle()
-            {
-                Counter = 0;
-            }
-
-            IEnumerable<BattleAction> OnTurnStarting(UnitEventArgs args)
-            {
-                if (Counter > 0)
-                {
-                    var basics = Battle.DrawZone.Where(c => c.IsBasic);
-                    if (basics.Count() == 0)
-                        basics = Battle.DiscardZone.Where(c => c.IsBasic);
-                    if (basics.Count() == 0)
-                        basics = Battle.HandZone.Where(c => c.IsBasic);
-                    if (basics.Count() > 0)
-                    {
-                        NotifyActivating();
-                        yield return new ExileCardAction(basics.Sample(GameRun.BattleRng));
-                    }
-
-                    Counter--;
-                }
-                yield break;
-            }
-
-
-
-
-        }
     }
 
 
+    [EntityLogic(typeof(ChocolateCoinExDef))]
+    public sealed class ChocolateCoinEx : ShiningExhibit
+    {
+        protected override void OnEnterBattle()
+        {
+            ReactBattleEvent(Battle.Player.TurnStarting, OnTurnStarting);
+            Counter = Value1;
+        }
+        protected override void OnLeaveBattle()
+        {
+            Counter = 0;
+        }
 
+        IEnumerable<BattleAction> OnTurnStarting(UnitEventArgs args)
+        {
+            if (Counter > 0)
+            {
+                var basics = Battle.DrawZone.Where(c => c.IsBasic);
+                if (basics.Count() == 0)
+                    basics = Battle.DiscardZone.Where(c => c.IsBasic);
+                if (basics.Count() == 0)
+                    basics = Battle.HandZone.Where(c => c.IsBasic);
+                if (basics.Count() > 0)
+                {
+                    NotifyActivating();
+                    yield return new ExileCardAction(basics.Sample(GameRun.BattleRng));
+                }
+
+                Counter--;
+            }
+            yield break;
+        }
+
+    }
 
 
 

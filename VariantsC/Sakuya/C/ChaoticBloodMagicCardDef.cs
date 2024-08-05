@@ -39,7 +39,7 @@ namespace VariantsC.Sakuya.C
                 GunNameBurst: "RemiZhuaB",
                 DebugLevel: 0,
                 Revealable: false,
-                IsPooled: BepinexPlugin.poolNewCards.Value,
+                IsPooled: true,
                 FindInBattle: true,
                 HideMesuem: false,
                 IsUpgradable: true,

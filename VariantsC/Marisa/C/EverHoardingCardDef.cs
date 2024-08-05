@@ -48,7 +48,7 @@ namespace VariantsC.Marisa.C
                 GunNameBurst: "",
                 DebugLevel: 0,
                 Revealable: false,
-                IsPooled: BepinexPlugin.poolNewCards.Value,
+                IsPooled: true,
                 FindInBattle: false,
                 HideMesuem: false,
                 IsUpgradable: true,

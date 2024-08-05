@@ -39,7 +39,7 @@ namespace VariantsC.Reimu.C
                 GunNameBurst: "",
                 DebugLevel: 0,
                 Revealable: false,
-                IsPooled: poolNewCards.Value, 
+                IsPooled: true, 
                 FindInBattle: true,
                 HideMesuem: false,
                 IsUpgradable: true,

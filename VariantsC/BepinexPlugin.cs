@@ -29,6 +29,9 @@ namespace VariantsC
 
         internal static BepInEx.Configuration.ConfigEntry<bool> poolNewCards;
 
+        internal static BepInEx.Configuration.ConfigEntry<bool> poolNewExhibits;
+
+
         internal static BatchLocalization CardBatchLoc = new BatchLocalization(directorySource, typeof(CardTemplate), "Card");
         internal static BatchLocalization StatusEffectBatchLoc = new BatchLocalization(directorySource, typeof(StatusEffectTemplate), "StatusEffect");
         internal static BatchLocalization ExhibitBatchLoc = new BatchLocalization(directorySource, typeof(ExhibitTemplate), "Exhibit");
@@ -43,7 +46,9 @@ namespace VariantsC
             DontDestroyOnLoad(gameObject);
             gameObject.hideFlags = HideFlags.HideAndDontSave;
 
-            poolNewCards = Config.Bind("Pools", "poolNewCards", true, "Makes new non-basic starting cards discoverable/undiscoverable during game run.");
+            poolNewCards = Config.Bind("Pools", "poolNewCardsWhenExhibit", false, "Pool new starting cards of a loadout when not in a possession of the corresponding loadout exhibit. For example, when set to false, Blood Magic and Consequence of Hickeys cards won't be rewarded or generated unless player has Bloody Ripper exhibit.");
+
+            poolNewExhibits = Config.Bind("Pools", "poolNewExhibits", false, "Makes C variant exhibits discoverable after defeating their owner.");
 
             new SaveContainer().RegisterSelf(PInfo.GUID);
 
