@@ -266,12 +266,12 @@ namespace FullElite
         [EntityLogic(typeof(AllRewardExhibitDef))]
         public sealed class AllRewardExhibit : JadeBox
         {
-            protected override void OnGain(GameRunController gameRun)
+            
+            protected override void OnAdded()
             {
-                base.OnGain(gameRun);
-                HandleGameRunEvent(gameRun.StationRewardGenerating, OnStationRewardGenerating);
-                
+                HandleGameRunEvent(GameRun.StationRewardGenerating, OnStationRewardGenerating);
             }
+
             private void OnStationRewardGenerating(StationEventArgs args)
             {
                 var station = args.Station;
