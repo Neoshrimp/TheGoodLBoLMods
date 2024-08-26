@@ -3,7 +3,6 @@
 *Korean translation by **raspberry Caffeine Monster***
 
 ![bigRin](https://github.com/Neoshrimp/TheGoodLBoLMods/assets/89428565/b0c00804-c679-47d8-a31f-93919b27719e)
-*Find Big Rin in Rainbow box!*
 
 
 Challenge mode where every regular encounter contains an elite.

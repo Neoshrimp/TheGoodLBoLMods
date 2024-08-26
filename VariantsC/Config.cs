@@ -55,7 +55,6 @@ namespace VariantsC
 
 
         [HarmonyPatch(typeof(Library), nameof(Library.EnumerateRollableCardTypes), MethodType.Enumerator)]
-        [HarmonyDebug]
         class EnumerateRollableCardTypes_Patch
         {
             private static int CheckConfig(CardType cardType, CardConfig config)

@@ -34,6 +34,8 @@ What this does **not** fix:
 ---
 *Change log*
 
+`2.2.6` Fix rng not being assigned properly for some modded entities.
+
 `2.2.4` Make fallback sampling more robust.
 
 `2.2.3` Fix some unintended enemy behavior changes, like all kedamas attacking on turn 1.
