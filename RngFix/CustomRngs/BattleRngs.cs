@@ -108,7 +108,8 @@ namespace RngFix.CustomRngs
             infiniteShufflingDeck.AddRange(overLimitTypes);
 
 
-
+            //log.LogDebug(string.Join(";", infiniteShufflingDeck.Select(t => t?.Name ?? "null")));
+            //Padding.OutputPadding(infiniteShufflingDeck, "\n");
 
             // 1st pass: shuffle by card type preserving card relative order
             int rolls = 0;

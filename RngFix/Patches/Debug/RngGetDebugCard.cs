@@ -127,6 +127,7 @@ namespace RngFix.Patches.Debug
             public bool ShouldSuspend { get => shouldSuspend; set => shouldSuspend = value; }
 
 
+
             public ManaGroup NaturalCost
             {
                 get

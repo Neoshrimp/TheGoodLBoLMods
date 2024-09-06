@@ -97,7 +97,44 @@ namespace RngFix.CustomRngs.Sampling.Pads
             }
         }
 
-        public static void OutputPadding(IEnumerable<Type> padded)
+
+        public static List<string> OutputCountRepeat(IEnumerable<object> padded)
+        {
+            return FormatCountRepeat(padded, t => t.ToString());
+        }
+
+        public static List<string> OutputCountRepeat(IEnumerable<Type> padded)
+        {
+            return FormatCountRepeat(padded, t => t.Name, (t1, t2) => t1?.Name == t2?.Name);
+        }
+        public static List<string> OutputCountRepeat(IEnumerable<GameEntity> padded)
+        {
+            return FormatCountRepeat(padded, ge => ge.Name, (ge1, ge2) => ge1?.Id == ge2?.Id);
+        }
+
+        public static void OutputPadding(IEnumerable<Type> padded, string delimiter = ";")
+        {
+            log.LogInfo(string.Join(delimiter, OutputCountRepeat(padded)));
+        }
+        public static void OutputPadding(IEnumerable<GameEntity> padded, string delimiter = ";")
+        {
+            log.LogInfo(string.Join(delimiter, OutputCountRepeat(padded)));
+        }
+
+        public static void CompPaddingOutput(List<string> out1, List<string> out2, string delimiter = "\n")
+        {
+
+            var maxLength = Math.Max(out1.Count, out2.Count);
+            log.LogInfo("\n" + string.Join(delimiter, out1.PadEnd(maxLength).Zip(out2.PadEnd(maxLength)).Select(ss => $"{ss.Item1 ?? "---", -34}{ss.Item2 ?? "---"}")));
+        }
+
+        private static List<string> FormatCountRepeat<T>(IEnumerable<T> padded, Func<T, string> nameProvider, Func<T, T, bool> areEqual = null) where T : class
+        {
+            return CountRepeat(padded, nameProvider, areEqual).Select(tu => $"{tu.lastIndex}:[{tu.count}]{tu.name}").ToList();
+        
+        }
+
+        public static List<(int lastIndex, int count, string name)> CountRepeat<T>(IEnumerable<T> padded, Func<T, string> nameProvider, Func<T, T, bool> areEqual = null) where T : class
         {
             //log.LogDebug(string.Join(";", BattleRngs.InfiteDeck.Items.Where(t => t != null && !potentialCards.CountedPool.ContainsKey(t)).Select(t => t?.Name ?? "null")));
 
@@ -105,24 +142,27 @@ namespace RngFix.CustomRngs.Sampling.Pads
 
                         log.LogDebug(string.Join(";", potentialCards.CountedPool.Keys.Where(t => !dickSet.Contains(t)).Select(t => t?.Name ?? "null")));*/
 
+
+            areEqual ??= new Func<T, T, bool>((t1, t2) => t1 == default);
+
             int agg = 0;
-            var rez = new List<string>();
+            var rez = new List<(int lastIndex, int count, string name)>();
             int count = padded.Count();
-            foreach ((var t, var i) in padded.Select((t, i) => (t, i)))
+            T prevT = padded.First();
+
+            foreach ((var t, var i) in padded.Concat(new T[] { default }).Select((t, i) => (t, i)))
             {
-                if ((t != null || i == count - 1) && agg > 0)
+                if ((!areEqual(t, prevT) || i == count))
                 {
-                    rez.Add($"\n[{agg}]\n");
+                    rez.Add((i, agg, prevT == default ? "null" : nameProvider(prevT)));
                     agg = 0;
                 }
-                if (t != null)
-                {
-                    rez.Add($"{i}:{t.Name}");
-                }
-	            if(t == null)
-                    agg++;
+                agg++;
+                prevT = t;
             }
-            UnityEngine.Debug.Log(string.Join(";", rez));
+
+
+            return rez;
         }
 
 
