@@ -34,6 +34,8 @@ Mod has a config toggle for making new starting cards pooled or not (pooled by d
 
 #### Changelog
 ---
+`0.5.4200` Fix config.
+
 `0.5.4100` Change starting cards pooling rules. New starting cards are not pooled unless the player has corresponding loadout exhibit. Configurable.
 
 `0.5.4000` Cap Ever Hoarding numbers, add certain anti-stall mechanic.

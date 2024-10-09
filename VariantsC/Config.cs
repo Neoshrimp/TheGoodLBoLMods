@@ -34,7 +34,7 @@ namespace VariantsC
 
             static void Postfix(GameRunController __instance)
             {
-                if(poolNewExhibits.Value)
+                if(!poolNewExhibits.Value)
                     __instance.ShiningExhibitPool.RemoveAll(t => cExhibits.Contains(t));
 
 
