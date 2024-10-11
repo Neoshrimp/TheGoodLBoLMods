@@ -6,6 +6,7 @@ using LBoL.Core.Adventures;
 using LBoL.Core.Cards;
 using LBoL.Core.Stations;
 using LBoL.Presentation;
+using Mono.Cecil.Cil;
 using RngFix.CustomRngs.Sampling;
 using RngFix.CustomRngs.Sampling.Pads;
 using RngFix.Patches;
@@ -190,8 +191,15 @@ namespace RngFix.CustomRngs
 
         }
 
-        public static GameRunController Gr() => GameMaster.Instance?.CurrentGameRun;
+        public static GameRunController Gr() 
+        {
+            var rez = GameMaster.Instance?.CurrentGameRun;
+            if (rez == null && !wr_midConstructGr.TryGetTarget(out rez))
+                return null;
+            return rez;
+        }
 
+        internal static WeakReference<GameRunController> wr_midConstructGr = new WeakReference<GameRunController>(null);
 
         static public GrRngs GetOrCreate(GameRunController gr)
         {

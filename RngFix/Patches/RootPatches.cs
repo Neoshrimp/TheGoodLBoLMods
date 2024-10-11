@@ -24,7 +24,7 @@ using static RngFix.BepinexPlugin;
 namespace RngFix.Patches
 {
     [HarmonyPatch]
-    class Gr_cctor_Patch
+    class Gr_InitRngs_Patch
     {
 
         static IEnumerable<MethodBase> TargetMethods()
@@ -32,7 +32,7 @@ namespace RngFix.Patches
             yield return AccessTools.Constructor(typeof(GameRunController), new Type[] { typeof(GameRunStartupParameters)});
         }
 
-        static void InitRngs(GameRunController gr)
+        internal static void InitRngs(GameRunController gr)
         {
             var grRngs = GrRngs.GetOrCreate(gr);
             log.LogDebug("Initing GrRngs..");
@@ -63,8 +63,15 @@ namespace RngFix.Patches
             grRngs.persRngs.extraCardRewardRng = new RandomGen(gr.RootRng.NextULong());
 
             grRngs.unusedRoot0 = new RandomGen(gr.RootRng.NextULong());
-            
+
+            GrRngs.wr_midConstructGr.SetTarget(gr);
         }
+
+        static void Postfix()
+        {
+            GrRngs.wr_midConstructGr.SetTarget(null);
+        }
+
 
         // custom rngs are initialized right after root rng is created, ensuring any additional rootRng calls in future updates won't influence custom rngs seeding.
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
@@ -73,7 +80,7 @@ namespace RngFix.Patches
                 .MatchForward(true, new CodeInstruction(OpCodes.Call, AccessTools.PropertySetter(typeof(GameRunController), nameof(GameRunController.RootRng))))
                 .Advance(1)
                 .InsertAndAdvance(new CodeInstruction(OpCodes.Ldarg_0))
-                .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Gr_cctor_Patch), nameof(Gr_cctor_Patch.InitRngs))))
+                .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Gr_InitRngs_Patch), nameof(Gr_InitRngs_Patch.InitRngs))))
                 .LeaveJumpFix().InstructionEnumeration();
         }
 

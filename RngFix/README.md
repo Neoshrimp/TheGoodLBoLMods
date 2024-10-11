@@ -34,6 +34,8 @@ What this does **not** fix:
 ---
 *Change log*
 
+`2.2.7` Fix RngFix not working with some jadeboxes.
+
 `2.2.6` Fix rng not being assigned properly for some modded entities.
 
 `2.2.4` Make fallback sampling more robust.

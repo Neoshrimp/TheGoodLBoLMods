@@ -1,6 +1,6 @@
 {
   "name": "RngFix",
-  "version_number": "2.2.6",
+  "version_number": "2.2.7",
   "website_url": "https://github.com/Neoshrimp/TheGoodLBoLMods/tree/master/RngFix",
   "description": "Makes seeded reruns way more consistent.",
   "dependencies": [ "BepInEx-BepInExPack-5.4.2100", "TeamNeo-Sideloader-0.9.6410" ]

@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Runtime.Serialization;
 
 namespace RngFix.Patches.Debug
@@ -196,15 +197,26 @@ namespace RngFix.Patches.Debug
         {
             if (!BepinexPlugin.doLoggingConf.Value)
                 return;
-            logger.SetValSafe(gr.CurrentMap.VisitingNode.StationType, "Station");
-            logger.SetValSafe(gr.CurrentMap.VisitingNode.Act, "Act");
-            logger.SetValSafe(gr.CurrentStage.Id, "Stage");
-            logger.SetValSafe(gr.CurrentMap.VisitingNode.X, "X");
-            logger.SetValSafe(gr.CurrentMap.VisitingNode.Y, "Y");
+
+            if (gr.CurrentMap != null)
+            {
+                logger.SetValSafe(gr.CurrentMap.VisitingNode.StationType, "Station");
+                logger.SetValSafe(gr.CurrentMap.VisitingNode.Act, "Act");
+                logger.SetValSafe(gr.CurrentMap.VisitingNode.X, "X");
+                logger.SetValSafe(gr.CurrentMap.VisitingNode.Y, "Y");
+            }
+            if (gr.CurrentStage != null)
+            {
+                logger.SetValSafe(gr.CurrentStage.Id, "Stage");
+            }
 
             logger.SetCollumnToSanitize("Event", false);
 
-            if (gr.CurrentStation is AdventureStation adventureStation)
+            if (gr.CurrentStation == null) 
+            {
+                logger.SetValSafe("not_in_a_station", "Event");
+            }
+            else if (gr.CurrentStation is AdventureStation adventureStation)
             {
                 logger.SetValSafe("adventure:" + adventureStation.Adventure?.Title ?? "", "Event");
             }
@@ -315,17 +327,40 @@ namespace RngFix.Patches.Debug
             GetPersistentRngsLog(gr).LogHead();
         }
 
-        [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.Create))]
-        [HarmonyPriority(Priority.LowerThanNormal)]
+
+        [HarmonyPatch]
         class InitLog
         {
+
+            [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.Create))]
+            [HarmonyPostfix]
             static void Postfix(GameRunController __result)
             {
-                var gr = __result;
                 currentGrId = "";
-                InitAndLogGrInfo(gr);
-                InitLogs(gr);
+                InitAndLogGrInfo(__result);
+            }
 
+
+
+
+            static void EarlyInit(GameRunController gr)
+            {
+                InitLogs(gr);
+            }
+
+
+
+            [HarmonyPatch(typeof(GameRunController), MethodType.Constructor, new Type[] { typeof(GameRunStartupParameters) })]
+            [HarmonyPriority(Priority.LowerThanNormal)]
+            [HarmonyTranspiler]
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                return new CodeMatcher(instructions)
+                    .MatchForward(true, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Gr_InitRngs_Patch), nameof(Gr_InitRngs_Patch.InitRngs))))
+                    .Advance(1)
+                    .InsertAndAdvance(new CodeInstruction(OpCodes.Ldarg_0))
+                    .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(InitLog), nameof(InitLog.EarlyInit))))
+                    .LeaveJumpFix().InstructionEnumeration();
             }
         }
 
