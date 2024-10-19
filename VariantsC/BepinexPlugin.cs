@@ -25,7 +25,7 @@ namespace VariantsC
         internal static IResourceSource embeddedSource = new EmbeddedSource(Assembly.GetExecutingAssembly());
 
         // add this for audio loading
-        internal static DirectorySource directorySource = new DirectorySource(VariantsC.PInfo.GUID, "resources");
+        internal static DirectorySource directorySource = new DirectorySource(VariantsC.PInfo.GUID, "");
 
         internal static BepInEx.Configuration.ConfigEntry<bool> poolNewCards;
 
