@@ -80,6 +80,8 @@ namespace VariantsC.Marisa.C
                 PassiveCost: null,
                 UpgradedPassiveCost: null,
                 ActiveCost: null,
+                ActiveCost2: null,
+                UpgradedActiveCost2: null,
                 UpgradedActiveCost: null,
                 UltimateCost: null,
                 UpgradedUltimateCost: null,

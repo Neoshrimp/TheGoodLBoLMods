@@ -59,11 +59,11 @@ namespace VariantsC.Shared
                     {
                         AudioManager.PlayUi("CardFly", false);
                         Transform parent = UnityEngine.Object.Instantiate<Transform>(cardUi.cardFlyHelperPrefab, cardUi.cardEffectLayer);
-                        parent.localPosition = cardUi.drawZoneButton.transform.localPosition;
+                        parent.localPosition = cardUi.discardButton.transform.localPosition;
                         CardFlyBrief clone = Object.Instantiate<CardFlyBrief>(cardUi.cardFlyBrief, parent);
                         Transform transform = clone.transform;
 
-                        parent.DOLocalMove(cardUi.discardZoneButton.transform.localPosition, 0.5f, false).SetEase(Ease.InSine).OnComplete(delegate
+                        parent.DOLocalMove(cardUi.discardButton.transform.localPosition, 0.5f, false).SetEase(Ease.InSine).OnComplete(delegate
                         {
                             clone.CloseCard();
                             Object.Destroy(parent.gameObject, 0.5f);

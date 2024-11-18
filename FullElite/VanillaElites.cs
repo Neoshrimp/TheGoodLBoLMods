@@ -4,6 +4,7 @@ using LBoL.EntityLib.EnemyUnits.Normal;
 using LBoL.EntityLib.EnemyUnits.Normal.Drones;
 using LBoL.EntityLib.EnemyUnits.Normal.Guihuos;
 using LBoL.EntityLib.EnemyUnits.Normal.Maoyus;
+using LBoL.EntityLib.EnemyUnits.Normal.Yinyangyus;
 using LBoL.EntityLib.EnemyUnits.Opponent;
 using LBoL.EntityLib.Exhibits.Shining;
 using System;
@@ -38,7 +39,8 @@ namespace FullElite
         public static List<Type> act3 = new List<Type>() {
             typeof(Siji), typeof(Alice), typeof(Cirno), typeof(Koishi), typeof(Marisa), typeof(Reimu), typeof(Sakuya),
             typeof(Doremy), typeof(DreamAya), typeof(DreamJunko), typeof(DreamRemilia), typeof(DreamYoumu),
-            typeof(Clownpiece), typeof(BlackFairy), typeof(WhiteFairy),
+            typeof(Clownpiece), typeof(BlackFairy), typeof(WhiteFairy), 
+            typeof(YinyangyuBlueReimu), typeof(YinyangyuRedReimu)
         };
 
 
