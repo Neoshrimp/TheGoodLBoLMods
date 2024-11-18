@@ -42,6 +42,10 @@ namespace FullElite
         {
             var con = DefaultConfig();
             con.Group = new List<string>() { JdBoxGroup };
+
+            con.Value1 = 4;
+            con.Value2 = 50;
+
             return con;
         }
     }
@@ -68,6 +72,8 @@ namespace FullElite
 
 
 
+
+
     public sealed class FullEliteJadeboxDef : BaseFullEliteJadeBoxDef
     {
         public override IdContainer GetId() => nameof(FullEliteBox);
@@ -87,6 +93,12 @@ namespace FullElite
                     else if (s.GetType() == typeof(WindGodLake))
                         PoolElites(new List<string> { "Clownpiece", "Siji", "Doremy" }, s);
                 }
+            }
+
+            protected override void OnAdded()
+            {
+                StartingDraftBoxDef.StartingDraftBox.StaticOnAdded(this);
+                PowerBonusBoxDef.PowerBonusBox.StaticOnAdded(this);
             }
         }
 
@@ -125,7 +137,9 @@ namespace FullElite
 
                     }
                 }
+
             }
+
 
             protected override void OnAdded()
             {
@@ -137,9 +151,11 @@ namespace FullElite
                         s.EnemyPoolAct2 = s.EnemyPoolAct1;
                         s.EnemyPoolAct3 = s.EnemyPoolAct1;
                     }
+
                 }
 
-
+                StartingDraftBoxDef.StartingDraftBox.StaticOnAdded(this);
+                PowerBonusBoxDef.PowerBonusBox.StaticOnAdded(this);
             }
 
         }
@@ -150,7 +166,7 @@ namespace FullElite
 
 
 
-    public sealed class StartingDraftBoxDef : JadeBoxTemplate
+    public /*sealed*/ class StartingDraftBoxDef : JadeBoxTemplate
     {
         public override IdContainer GetId() => nameof(StartingDraftBox);
 
@@ -162,20 +178,23 @@ namespace FullElite
             return con;
         }
 
-        [EntityLogic(typeof(StartingDraftBoxDef))]
-        public sealed class StartingDraftBox : JadeBox
+        //[EntityLogic(typeof(StartingDraftBoxDef))]
+        public /*sealed*/ class StartingDraftBox : JadeBox
         {
-            protected override void OnAdded()
+            public static void StaticOnAdded(JadeBox jadeBox)
             {
-                base.HandleGameRunEvent<StationEventArgs>(base.GameRun.StationEntered, delegate (StationEventArgs args)
+                jadeBox.HandleGameRunEvent<StationEventArgs>(jadeBox.GameRun.StationEntered, delegate (StationEventArgs args)
                 {
+                    if (jadeBox.GameRun.HasJadeBox<DisableStartingBonusesDef.DisableStartingBonuses>())
+                        return;
+
                     EntryStation entryStation = args.Station as EntryStation;
-                    if (entryStation != null && GameRun.Stages.IndexOf(entryStation.Stage) == 0)
+                    if (entryStation != null && jadeBox.GameRun.Stages.IndexOf(entryStation.Stage) == 0)
                     {
                         var rewards = new List<StationReward>();
-                        for (var i = 0; i < Value1; i++)
+                        for (var i = 0; i < jadeBox.Value1; i++)
                         {
-                            rewards.Add(GameRun.CurrentStage.GetEnemyCardReward());
+                            rewards.Add(jadeBox.GameRun.CurrentStage.GetEnemyCardReward());
                         }
                         entryStation.AddRewards(rewards);
 
@@ -183,8 +202,8 @@ namespace FullElite
 
                         UiManager.GetPanel<RewardPanel>().Show(new ShowRewardContent
                         {
-                            Station = GameRun.CurrentStation,
-                            Rewards = GameRun.CurrentStation.Rewards,
+                            Station = jadeBox.GameRun.CurrentStation,
+                            Rewards = jadeBox.GameRun.CurrentStation.Rewards,
                             ShowNextButton = true
                         });
                     }
@@ -194,7 +213,7 @@ namespace FullElite
     }
 
 
-    public sealed class PowerBonusBoxDef : JadeBoxTemplate
+    public /*sealed*/ class PowerBonusBoxDef : JadeBoxTemplate
     {
         public override IdContainer GetId() => nameof(PowerBonusBox);
 
@@ -206,12 +225,26 @@ namespace FullElite
             return con;
         }
 
-        [EntityLogic(typeof(PowerBonusBoxDef))]
-        public sealed class PowerBonusBox : JadeBox
+        //[EntityLogic(typeof(PowerBonusBoxDef))]
+        public /*sealed*/ class PowerBonusBox : JadeBox
         {
             protected override void OnGain(GameRunController gameRun)
             {
                 gameRun.GainPower(Value1);
+            }
+
+            public static void StaticOnAdded(JadeBox jadeBox)
+            {
+                jadeBox.HandleGameRunEvent<StationEventArgs>(jadeBox.GameRun.StationEntered, delegate (StationEventArgs args)
+                {
+                    if (jadeBox.GameRun.HasJadeBox<DisableStartingBonusesDef.DisableStartingBonuses>())
+                        return;
+                    EntryStation entryStation = args.Station as EntryStation;
+                    if (entryStation != null && jadeBox.GameRun.Stages.IndexOf(entryStation.Stage) == 0)
+                    {
+                        jadeBox.GameRun.GainPower(jadeBox.Value2);
+                    }
+                });
             }
         }
     }
@@ -280,6 +313,26 @@ namespace FullElite
                     station.AddReward(StationReward.CreateExhibit(station.Stage.GetEliteEnemyExhibit()));
                 }
             }
+        }
+
+    }
+
+
+    public sealed class DisableStartingBonusesDef : JadeBoxTemplate
+    {
+        public override IdContainer GetId() => nameof(DisableStartingBonuses);
+
+        public override LocalizationOption LoadLocalization() => jadeboxBatchLoc.AddEntity(this);
+        public override JadeBoxConfig MakeConfig()
+        {
+            var con = DefaultConfig();
+            return con;
+        }
+
+        [EntityLogic(typeof(DisableStartingBonusesDef))]
+        public sealed class DisableStartingBonuses : JadeBox
+        {
+
         }
 
     }

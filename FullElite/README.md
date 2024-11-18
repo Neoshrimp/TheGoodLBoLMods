@@ -1,18 +1,21 @@
 ### Full Elite
 
 *Korean translation by **raspberry Caffeine Monster***
+**Korean translation slightly outdated**
 
 ![bigRin](https://github.com/Neoshrimp/TheGoodLBoLMods/assets/89428565/b0c00804-c679-47d8-a31f-93919b27719e)
 
 
 Challenge mode where every regular encounter contains an elite.
 
-Challenge is selectable and configurable via jadeboxes. Jadebox bonuses are pretty much mandatory for a clear but starting cards and power should be enough to clear L7.
+Challenge is selectable and configurable via jadeboxes. Some starting bonus are pretty much mandatory but can be disabled by toggling specific jadebox.
 
 [Rainbow box details](https://github.com/Neoshrimp/TheGoodLBoLMods/blob/master/FullElite/RainbowPoolingRules.md) (somewhat spoilers)
 
 ---
 *Change log*
+
+`1.1.60` Nerf summoned Reimu orbs. Make starting bonuses implicit with full elite boxes. Compatible with **both** LBoL 1.5.x and 1.6.0.
 
 `1.1.51` Fix extra reward exhibit bonus not working after restart.
 

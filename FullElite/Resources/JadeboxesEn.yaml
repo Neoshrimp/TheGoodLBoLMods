@@ -1,10 +1,10 @@
 FullEliteBox:
   Name: Full Elite
-  Description: All normal encounters contain an elite enemy instead.
+  Description: All normal encounters contain an elite enemy instead. At the start of the run, draft {Value1} cards and gain {Value2} <sprite="Point" name="Power">.
 
 RainbowFullEliteBox:
   Name: Rainbow Full Elite
-  Description: All normal encounters contain an elite enemy instead. Elites of ALL acts are added to the encounter pool and are scaled appropriately (surely).
+  Description: All normal encounters contain an elite enemy instead. Elites of ALL acts are added to the encounter pool and are scaled appropriately (surely). At the start of the run, draft {Value1} cards and gain {Value2} <sprite="Point" name="Power">.
 
 StartingDraftBox:
   Name: '|FE Bonus| Starting Draft'
@@ -21,3 +21,7 @@ BlockToysBonusBox:
 AllRewardExhibit:
   Name: '|FE Bonus| Reward Exhibit'
   Description: All fights reward an exhibit as an elite would.
+
+DisableStartingBonuses:
+  Name: '|FE Bonus| Disable starting bonuses'
+  Description: Disables starting draft and Power bonuses. Only recommended if other bonuses are chosen, i.e., |Best Collection|.
