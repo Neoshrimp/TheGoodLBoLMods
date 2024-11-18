@@ -34,6 +34,8 @@ What this does **not** fix:
 ---
 *Change log*
 
+`2.2.8` Update for LBoL 1.6.0 beta. **Not compatible with previous versions.**. Koishi cards not touched yet.
+
 `2.2.7` Fix RngFix not working with some jadeboxes.
 
 `2.2.6` Fix rng not being assigned properly for some modded entities.

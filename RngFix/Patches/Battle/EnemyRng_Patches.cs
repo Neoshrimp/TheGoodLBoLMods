@@ -25,7 +25,6 @@ using LBoL.EntityLib.EnemyUnits.Normal.Ravens;
 using LBoL.EntityLib.EnemyUnits.Normal.Yinyangyus;
 using LBoL.EntityLib.EnemyUnits.Opponent;
 using LBoL.EntityLib.EnemyUnits.Normal;
-using LBoL.EntityLib.StatusEffects.Enemy.SeijaItems;
 using LBoL.Core.Battle;
 using UnityEngine;
 

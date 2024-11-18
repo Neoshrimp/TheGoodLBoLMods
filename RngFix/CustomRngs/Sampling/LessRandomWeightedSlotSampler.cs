@@ -97,7 +97,7 @@ namespace RngFix.CustomRngs.Sampling
                 BepinexPlugin.log.LogWarning(rangeRez.Item2);
 
             int i = 0;
-            uint er = 0;
+            //uint er = 0;
             while (i < maxItemRolls)
             {
                 int index = i % shufflingList.Count;

@@ -16,6 +16,7 @@ using LBoL.EntityLib.Cards.Enemy;
 using LBoL.EntityLib.Cards.Neutral.Black;
 using LBoL.EntityLib.Cards.Neutral.NoColor;
 using LBoL.EntityLib.Cards.Neutral.TwoColor;
+using LBoL.EntityLib.Cards.Others;
 using LBoL.EntityLib.EnemyUnits.Character;
 using LBoL.EntityLib.EnemyUnits.Normal;
 using LBoL.EntityLib.EnemyUnits.Normal.Yinyangyus;
@@ -25,7 +26,7 @@ using LBoL.EntityLib.Exhibits.Shining;
 using LBoL.EntityLib.JadeBoxes;
 using LBoL.EntityLib.StatusEffects.Cirno;
 using LBoL.EntityLib.StatusEffects.Enemy;
-using LBoL.EntityLib.StatusEffects.Enemy.SeijaItems;
+using LBoL.EntityLib.StatusEffects.Enemy.Seija;
 using LBoL.EntityLib.StatusEffects.Marisa;
 using LBoL.EntityLib.StatusEffects.Neutral.TwoColor;
 using LBoL.EntityLib.StatusEffects.Neutral.White;
@@ -362,7 +363,8 @@ namespace RngFix.Patches.Battle
             yield return AccessTools.PropertyGetter(typeof(BattleController), nameof(BattleController.RandomAliveEnemy));
             yield return ExtraAccess.InnerMoveNext(typeof(IceLaser), nameof(IceLaser.Actions));
             yield return ExtraAccess.InnerMoveNext(typeof(Changzhizhen), nameof(Changzhizhen.OnPlayerTurnEnding));
-            yield return ExtraAccess.InnerMoveNext(typeof(SakuyaAttackX), nameof(SakuyaAttackX.Actions));
+            //yield return ExtraAccess.InnerMoveNext(typeof(SakuyaAttackX), nameof(SakuyaAttackX.Actions));
+            yield return ExtraAccess.InnerMoveNext(typeof(AttackX), nameof(AttackX.Actions));
             // enemyRng
             yield return ExtraAccess.InnerMoveNext(typeof(HetongKailang), nameof(HetongKailang.RepairActions));
             yield return ExtraAccess.InnerMoveNext(typeof(YinyangyuBlueOrigin), nameof(YinyangyuBlueOrigin.DefendActions));
@@ -403,7 +405,7 @@ namespace RngFix.Patches.Battle
                 case nameof(IceLaser):
                     searchBackMatch = new CodeMatch(ci => ci.opcode == OpCodes.Call && (ci.operand?.ToString().Contains("Where") ?? false));
                     break;
-                case nameof(SakuyaAttackX):
+                case nameof(AttackX):
                     searchBackMatch = new CodeMatch(new CodeInstruction(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(BattleController), nameof(BattleController.AllAliveEnemies))));
                     break;
                 case nameof(HetongKailang):
