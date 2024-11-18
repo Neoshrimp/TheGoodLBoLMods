@@ -13,7 +13,6 @@ using LBoLEntitySideloader;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using static UnityEngine.UI.GridLayoutGroup;
 using UnityEngine;
 using LBoL.Core.Units;
 using LBoL.EntityLib.Exhibits.Common;
