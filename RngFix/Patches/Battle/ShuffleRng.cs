@@ -18,23 +18,29 @@ namespace RngFix.Patches.Battle
 {
 
     [HarmonyPatch(typeof(BattleController), nameof(BattleController.ShuffleDrawPile))]
+    //[HarmonyDebug]
     class ShuffleDrawPile_Patch
     {
-        static bool Prefix(BattleController __instance)
-        {
-            var bc = __instance;
-            var gr = bc.GameRun;
-            var shuffledDrawZone = BattleRngs.Shuffle(gr.ShuffleRng, bc._drawZone);
-            bc._drawZone.Clear();
-            bc._drawZone.AddRange(shuffledDrawZone);
 
-            return false;
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+        {
+            var matcher = new CodeMatcher(instructions);
+            matcher.Start();
+            while (matcher.IsValid)
+            {
+                matcher.MatchEndForward(new CodeMatch(ci => ci.opcode == OpCodes.Call && ci.operand is MethodBase mb && mb.Name.StartsWith("Shuffle")));
+                if (!matcher.IsValid)
+                    break;
+                matcher.SetInstructionAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(BattleRngs), nameof(BattleRngs.ShuffleAndAssign))));
+            }
+
+            return matcher.LeaveJumpFix().InstructionEnumeration();
         }
+
     }
 
 
     [HarmonyPatch(typeof(BattleController), MethodType.Constructor, new Type[] { typeof(GameRunController), typeof(EnemyGroup), typeof(IEnumerable<Card>) })]
-    //[HarmonyDebug]
     class BattleController_ccTor_Patch
     {
 

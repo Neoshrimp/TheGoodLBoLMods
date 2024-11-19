@@ -56,6 +56,12 @@ namespace RngFix.CustomRngs
         public RandomGen BatLockOnRng { get => unitRootRngs.GetOrCreateRootRng(typeof(BatOrigin).FullName + "lckOn", null); }
 
 
+        public static void ShuffleAndAssign(List<Card> toShuffle, RandomGen rng)
+        {
+            var shuffled = Shuffle(rng, toShuffle);
+            toShuffle.Clear();
+            toShuffle.AddRange(shuffled);
+        }
 
         public static List<Card> Shuffle(RandomGen rng, IList<Card> toShuffle)
         {
