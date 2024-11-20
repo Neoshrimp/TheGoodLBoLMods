@@ -13,6 +13,7 @@ using LBoL.Core.Cards;
 
 namespace RngFix.Patches.Cards
 {
+    // AGGRO PREFIX FALSE
     [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.GetRandomCurseCard))]
     [HarmonyPriority(Priority.Low)]
     public class GetRandomCurseCard_Patch

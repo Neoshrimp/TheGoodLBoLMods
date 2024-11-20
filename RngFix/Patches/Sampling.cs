@@ -21,7 +21,7 @@ namespace RngFix.Patches
 {
 
 
-
+    // AGGRO PREFIX FALSE
     [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.RollNormalExhibit))]
     [HarmonyPriority(Priority.Low)]
     class ExhibitRoll_Patch
@@ -52,6 +52,7 @@ namespace RngFix.Patches
     }
 
 
+    // AGGRO PREFIX FALSE
     [HarmonyPatch(typeof(Stage), nameof(Stage.GetAdventure))]
     [HarmonyPriority(Priority.Low)]
     class AdventureRoll_Patch
@@ -89,7 +90,7 @@ namespace RngFix.Patches
 
 
 
-
+    // AGGRO PREFIX FALSE
     [HarmonyPatch(typeof(GameRunController), nameof(GameRunController.RollCards), new Type[] { typeof(RandomGen ), typeof(CardWeightTable), typeof(int) , typeof(ManaGroup?), typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(Predicate<CardConfig>) })]
     [HarmonyPriority(Priority.Low)]
     class CardRoll_Patch
