@@ -67,7 +67,7 @@ namespace VariantsC.Marisa.C
         ManaGroup _mana = new ManaGroup { Philosophy = 3 };
         public ManaGroup Mana { get => _mana; }
 
-        public int HalfDeck { get => Math.Min(GameRun.BaseDeck.Count / 2, GameRun.BaseDeckWithOutUnremovable.Where(c => !c.IsUpgraded).Count()); }
+        public int HalfDeck { get => Math.Min(GameRun.BaseDeck.Count / 2, GameRun.BaseDeckWithoutUnremovable.Where(c => !c.IsUpgraded).Count()); }
         
         public string HalfDeckWrap { get => GameRun == null ? LocalizeProperty("Several") : $"<color=#B2FFFF>{HalfDeck}</color>"; }
 
@@ -88,7 +88,7 @@ namespace VariantsC.Marisa.C
             
             var subRootRng = new RandomGen(PerRngs.Get(GameRun).springCleaningRng.NextULong());
 
-            var selected = GameRun.BaseDeckWithOutUnremovable
+            var selected = GameRun.BaseDeckWithoutUnremovable
                 .Where(c => c.Id != nameof(EverHoardingCard) && !c.IsUpgraded)
                 .GroupBy(c => c.IsUpgraded.ToInt() * 1 /*+ c.IsBasic.ToInt() * 2*/) // there's only ever gonna be one group
                 .OrderBy(g => g.Key)
