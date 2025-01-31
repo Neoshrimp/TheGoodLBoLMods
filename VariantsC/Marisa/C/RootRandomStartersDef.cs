@@ -161,7 +161,9 @@ namespace VariantsC.Marisa.C
 
         public void OnGrStarted(GameRunController gr)
         {
-            gr.RemoveDeckCard(this, false);
+            //gr.RemoveDeckCard(this, false);
+            gr._baseDeck.Remove(this);
+
             if (transformRng == null)
                 transformRng = new RandomGen(gr.CardRng.NextULong());
 
@@ -169,7 +171,7 @@ namespace VariantsC.Marisa.C
             pool.AddRange(PotentialCards(gr));
 
             for(int i = 0; i < AddTimes; i++)
-                gr.AddDeckCards(pool.Sample(transformRng).Select(c => c.Clone()), false);
+                gr.InternalAddDeckCards(pool.Sample(transformRng).Select(c => c.Clone(true)).ToArray());
         }
 
         protected override IEnumerable<BattleAction> Actions(UnitSelector selector, ManaGroup consumingMana, Interaction precondition)
@@ -201,6 +203,7 @@ namespace VariantsC.Marisa.C
         static void Postfix(GameRunController __instance)
         {
             onGrStarted.Do(a => a(__instance));
+            onGrStarted.Clear();
         }
 
 
