@@ -34,6 +34,8 @@ Mod has a config toggle for making new starting cards pooled or not (pooled by d
 
 #### Changelog
 ---
+`0.5.7000` Update for LBoL 1.7.0
+
 `0.5.6100` Fix MarisaC compatibility with runLogger.
 
 `0.5.6000` Fix MarisaC not working.

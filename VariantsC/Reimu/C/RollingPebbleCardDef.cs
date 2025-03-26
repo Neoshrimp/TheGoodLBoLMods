@@ -50,6 +50,8 @@ namespace VariantsC.Reimu.C
                 IsXCost: false,
                 Cost: new ManaGroup() { Any = 1 },
                 UpgradedCost: null,
+                Kicker: null,
+                UpgradedKicker: null,
                 MoneyCost: null,
                 Damage: 6,
                 UpgradedDamage: null,

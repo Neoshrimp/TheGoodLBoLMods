@@ -58,6 +58,8 @@ namespace VariantsC.Marisa.C
                 IsXCost: false,
                 Cost: new ManaGroup() { Colorless = 1 },
                 UpgradedCost: null,
+                Kicker: null,
+                UpgradedKicker: null,
                 MoneyCost: null,
                 Damage: null,
                 UpgradedDamage: null,

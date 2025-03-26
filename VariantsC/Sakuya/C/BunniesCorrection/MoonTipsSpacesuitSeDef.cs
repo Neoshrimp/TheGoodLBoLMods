@@ -53,7 +53,10 @@ namespace VariantsC.Sakuya.C.BunniesCorrection
                 RelativeEffects: new List<string>(),
                 VFX: "Default",
                 VFXloop: "Default",
-                SFX: "Default");
+                SFX: "Default",
+                ImageId: null
+                
+                );
         }
 
     }

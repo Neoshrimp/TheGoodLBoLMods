@@ -3,6 +3,7 @@ using HarmonyLib;
 using LBoLEntitySideloader;
 using LBoLEntitySideloader.Entities;
 using LBoLEntitySideloader.Resource;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using VariantsC.Rng;

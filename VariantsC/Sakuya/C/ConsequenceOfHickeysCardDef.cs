@@ -49,6 +49,8 @@ namespace VariantsC.Sakuya.C
                 IsXCost: false,
                 Cost: new ManaGroup() { Red = 1 },
                 UpgradedCost: new ManaGroup() { Any = 1 },
+                Kicker: null,
+                UpgradedKicker: null,
                 MoneyCost: null,
                 Damage: 3,
                 UpgradedDamage: null,

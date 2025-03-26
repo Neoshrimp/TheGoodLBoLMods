@@ -79,7 +79,8 @@ namespace FullElite
                         a2um.mods.Add(DoSomeAction((Unit unit) => {
                             if (unit is GuihuoRed red)
                             {
-                                red.NoDebuffMove = false;
+                                // removed in 1.7.0
+                                //red.NoDebuffMove = false;
                             }
                             return unit;
                         }));
@@ -130,7 +131,8 @@ namespace FullElite
                         a3um.mods.Add(DoSomeAction((Unit unit) => {
                             if (unit is GuihuoRed red)
                             {
-                                red.NoDebuffMove = false;
+                                // removed in 1.7.0
+                                //red.NoDebuffMove = false;
                                 red.Next = Guihuo.MoveType.Debuff;
                             }
                             return unit;

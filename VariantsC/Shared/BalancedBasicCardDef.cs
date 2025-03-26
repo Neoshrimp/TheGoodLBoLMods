@@ -50,6 +50,8 @@ namespace VariantsC.Shared
                 IsXCost: false,
                 Cost: new ManaGroup() { Any = 2 },
                 UpgradedCost: null,
+                Kicker: null,
+                UpgradedKicker: null,
                 MoneyCost: null,
                 Damage: 4,
                 UpgradedDamage: 7,
