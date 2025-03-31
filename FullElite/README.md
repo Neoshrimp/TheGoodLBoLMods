@@ -15,6 +15,8 @@ Challenge is selectable and configurable via jadeboxes. Some starting bonus are 
 ---
 *Change log*
 
+`1.1.80` Reduce amount of Glares Kokoro adds in the first stage on Lunatic from 2 to 1.
+
 `1.1.70` Update for LBoL 1.7.0
 
 `1.1.60` Nerf summoned Reimu orbs. Make starting bonuses implicit with full elite boxes. Compatible with **both** LBoL 1.5.x and 1.6.0.

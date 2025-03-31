@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using LBoL.Core.Units;
 using LBoL.EntityLib.EnemyUnits.Character;
+using LBoL.EntityLib.Stages.NormalStages;
 using LBoLEntitySideloader.ReflectionHelpers;
 using System;
 using System.Collections.Generic;
@@ -81,6 +82,37 @@ namespace FullElite
 
 
     }
+
+
+
+    [HarmonyPatch(typeof(Kokoro), nameof(Kokoro.GetTurnMoves), MethodType.Enumerator)]
+    class Kokoro_GlareCount_Patch
+    {
+
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            return new CodeMatcher(instructions)
+                .SearchForward(ci => ci.opcode == OpCodes.Call && (ci?.operand.ToString().Contains("AddCardMove") ?? false))
+                .MatchStartBackwards(new CodeMatch(OpCodes.Call, AccessTools.PropertyGetter(typeof(EnemyUnit), nameof(EnemyUnit.Difficulty))))
+                .ThrowIfInvalid("Difficulty check not matched")
+                .MatchStartForward(OpCodes.Ldc_I4_2)
+                .SetAndAdvance(OpCodes.Ldloc_1, null)
+                .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Kokoro_GlareCount_Patch), nameof(Kokoro_GlareCount_Patch.CheckStage))))
+                .InstructionEnumeration();
+        }
+
+        private static int CheckStage(Kokoro kokoro)
+        {
+            if (kokoro.GameRun?.CurrentStage?.GetType() == typeof(BambooForest))
+            { 
+                return 1;
+            }
+            return 2;
+        }
+
+    }
+
+
 
 
 }
