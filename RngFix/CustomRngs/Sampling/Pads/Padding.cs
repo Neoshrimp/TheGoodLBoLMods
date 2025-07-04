@@ -88,6 +88,15 @@ namespace RngFix.CustomRngs.Sampling.Pads
             }
         }
 
+        public static IEnumerable<Type> ShiningExhibits
+        {
+            get
+            {
+                return ExPadding(ExhibitConfig.AllConfig().Where(c => c.Rarity is Rarity.Shining));
+            }
+        }
+
+
         public static IEnumerable<Type> RollableExhibits
 
         {
