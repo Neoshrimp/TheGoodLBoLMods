@@ -2,6 +2,7 @@
 using LBoL.Core;
 using LBoL.Core.Randoms;
 using LBoLEntitySideloader.Utils;
+using RngFix.CustomRngs;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -16,14 +17,18 @@ namespace RngFix.Patches
     class KillCardFactors_Patch
     {
 
-        static bool IgnoreFactorTable() => !BepinexPlugin.ignoreFactorsTableConf.Value;
+        static bool IgnoreFactorTable(bool factorFound)
+        {
+            if (BepinexPlugin.ignoreFactorsTableConf.Value)
+                return false;
+            return factorFound;
+        }
 
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             return new CodeMatcher(instructions)
                 .MatchForward(true, new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(GameRunController), nameof(GameRunController._cardRewardWeightFactors))))
                 .MatchForward(false, new CodeMatch(OpCodes.Brfalse))
-                .InsertAndAdvance(new CodeInstruction(OpCodes.Pop))
                 .InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(KillCardFactors_Patch), nameof(KillCardFactors_Patch.IgnoreFactorTable))))
                 .LeaveJumpFix().InstructionEnumeration();
         }

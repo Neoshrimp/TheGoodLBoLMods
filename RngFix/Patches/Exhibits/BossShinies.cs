@@ -53,8 +53,6 @@ namespace RngFix.Patches.Exhibits
     class RollShiningExhibit_Patch
     {
 
-
-
         public const float maxTotalWeight = 200f;
 
         private static Type ConsistentExSample(RepeatableRandomPool<Type> pool, RandomGen rng, GameRunController gr)

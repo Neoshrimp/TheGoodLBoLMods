@@ -204,7 +204,7 @@ namespace RngFix.Patches
     {
         static void SetNodeMaster(Type aType, Stage stage)
         {
-            log.LogDebug($"{stage}: {aType}");
+            //log.LogDebug($"{stage}: {aType}");
             var gr = stage.GameRun;
             var grngs = GrRngs.GetOrCreate(gr);
 
