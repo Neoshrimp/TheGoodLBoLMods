@@ -96,6 +96,7 @@ namespace VariantsC.Marisa.C
                 RelativeCards: new List<string>(),
                 UpgradedRelativeCards: new List<string>(),
                 Owner: "Marisa",
+                Pack: "",
                 ImageId: "",
                 UpgradeImageId: "",
                 Unfinished: false,

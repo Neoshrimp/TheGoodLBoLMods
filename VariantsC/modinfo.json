@@ -1,0 +1,20 @@
+{
+  "Title": "VariantsC",
+  "Description": "More starting loadouts for vanilla characters",
+  "Brief": "More starting loadouts for vanilla characters.",
+  "Changelog": [
+    "v0.5.7001: \nInitial Release."
+  ],
+  "Version": "0.5.7001",
+  "Author": "Neo",
+  "Tags": [
+    "Content",
+    "Gameplay"
+  ],
+  "PublishedFileId": 0,
+  "AuthorId": 0,
+  "GUID": "neo.lbol.gameplay.VariantsC",
+  "Dependencies": [ "BepInEx-BepInExPack-5.4.2100", "neo.lbol.frameworks.entitySideloader" ],
+  "LastUpdateTime": 0,
+  "OnlyUploadFiles": true
+}

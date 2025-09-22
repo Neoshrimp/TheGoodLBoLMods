@@ -88,6 +88,7 @@ namespace VariantsC.Shared
                 RelativeCards: new List<string>(),
                 UpgradedRelativeCards: new List<string>(),
                 Owner: null,
+                Pack: "",
                 ImageId: "",
                 UpgradeImageId: "",
                 Unfinished: false,

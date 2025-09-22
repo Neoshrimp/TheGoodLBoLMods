@@ -88,6 +88,7 @@ namespace VariantsC.Reimu.C
                 RelativeCards: new List<string>(),
                 UpgradedRelativeCards: new List<string>(),
                 Owner: "Koishi",
+                Pack: "",
                 ImageId: "",
                 UpgradeImageId: "",
                 Unfinished: false,

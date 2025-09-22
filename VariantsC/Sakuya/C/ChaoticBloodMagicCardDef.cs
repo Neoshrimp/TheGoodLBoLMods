@@ -88,6 +88,7 @@ namespace VariantsC.Sakuya.C
                 RelativeCards: new List<string>(),
                 UpgradedRelativeCards: new List<string>(),
                 Owner: "Sakuya",
+                Pack: "",
                 ImageId: "",
                 UpgradeImageId: "",
                 Unfinished: false,

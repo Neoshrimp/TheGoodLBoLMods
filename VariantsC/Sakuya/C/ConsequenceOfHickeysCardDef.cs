@@ -87,6 +87,7 @@ namespace VariantsC.Sakuya.C
                 RelativeCards: new List<string>() { nameof(Knife) },
                 UpgradedRelativeCards: new List<string>() { nameof(Knife) },
                 Owner: "Sakuya",
+                Pack: "",
                 ImageId: "",
                 UpgradeImageId: "",
                 Unfinished: false, 
