@@ -1,0 +1,18 @@
+{
+  "Title": "Full Elite",
+  "Description": "All fights are Elites",
+  "Brief": "All fights are Elites.",
+  "Changelog": [
+    "v1.1.80: \nInitial Release."
+  ],
+  "Version": "1.1.80",
+  "Author": "Neo",
+  "Tags": [
+    "Gameplay"
+  ],
+  "PublishedFileId": 0,
+  "AuthorId": 0,
+  "GUID": "neo.lbol.runmods.fullElite",
+  "Dependencies": [ "BepInEx-BepInExPack-5.4.2100", "neo.lbol.frameworks.entitySideloader" ],
+  "LastUpdateTime": 0
+}
