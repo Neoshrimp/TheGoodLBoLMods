@@ -15,5 +15,5 @@
   "AuthorId": 0,
   "GUID": "neo.lbol.fix.rngFix",
   "Dependencies": [ "BepInEx-BepInExPack-5.4.2100", "neo.lbol.frameworks.entitySideloader" ],
-  "LastUpdateTime": 0,
+  "LastUpdateTime": 0
 }
