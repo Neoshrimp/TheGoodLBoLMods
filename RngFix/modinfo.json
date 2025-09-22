@@ -1,0 +1,19 @@
+{
+  "Title": "RngFix",
+  "Description": "Makes seeded reruns way more consistent.",
+  "Brief": "Makes seeded reruns way more consistent.",
+  "Changelog": [
+    "v2.3.3: \nInitial Release."
+  ],
+  "Version": "2.3.3",
+  "Author": "Neo",
+  "Tags": [
+    "Misc",
+    "Gameplay"
+  ],
+  "PublishedFileId": 0,
+  "AuthorId": 0,
+  "GUID": "neo.lbol.fix.rngFix",
+  "Dependencies": [ "BepInEx-BepInExPack-5.4.2100", "neo.lbol.frameworks.entitySideloader" ],
+  "LastUpdateTime": 0,
+}

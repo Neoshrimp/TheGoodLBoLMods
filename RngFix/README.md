@@ -34,6 +34,8 @@ What this does **not** fix:
 ---
 *Change log*
 
+`2.3.3` Workshop update.
+
 `2.3.2` Fix IgnoreFactorsTable config not working when set to false. *Thanks, Rokk*
 
 `2.3.1` Small fix regarding 'unknown' card type.
