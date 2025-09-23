@@ -11,7 +11,7 @@
     "Misc",
     "Gameplay"
   ],
-  "PublishedFileId": 0,
+  "PublishedFileId": 3573045463,
   "AuthorId": 0,
   "GUID": "neo.lbol.fix.rngFix",
   "Dependencies": [ "BepInEx-BepInExPack-5.4.2100", "neo.lbol.frameworks.entitySideloader" ],

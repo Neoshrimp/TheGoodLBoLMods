@@ -10,9 +10,9 @@
   "Tags": [
     "Gameplay"
   ],
-  "PublishedFileId": 0,
+  "PublishedFileId": 3573057404,
   "AuthorId": 0,
   "GUID": "neo.lbol.runmods.fullElite",
-  "Dependencies": [ "BepInEx-BepInExPack-5.4.2100", "neo.lbol.frameworks.entitySideloader" ],
+  "Dependencies": [ "BepInEx-BepInExPack-5.4.2100", "neo.lbol.frameworks.entitySideloader", "neo.lbol.qol.uncappedJadeboxes" ],
   "LastUpdateTime": 0
 }

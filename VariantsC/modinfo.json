@@ -11,7 +11,7 @@
     "Content",
     "Gameplay"
   ],
-  "PublishedFileId": 0,
+  "PublishedFileId": 3573026893,
   "AuthorId": 0,
   "GUID": "neo.lbol.gameplay.VariantsC",
   "Dependencies": [ "BepInEx-BepInExPack-5.4.2100", "neo.lbol.frameworks.entitySideloader" ],
