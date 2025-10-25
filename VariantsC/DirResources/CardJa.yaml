@@ -1,0 +1,38 @@
+BalancedBasicCard:
+    Description: "{Block} |ブロック|を得る。\n{Damage} ダメージを与える。"
+    Name: "均衡結界"
+
+BasicAttacksPack:
+    JustName: "さびた装置"
+
+BasicDefencePack:
+    JustName: "埃塗れの本"
+
+BasicMiseryPack:
+    JustName: "臭い何か"
+
+BasicTreasurePack:
+    JustName: "宝物（ガラクタ）"
+
+ChaoticBloodMagicCard:
+    Description: "敵全体に{Damage}ダメージを与える。\n{SelfName}で敵を撃破した時、{Mana}を得る。"
+    Name: "カオティックブラッドマジック"
+
+ConsequenceOfHickeysCard:
+    Description: "ライフを{Value1}失う。\n{Damage}ダメージを与える。\n|投げナイフ|を{Value2}枚手札に加える。"
+    Name: "噛み痕の末路"
+
+EverHoardingCard:
+    Description: "カードを{CardCounter}枚プレイするたびに、{JustNameBlue}のコストを{Mana}増やす。\nこのカードをプレイするために支払ったコスト- <color=#B2FFFF>1</color> (<color=#B2FFFF><b>{GenAmount}</b></color>)枚のランダムなカードを|デッキ|に加える。（最大で <color=#B2FFFF>{MaxGen}</color>枚）\n<color={CommonColor}>コモン:<b>{CommonChance}</b></color> <color={UncommonColor}>アンコモン:<b>{UncommonChance}</b></color> <color={RareColor}>レア:<b>{RareChance}</b></color> "
+    DetailText: "このカードをプレイするために支払うマナが多いほど、アンコモンとレアの確率が高くなる。上限は|14|。{JustNameBlue}は加えられない。"
+    JustName: "ため込み癖"
+    Name: "{CardCounterWrap}{JustName}"
+
+FakePackForCommonLoc:
+    Description: "ゲーム開始時、 {JustNameBlue} は以下の中からランダムな1組に変化する。これを｛X｝の数だけ繰り返す。 \n{ListCards}"
+    Name: "{JustName}{AddTimesWrap}"
+
+RollingPebbleCard:
+    Description: "{Damage}ダメージを与える。\n|<sprite=\"ManaSprite\" name=\"C\"> または <sprite=\"ManaSprite\" name=\"P\"> につき|: この戦闘中に与えるダメージが{Value1} 増える。"
+    Name: "回るこいし"
+    UpgradedDescription: "|<sprite=\"ManaSprite\" name=\"C\"> または <sprite=\"ManaSprite\" name=\"P\"> につき|: この戦闘中に与えるダメージが{Value1} 増える。\n{Damage}ダメージを与える。"

@@ -1,0 +1,9 @@
+BloodDrainSe:
+    Brief: "{OwnerName} が攻撃ダメージによって敵のHPを減らした時与えた時、それと同じ値のライフを得て、|吸血|を <color=#B2FFFF>1</color> つ失う。 |吸血|は次のターン開始時にすべて失う。"
+    Description: "{OwnerName} が攻撃ダメージによって敵のHPを減らした時与えた時、それと同じ値のライフを得て、|吸血|を <color=#B2FFFF>1</color> つ失う。 |吸血|は次のターン開始時にすべて失う。"
+    Name: "吸血"
+
+BloodyRipperSe:
+    Brief: "血塗れ包丁のカウンター"
+    Description: "血塗れ包丁のカウンター"
+    Name: "血塗れ包丁"

@@ -2,6 +2,8 @@
 *under development*
 
 *Korean translation by **raspberry Caffeine Monster***
+*Japanese translation by **「名無しでありたい」***
+
 
 
 Adds new starting loadouts. Each loadout contains new spell card, cards and shining exhibit. 
@@ -34,6 +36,8 @@ Mod has a config toggle for making new starting cards pooled or not (pooled by d
 
 #### Changelog
 ---
+`0.5.7002` Add Japanese translation. Thanks to *「名無しでありたい」*.
+
 `0.5.7001` Workshop update.
 
 `0.5.7000` Update for LBoL 1.7.0

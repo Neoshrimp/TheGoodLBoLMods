@@ -1,0 +1,13 @@
+BloodyRipperEx:
+    Description: "マナ基盤に{BaseMana}を加える。|咲夜|専用のカードが出現するようになる。\nこの展示品を持っている間、最大ライフが{Value1}増える。\n|投げナイフ|以外のカードをプレイした後、ライフを <color=#B2FFFF>1~3</color>失う。この効果でライフは0にはならない。\n {PlayerName}が攻撃カードをプレイした時、カウンターを<color=#B2FFFF>1</color>増やす。カウンターが{Value2}になった時、カウンターをリセットして|吸血|を得る。ターン終了時にカウンターを<color=#B2FFFF>1</color>減らす。"
+    FlavorText: "Rip and tear, tear and rip."
+    Name: "血塗れ包丁"
+
+ChocolateCoinEx:
+    Description: "マナ基盤に{BaseMana}を加える。|霊夢|専用のカードが出現するようになる。\n各戦闘の最初の{Value1}ターンの開始時、ランダムな|基本カード|を1枚|廃棄|する。山札、捨て札、手札の順に優先する。"
+    FlavorText: "Melts if exposed to direct sunlight."
+    Name: "コインチョコ"
+
+PachyBagEx:
+    Description: "マナ基盤に{BaseMana}を加える。|魔理沙|専用のカードが出現するようになる。\n{PlayerName}のターン開始時に、|デッキ|の枚数 {Value1}枚ごとにランダムなマナを一つ獲得する。\n\nカード報酬の選択肢が{Value2}つ減るが、|ボス|以外の戦闘で追加のカード報酬を得ることができるようになる。\n\n |固有|のカードは、戦闘開始時に、山札の一番上ではなく山札の <i>前半</i>部分にシャッフルされる 。"
+    Name: "宝袋"

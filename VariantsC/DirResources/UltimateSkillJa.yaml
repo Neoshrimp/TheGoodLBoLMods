@@ -1,0 +1,12 @@
+BatFormUlt:
+    Content: "吸血形態"
+    Description: "{Value1} |Blood Drain|.を得る\n{Value2} |投げナイフ| を2枚手札に加える。"
+
+JabReimuCUlt:
+    Content: "拳"
+    Description: "{Damage}ダメージを与える（精密ではない）"
+
+SpringCleaningUlt:
+    Content: "春の大掃除"
+    Description: "|デッキ|のアップグレードしていないカードをデッキ枚数の半分まで（ {HalfDeckWrap}枚）ランダムに選ぶ。\n<color=#B2FFFF>ため込み癖</color> は選ばれない。\n選ばれたカードの半分{ToRemoveWrap} をランダムにデッキから削除し、残りの半分から削除したカードの半分{ToUpgradeWrap} だけカードをランダムに|アップグレード|する。\n|フィールド| のカードも同様に変化する。\nランダムに|厄災|を一枚デッキに加える。\n\n手札と山札をすべて捨て札に送る。\nカードを {Value1}枚引き、 {Mana}を得る。\n\n<i>削除/アップグレードされたカードはバトルログで見直せる。初期設定は|F4|キー。</i>"
+    Several: "数"
